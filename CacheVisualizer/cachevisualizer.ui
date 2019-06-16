@@ -72,7 +72,7 @@
   <action name="actionOpen_Trace">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/imgs/open.png</normaloff>:/imgs/open.png</iconset>
+     <normaloff>:/imgs/icons/open.png</normaloff>:/imgs/icons/open.png</iconset>
    </property>
    <property name="text">
     <string>Open Trace</string>
@@ -81,7 +81,7 @@
   <action name="actionStart">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/imgs/play.png</normaloff>:/imgs/play.png</iconset>
+     <normaloff>:/imgs/icons/play.png</normaloff>:/imgs/icons/play.png</iconset>
    </property>
    <property name="text">
     <string>Start</string>
@@ -90,7 +90,7 @@
   <action name="actionPause">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/imgs/pause.png</normaloff>:/imgs/pause.png</iconset>
+     <normaloff>:/imgs/icons/pause1.png</normaloff>:/imgs/icons/pause1.png</iconset>
    </property>
    <property name="text">
     <string>Pause</string>
@@ -99,7 +99,7 @@
   <action name="actionStop">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/imgs/stop.png</normaloff>:/imgs/stop.png</iconset>
+     <normaloff>:/imgs/icons/stop.png</normaloff>:/imgs/icons/stop.png</iconset>
    </property>
    <property name="text">
     <string>Stop</string>
@@ -108,7 +108,7 @@
   <action name="actionClear">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/imgs/clear.png</normaloff>:/imgs/clear.png</iconset>
+     <normaloff>:/imgs/icons/clear.png</normaloff>:/imgs/icons/clear.png</iconset>
    </property>
    <property name="text">
     <string>Clear</string>
@@ -117,7 +117,7 @@
   <action name="actionChange_Configuration_File">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/imgs/change.png</normaloff>:/imgs/change.png</iconset>
+     <normaloff>:/imgs/icons/change.png</normaloff>:/imgs/icons/change.png</iconset>
    </property>
    <property name="text">
     <string>Change Configuration File</string>
@@ -126,7 +126,7 @@
   <action name="actionExit">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/imgs/Actions-application-exit-icon.png</normaloff>:/imgs/Actions-application-exit-icon.png</iconset>
+     <normaloff>:/imgs/icons/Actions-application-exit-icon.png</normaloff>:/imgs/icons/Actions-application-exit-icon.png</iconset>
    </property>
    <property name="text">
     <string>Exit</string>
@@ -140,7 +140,7 @@
   <action name="actionPrint_Configuration">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/imgs/print.png</normaloff>:/imgs/print.png</iconset>
+     <normaloff>:/imgs/icons/print.png</normaloff>:/imgs/icons/print.png</iconset>
    </property>
    <property name="text">
     <string>Print Configuration</string>
@@ -149,7 +149,7 @@
   <action name="actionAbout">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/imgs/info.png</normaloff>:/imgs/info.png</iconset>
+     <normaloff>:/imgs/icons/info.png</normaloff>:/imgs/icons/info.png</iconset>
    </property>
    <property name="text">
     <string>About</string>
@@ -158,7 +158,7 @@
   <action name="actionSave_Simulation_Results">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/imgs/save.png</normaloff>:/imgs/save.png</iconset>
+     <normaloff>:/imgs/icons/save.png</normaloff>:/imgs/icons/save.png</iconset>
    </property>
    <property name="text">
     <string>Save Simulation Results</string>

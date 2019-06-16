@@ -1,15 +1,15 @@
 <RCC>
     <qresource prefix="/imgs">
-        <file>stop.png</file>
-        <file>pause.png</file>
-        <file>play.png</file>
-        <file>print.png</file>
-        <file>info.png</file>
-        <file>Actions-application-exit-icon.png</file>
-        <file>open.png</file>
-        <file>clear.png</file>
-        <file>change.png</file>
-        <file>pause1.png</file>
-        <file>save.png</file>
+        <file>icons/save.png</file>
+        <file>icons/clear.png</file>
+        <file>icons/change.png</file>
+        <file>icons/pause1.png</file>
+        <file>icons/stop.png</file>
+        <file>icons/pause.png</file>
+        <file>icons/play.png</file>
+        <file>icons/print.png</file>
+        <file>icons/info.png</file>
+        <file>icons/Actions-application-exit-icon.png</file>
+        <file>icons/open.png</file>
     </qresource>
 </RCC>
