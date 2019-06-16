@@ -25,11 +25,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        fileio.cpp \
+        globals.cpp \
         main.cpp \
         cachevisualizer.cpp
 
 HEADERS += \
         cachevisualizer.h \
+        fileio.h \
+        globals.h \
         main.h
 
 FORMS += \

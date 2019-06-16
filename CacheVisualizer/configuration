@@ -27,5 +27,5 @@ replacementpolicy=1
 writepolicy=1
 #1 = write allocate (in L2)
 l1loadgranularity=128
-l2loadgranularity=128
+l2loadgranularity=32
 

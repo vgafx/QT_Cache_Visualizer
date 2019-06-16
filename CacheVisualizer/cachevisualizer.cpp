@@ -5,6 +5,7 @@ CacheVisualizer::CacheVisualizer(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::CacheVisualizer)
 {
+    //printf("UI Setup\n");
     ui->setupUi(this);
 }
 
