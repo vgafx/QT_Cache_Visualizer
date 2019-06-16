@@ -26,7 +26,7 @@ void readConfig(){
             std::getline(tokenizer, attribute, '=');
             std::getline(tokenizer, value);
 
-            //printf("Tokenizer: att= %s , val= %s\n", attribute.c_str(), value.c_str());
+            printf("Tokenizer: att=%s,val=%sEND\n", attribute.c_str(), value.c_str());
 
             if (attribute=="name"){
                 name = value;
@@ -44,8 +44,10 @@ void readConfig(){
                 is_sectored = std::stoi(value);
             } else if(attribute=="sectorsize"){
                 sector_size = std::stoi(value);
-            } else if(attribute=="waysize"){
-                way_size = std::stoi(value);
+            } else if(attribute=="waysizel1"){
+                way_size_l1 = std::stoi(value);
+            } else if(attribute=="waysizel2"){
+                way_size_l2 = std::stoi(value);
             } else if(attribute=="l1enabled"){
                 is_l1_enabled = std::stoi(value);
             } else if(attribute=="replacementpolicy"){
@@ -57,7 +59,7 @@ void readConfig(){
             } else if(attribute=="l2loadgranularity"){
                 l2_load_granularity = std::stoi(value);
             } else if(attribute=="global"){
-                global_size = std::stoi(value);
+                global_size = std::stoll(value);
             } else if(attribute=="l2size"){
                 l2_size = std::stoi(value);
             } else if(attribute=="l1size"){

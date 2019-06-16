@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1221</width>
-    <height>803</height>
+    <width>1433</width>
+    <height>928</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,10 +19,46 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1221</width>
+     <width>1433</width>
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen_Trace"/>
+    <addaction name="actionChange_Configuration_File"/>
+    <addaction name="actionSave_Simulation_Results"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuSimulation">
+    <property name="title">
+     <string>Simulation</string>
+    </property>
+    <widget class="QMenu" name="menuSpeed">
+     <property name="title">
+      <string>Speed</string>
+     </property>
+     <addaction name="action100"/>
+    </widget>
+    <addaction name="actionStart"/>
+    <addaction name="actionPause"/>
+    <addaction name="actionStop"/>
+    <addaction name="actionClear"/>
+    <addaction name="menuSpeed"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionPrint_Configuration"/>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuSimulation"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -33,8 +69,105 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionOpen_Trace">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/imgs/open.png</normaloff>:/imgs/open.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open Trace</string>
+   </property>
+  </action>
+  <action name="actionStart">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/imgs/play.png</normaloff>:/imgs/play.png</iconset>
+   </property>
+   <property name="text">
+    <string>Start</string>
+   </property>
+  </action>
+  <action name="actionPause">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/imgs/pause.png</normaloff>:/imgs/pause.png</iconset>
+   </property>
+   <property name="text">
+    <string>Pause</string>
+   </property>
+  </action>
+  <action name="actionStop">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/imgs/stop.png</normaloff>:/imgs/stop.png</iconset>
+   </property>
+   <property name="text">
+    <string>Stop</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/imgs/clear.png</normaloff>:/imgs/clear.png</iconset>
+   </property>
+   <property name="text">
+    <string>Clear</string>
+   </property>
+  </action>
+  <action name="actionChange_Configuration_File">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/imgs/change.png</normaloff>:/imgs/change.png</iconset>
+   </property>
+   <property name="text">
+    <string>Change Configuration File</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/imgs/Actions-application-exit-icon.png</normaloff>:/imgs/Actions-application-exit-icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="action100">
+   <property name="text">
+    <string>100%</string>
+   </property>
+  </action>
+  <action name="actionPrint_Configuration">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/imgs/print.png</normaloff>:/imgs/print.png</iconset>
+   </property>
+   <property name="text">
+    <string>Print Configuration</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/imgs/info.png</normaloff>:/imgs/info.png</iconset>
+   </property>
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionSave_Simulation_Results">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/imgs/save.png</normaloff>:/imgs/save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save Simulation Results</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

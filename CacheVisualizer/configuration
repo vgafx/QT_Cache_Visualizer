@@ -19,7 +19,8 @@ cacheline=128
 issectored=1
 sectorsize=32
 #set-associativety: 3,6,12,24
-waysize=6
+waysizel1=6
+waysizel2=6
 l1enabled=0
 replacementpolicy=1
 #1 = LRU
