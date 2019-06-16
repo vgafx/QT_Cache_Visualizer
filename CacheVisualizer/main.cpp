@@ -1,7 +1,6 @@
 #include "cachevisualizer.h"
 #include <QApplication>
-
-int l2size;
+#include <string>
 
 int main(int argc, char *argv[])
 {
