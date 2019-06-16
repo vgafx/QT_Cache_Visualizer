@@ -29,7 +29,8 @@ SOURCES += \
         cachevisualizer.cpp
 
 HEADERS += \
-        cachevisualizer.h
+        cachevisualizer.h \
+        main.h
 
 FORMS += \
         cachevisualizer.ui

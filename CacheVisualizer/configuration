@@ -1,4 +1,31 @@
+#GPU info
 name=GeForce GTX TitanX
-Architecture=2nd generation Maxwell
+architecture=2nd generation Maxwell
 chip=GM200-400-A1
+
+#arch
+cudacores=3072
+smm=24
+warpsize=32
+concurrentwarps=4
+
+#Memory (in bytes)
+global=12884901888
+l2size=3145728
+l1size=24576
+
+#Cache attributes
+cacheline=128
+issectored=1
+sectorsize=32
+#set-associativety: 3,6,12,24
+waysize=6
+l1enabled=0
+replacementpolicy=1
+#1 = LRU
+#2 = random from set
+writepolicy=1
+#1 = write allocate (in L2)
+l1loadgranularity=128
+l2loadgranularity=128
 
