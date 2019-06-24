@@ -28,13 +28,15 @@ SOURCES += \
         fileio.cpp \
         globals.cpp \
         main.cpp \
-        cachevisualizer.cpp
+        cachevisualizer.cpp \
+        threadblock.cpp
 
 HEADERS += \
         cachevisualizer.h \
         fileio.h \
         globals.h \
-        main.h
+        main.h \
+        threadblock.h
 
 FORMS += \
         cachevisualizer.ui
