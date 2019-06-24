@@ -13,6 +13,9 @@ public:
     unsigned int blockIdZ;
     unsigned int mappedToSM;
     unsigned int numThreads;
+    unsigned int numThreadsX;
+    unsigned int numThreadsY;
+    unsigned int numThreadsZ;
     unsigned int numWarps;
 };
 

@@ -27,6 +27,7 @@ CONFIG += c++11
 SOURCES += \
         fileio.cpp \
         globals.cpp \
+        grid.cpp \
         main.cpp \
         cachevisualizer.cpp \
         threadblock.cpp
@@ -35,6 +36,7 @@ HEADERS += \
         cachevisualizer.h \
         fileio.h \
         globals.h \
+        grid.h \
         main.h \
         threadblock.h
 
