@@ -6,6 +6,7 @@ class grid
 {
 public:
     grid();
+    int getNumBlocks();
     unsigned int numBlocks;
     unsigned int dimensions;
     unsigned int numElements;

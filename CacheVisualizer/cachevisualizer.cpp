@@ -1,13 +1,25 @@
 #include "cachevisualizer.h"
 #include "ui_cachevisualizer.h"
 #include "globals.h"
+#include <QLabel>
+#include <QGridLayout>
 
 CacheVisualizer::CacheVisualizer(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::CacheVisualizer)
 {
-    //printf("UI Setup\n");
     ui->setupUi(this);
+    QWidget *uiGrid = new QWidget;
+    QGridLayout *layout = new QGridLayout;
+    setCentralWidget(uiGrid);
+    for (int r = 0; r < 8; r++) {
+        for (int c = 0; c < 8; c++) {
+            QLabel *label = new QLabel("1", uiGrid); // Text could be 1 or 0.
+            layout->addWidget(label, r, c);
+        }
+    }
+    uiGrid->setLayout(layout);
+
 }
 
 CacheVisualizer::~CacheVisualizer()
