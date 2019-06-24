@@ -6,7 +6,9 @@ class grid
 {
 public:
     grid();
-    int numBlocks;
+    unsigned int numBlocks;
+    unsigned int dimensions;
+    unsigned int numElements;
 };
 
 #endif // GRID_H
