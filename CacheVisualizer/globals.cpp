@@ -1,7 +1,7 @@
 #include "globals.h"
 
 /*Init with Titanx configuration on default*/
-std::string name="TitanX";
+std::string name="GTX TitanX";
 int l2_size=3145728;
 int l1_size=24576;
 int line_size=128;
@@ -19,6 +19,9 @@ int replacement_policy=1; //1 =LRU
 int write_policy=1; //1 = write allocate
 int l1_load_granularity=128;
 int l2_load_granularity=32;
+std::string architecture="2nd generation Maxwell";
+std::string chip="GM200-400-A1";
+
 bool missingConfigAttribute = false;
 
 int bytes_in_set_l2;
@@ -51,8 +54,8 @@ void printGlobals(){
     printf("Is cache line sectored? : %d\n",is_sectored);
     printf("Sector Size: %d\n",sector_size);
     printf("Warp Size: %d\n",warp_size);
-    printf("Set Associativety(L1): %d-way\n",way_size_l1);
-    printf("Set Associativety(L2): %d-way\n",way_size_l2);
+    printf("Set Associativety(L1): %d-way \n",way_size_l1);
+    printf("Set Associativety(L2): %d-way \n",way_size_l2);
     printf("Is L1 enabled? : %d\n",is_l1_enabled);
     printf("Load granularity(L1): %d\n",l1_load_granularity);
     printf("Load granularity(L2): %d\n",l2_load_granularity);

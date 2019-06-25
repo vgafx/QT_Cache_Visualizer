@@ -24,6 +24,9 @@ extern int replacement_policy; //1 =LRU
 extern int write_policy; //1 = write allocate
 extern int l1_load_granularity;
 extern int l2_load_granularity;
+extern std::string architecture;
+extern std::string chip;
+
 extern bool missingConfigAttribute;
 
 //computed

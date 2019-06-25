@@ -50,12 +50,13 @@ void readConfig(){
     if ( configFile.is_open()){
         std::string line;
         while (getline(configFile,line)){
+            if(line[0] == '#' || line.empty()){continue;}
             std::istringstream tokenizer(line);
             std::string attribute, value;
             std::getline(tokenizer, attribute, '=');
             std::getline(tokenizer, value);
 
-            printf("Tokenizer: att=%s,val=%sEND\n", attribute.c_str(), value.c_str());
+            printf("Tokenizer: att=%s,val=%s\n", attribute.c_str(), value.c_str());
 
             if (attribute=="name"){
                 name = value;

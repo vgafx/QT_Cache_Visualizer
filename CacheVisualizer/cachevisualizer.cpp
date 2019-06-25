@@ -126,6 +126,41 @@ void CacheVisualizer::on_actionChange_Configuration_File_triggered()
 */
 void CacheVisualizer::on_actionPrint_Configuration_triggered()
 {
+    QString gpuName = QString::fromStdString(name);
+    QString arc = QString::fromStdString(architecture);
+    QString chipset = QString::fromStdString(chip);
+    QString l1active = (is_l1_enabled == 1) ? "Yes":"No";
+    QString l2sectored = (is_sectored == 1) ? "Yes":"No";
+    QString replacementPol = (replacement_policy == 1) ? "LRU": "Random within Set";
+    QString writePol = (write_policy == 1) ? "Write-Allocate": "Non-Cached";
+
+    QMessageBox::about (this, "Configuration Summary", "GPU Name:                                            " + gpuName +
+                        "\nArchitecture:                                        " + arc +
+                        "\nChip:                                                        " + chipset +
+                        "\n------------------------------------------------------------------------------------------"  +
+                        "\nNumber of SMs:                                  " + QString::number(num_sm) +
+                        "\nCuda Cores(total):                              " + QString::number(cuda_cores) +
+                        "\nWarp Size:                                             " + QString::number(warp_size) +
+                        "\nMax Active Warps(per SM):             " + QString::number(concurrent_warps) +
+                        "\n------------------------------------------------------------------------------------------"  +
+                        "\nGlobal Memory(bytes):                    " + QString::number(global_size) +
+                        "\nL2 Size(bytes):                                     " + QString::number(l2_size) +
+                        "\nL1 Size(bytes):                                     " + QString::number(l1_size) +
+                        "\nCache Line Size(bytes):                    " + QString::number(line_size) +
+                        "\nL1 Enabled?:                                         " + l1active +
+                        "\nL2 Sectored?:                                       " + l2sectored +
+                        "\nSector Size:                                           " + QString::number(sector_size) +
+                        "\nSet Associativety(L1):                       " + QString::number(way_size_l1) +"-way"+
+                        "\nSet Associativety(L2):                       " + QString::number(way_size_l2) +"-way"+
+                        "\nLoad Granularity(L1):                       " + QString::number(l1_load_granularity) +
+                        "\nLoad Granularity(L2):                       " + QString::number(l2_load_granularity) +
+                        "\n------------------------------------------------------------------------------------------"  +
+                        "\nNumber of Sets(L2):                         " + QString::number(num_sets_l2) +
+                        "\nNumber of Cache Lines(L2):          " + QString::number(num_clines_l2) +
+                        "\nBytes per Set(L2):                             " + QString::number(bytes_in_set_l2) +
+                        "\nNumber of Sets(L1):                         " + QString::number(num_sets_l1) +
+                        "\nNumber of Cache Lines(L1):          " + QString::number(num_clines_l1) +
+                        "\nBytes per Set(L1):                             " + QString::number(bytes_in_set_l1) );
 
 }
 
@@ -134,16 +169,16 @@ void CacheVisualizer::on_actionPrint_Configuration_triggered()
 */
 void CacheVisualizer::on_actionAbout_triggered()
 {
-
+    QMessageBox::about (this, "About this Application", "Name:                GPU Cache Visualizer\nAuthor:              Vasileios Gkanasoulis\nVersion:             1.0.0\nCreated with:  QT Framework\nGitHub:              https://github.com/vgafx/QT_Cache_Visualizer\n \nCreated for the requirements of Master Thesis in CS:PCS,\nSupervisor: Pieter Hijma");
 }
 
 void CacheVisualizer::on_actionSave_Simulation_Results_triggered()
 {
-    if(!simulation_done){
-        printf("Simulation Data not ready!\n");
-        QMessageBox::warning(this, "Warning", "Simulation data not ready for saving. Complete a simulation and then use this option." );
-        return;
-    } else {
+    //if(!simulation_done){
+    //    printf("Simulation Data not ready!\n");
+    //    QMessageBox::warning(this, "Warning", "Simulation data not ready for saving. Complete a simulation and then use this option." );
+    //    return;
+    //} else {
         QString simResultsName = QFileDialog::getSaveFileName(this, "Save As");
         QFile file(simResultsName);
         if(!file.open(QFile::WriteOnly | QFile::Text)){
@@ -156,7 +191,7 @@ void CacheVisualizer::on_actionSave_Simulation_Results_triggered()
         out << text;
         file.close();
 
-    }
+    //}
 }
 
 
