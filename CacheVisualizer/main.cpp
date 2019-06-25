@@ -10,6 +10,7 @@
 int main(int argc, char *argv[])
 {
     //exit(0);
+    initConfigMap();
     readConfig();
     printf("Configuration finished...\n");
     computeConfig();

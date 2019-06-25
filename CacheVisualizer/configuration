@@ -23,10 +23,10 @@ waysizel1=6
 waysizel2=6
 l1enabled=0
 replacementpolicy=1
-#1 = LRU
-#2 = random from set
+#1 : LRU
+#2 : random from set
 writepolicy=1
-#1 = write allocate (in L2)
+#1 : write allocate (in L2)
 l1loadgranularity=128
 l2loadgranularity=32
 

@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <QTextStream>
 #include <QMessageBox>
+#include "fileio.h"
 
 
 namespace Ui {

@@ -19,6 +19,7 @@ int replacement_policy=1; //1 =LRU
 int write_policy=1; //1 = write allocate
 int l1_load_granularity=128;
 int l2_load_granularity=32;
+bool missingConfigAttribute = false;
 
 int bytes_in_set_l2;
 int num_sets_l2;

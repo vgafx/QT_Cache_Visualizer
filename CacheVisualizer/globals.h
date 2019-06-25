@@ -24,6 +24,7 @@ extern int replacement_policy; //1 =LRU
 extern int write_policy; //1 = write allocate
 extern int l1_load_granularity;
 extern int l2_load_granularity;
+extern bool missingConfigAttribute;
 
 //computed
 extern int bytes_in_set_l2;
