@@ -12,7 +12,7 @@ CacheVisualizer::CacheVisualizer(QWidget *parent) :
     QWidget *uiGrid = new QWidget;
     QGridLayout *layout = new QGridLayout;
     if (missingConfigAttribute){
-        QMessageBox::warning(this, "Warning", "Configuration not loaded properly!\n Some of the predifined attributes are missing from the configuration file.\n Consult the provided default file and restart the application");
+        QMessageBox::critical(this, "Warning", "Configuration not loaded properly!\n Some of the predifined attributes are missing from the configuration file.\n Consult the provided default file and restart the application");
         exit(0);
     }
     setCentralWidget(uiGrid);
@@ -48,7 +48,7 @@ void CacheVisualizer::on_actionOpen_Trace_triggered()
     QFile file(trace_fname);
     currentFile = trace_fname;
     if(!file.open(QIODevice::ReadOnly | QFile::Text)){
-        QMessageBox::warning(this, "Warning", "Cannot Open file : " + file.errorString());
+        QMessageBox::critical(this, "Warning", "Cannot Open file : " + file.errorString());
         return;
     }
     //setWindowTitle(trace_fname);
@@ -66,6 +66,12 @@ void CacheVisualizer::on_actionOpen_Trace_triggered()
 */
 void CacheVisualizer::on_actionStart_triggered()
 {
+    if(!trace_loaded){
+        //QMessageBox::error(this, "Warning", "Cannot Open file : ");
+        QMessageBox::critical(this, "No Trace Data", "No Trace data were loaded for simulation.\nLoad a trace file first an try again");
+    } else {
+
+    }
 
 }
 
@@ -103,7 +109,7 @@ void CacheVisualizer::on_actionChange_Configuration_File_triggered()
     QString config_fname = QFileDialog::getOpenFileName(this, tr("Open configuration file"), "", tr("Trace Files (*)"));
     QFile file(config_fname);
     if(!file.open(QIODevice::ReadOnly | QFile::Text)){
-        QMessageBox::warning(this, "Warning", "Cannot Open file : " + file.errorString());
+        QMessageBox::critical(this, "Warning", "Cannot Open file : " + file.errorString());
         return;
     }
     QTextStream in(&file);
@@ -113,7 +119,7 @@ void CacheVisualizer::on_actionChange_Configuration_File_triggered()
         printf("Configuration file read succesfully\n!");
         QMessageBox::information(this, "Info", "Configuration File loaded successfully!\n" );
     } else {
-        QMessageBox::warning(this, "Warning", "Operation aborted!\nOne or more required attributes is missing from the specified configuration file.\nLoad a file that adheres to the default specifications");
+        QMessageBox::critical(this, "Warning", "Operation aborted!\nOne or more required attributes is missing from the specified configuration file.\nLoad a file that adheres to the default specifications");
     }
     file.close();
 
@@ -174,15 +180,15 @@ void CacheVisualizer::on_actionAbout_triggered()
 
 void CacheVisualizer::on_actionSave_Simulation_Results_triggered()
 {
-    //if(!simulation_done){
-    //    printf("Simulation Data not ready!\n");
-    //    QMessageBox::warning(this, "Warning", "Simulation data not ready for saving. Complete a simulation and then use this option." );
-    //    return;
-    //} else {
+    if(!simulation_done){
+        printf("Simulation Data not ready!\n");
+        QMessageBox::warning(this, "Warning", "Simulation data not ready for saving. Complete a simulation and then use this option." );
+        return;
+    } else {
         QString simResultsName = QFileDialog::getSaveFileName(this, "Save As");
         QFile file(simResultsName);
         if(!file.open(QFile::WriteOnly | QFile::Text)){
-            QMessageBox::warning(this, "Warning", "Cannot save file : " + file.errorString());
+            QMessageBox::critical(this, "Warning", "Cannot save file : " + file.errorString());
             return;
         }
         QTextStream out(&file);
@@ -191,7 +197,7 @@ void CacheVisualizer::on_actionSave_Simulation_Results_triggered()
         out << text;
         file.close();
 
-    //}
+    }
 }
 
 
