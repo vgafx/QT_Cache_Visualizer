@@ -1,35 +1,67 @@
 #include "cachevisualizer.h"
 #include "ui_cachevisualizer.h"
 #include "globals.h"
+#include "cacheline.h"
+#include "view.h"
+
 #include <QLabel>
 #include <QGridLayout>
+#include <QHBoxLayout>
+#include <QSplitter>
+
 
 CacheVisualizer::CacheVisualizer(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::CacheVisualizer)
 {
     ui->setupUi(this);
-    QWidget *uiGrid = new QWidget;
-    QGridLayout *layout = new QGridLayout;
+    //QWidget *uiGrid = new QWidget;
+    //QGridLayout *layout = new QGridLayout;
     if (missingConfigAttribute){
         QMessageBox::critical(this, "Warning", "Configuration not loaded properly!\n Some of the predifined attributes are missing from the configuration file.\n Consult the provided default file and restart the application");
         exit(0);
     }
-    setCentralWidget(uiGrid);
-    for (int r = 0; r < 1; r++) {
-        for (int c = 0; c < 1; c++) {
-            QLabel *label = new QLabel("1", uiGrid); // Text could be 1 or 0.
-            layout->addWidget(label, r, c);
-        }
-    }
-    uiGrid->setLayout(layout);
+    populateScene();
 
+    l2View = new View("L2 Cache");
+    l2View->view()->setScene(scene);
+
+    l2View->show();
+    setCentralWidget(l2View);
 }
 
 CacheVisualizer::~CacheVisualizer()
 {
     delete ui;
 }
+
+
+void CacheVisualizer::populateScene(){
+    scene = new QGraphicsScene(this);
+    scene->setBackgroundBrush(Qt::white);
+
+    //Used config Data to draw the scene
+    int xx = 0, yy =0;
+    int numLines = 0;
+
+    for (int i = -11000; i < 11000; i += 110) {
+        ++xx;
+        for (int j = -7000; j < 7000; j += 70) {
+            ++yy;
+
+            QColor color(Qt::white);
+            QGraphicsItem *item = new cacheline(color, xx, yy);
+            item->setPos(QPointF(i, j));
+            scene->addItem(item);
+
+            ++numLines;
+        }
+    }
+    printf("DREW: %d \n", numLines);
+}
+
+
+
 
 void CacheVisualizer::on_actionExit_triggered()
 {
@@ -38,6 +70,7 @@ void CacheVisualizer::on_actionExit_triggered()
     QApplication::quit();
     exit(0);
 }
+
 
 /*Menu Bar Trigger
   Create the dialog to open a trace file for simulation
@@ -68,7 +101,7 @@ void CacheVisualizer::on_actionStart_triggered()
 {
     if(!trace_loaded){
         //QMessageBox::error(this, "Warning", "Cannot Open file : ");
-        QMessageBox::critical(this, "No Trace Data", "No Trace data were loaded for simulation.\nLoad a trace file first an try again");
+        QMessageBox::critical(this, "No Trace Data", "No Trace data were loaded for simulation.\nLoad a trace file first and try again");
     } else {
 
     }
@@ -96,7 +129,12 @@ void CacheVisualizer::on_actionStop_triggered()
 */
 void CacheVisualizer::on_actionClear_triggered()
 {
+    scene->clear();
+    populateScene();
+    l2View->view()->setScene(scene);
 
+    //l2View->show();
+    //l2View
 }
 
 /*Menu Bar Trigger

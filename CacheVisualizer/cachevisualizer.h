@@ -7,7 +7,10 @@
 #include <QTextStream>
 #include <QMessageBox>
 #include "fileio.h"
+#include "view.h"
 
+class QGraphicsScene;
+class QSplitter;
 
 namespace Ui {
 class CacheVisualizer;
@@ -45,6 +48,12 @@ private slots:
 private:
     Ui::CacheVisualizer *ui;
     QString currentFile="";
+    QGraphicsScene *scene;
+    QSplitter *h1Splitter;
+    QSplitter *h2Splitter;
+    View *l2View;
+    void populateScene();
+    void setupMatrix();
 };
 
 #endif // CACHEVISUALIZER_H

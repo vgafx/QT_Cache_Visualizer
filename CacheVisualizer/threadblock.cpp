@@ -5,3 +5,7 @@ threadBlock::threadBlock()
 {
 
 }
+
+int getBlockId(){
+    //return blockId;
+}

@@ -17,6 +17,8 @@ public:
     unsigned int numThreadsY;
     unsigned int numThreadsZ;
     unsigned int numWarps;
+    int getBlockId();
+
 };
 
 #endif // THREADBLOCK_H

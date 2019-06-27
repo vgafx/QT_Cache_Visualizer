@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui printsupport
+QT       += core gui opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -24,21 +24,26 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
+
 SOURCES += \
+        cacheline.cpp \
         fileio.cpp \
         globals.cpp \
         grid.cpp \
         main.cpp \
         cachevisualizer.cpp \
-        threadblock.cpp
+        threadblock.cpp \
+        view.cpp
 
 HEADERS += \
+        cacheline.h \
         cachevisualizer.h \
         fileio.h \
         globals.h \
         grid.h \
         main.h \
-        threadblock.h
+        threadblock.h \
+        view.h
 
 FORMS += \
         cachevisualizer.ui

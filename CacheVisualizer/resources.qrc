@@ -11,5 +11,11 @@
         <file>icons/info.png</file>
         <file>icons/Actions-application-exit-icon.png</file>
         <file>icons/open.png</file>
+        <file>icons/zoomout.png</file>
+        <file>icons/zoomin.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>icons/zoomout.png</file>
+        <file>icons/zoomin.png</file>
     </qresource>
 </RCC>
