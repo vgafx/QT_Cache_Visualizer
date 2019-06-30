@@ -8,7 +8,7 @@
 class cacheline: public QGraphicsItem
 {
 public:
-    cacheline(const QColor &color, int x, int y);
+    cacheline(const QColor &color, int x, int y, int setID);
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) override;
@@ -19,6 +19,7 @@ protected:
 private:
     int x;
     int y;
+    int set_idx;
     QColor color;
     QVector<QPointF> stuff;
 };

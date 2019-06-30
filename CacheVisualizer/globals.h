@@ -34,6 +34,7 @@ extern int bytes_in_set_l2;
 extern int num_sets_l2;
 extern int num_sectors_l2;
 extern int num_clines_l2;
+extern int sectorsPerSetL2;
 
 extern int bytes_in_set_l1;
 extern int num_sets_l1;

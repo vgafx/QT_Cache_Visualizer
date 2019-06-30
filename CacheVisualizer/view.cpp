@@ -51,7 +51,7 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent)
     zoomSlider = new QSlider;
     zoomSlider->setMinimum(0);
     zoomSlider->setMaximum(500);
-    zoomSlider->setValue(130);
+    zoomSlider->setValue(140);
     zoomSlider->setTickPosition(QSlider::TicksRight);
 
     QVBoxLayout *zoomSliderLayout = new QVBoxLayout;
@@ -126,7 +126,7 @@ QGraphicsView *View::view() const
 
 void View::resetView()
 {
-    zoomSlider->setValue(130);
+    zoomSlider->setValue(140);
     setupMatrix();
     graphicsView->ensureVisible(QRectF(0, 0, 0, 0));
 

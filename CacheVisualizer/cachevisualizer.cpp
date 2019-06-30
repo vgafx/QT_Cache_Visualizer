@@ -3,6 +3,7 @@
 #include "globals.h"
 #include "cacheline.h"
 #include "view.h"
+#include <math.h>
 
 #include <QLabel>
 #include <QGridLayout>
@@ -21,8 +22,9 @@ CacheVisualizer::CacheVisualizer(QWidget *parent) :
         QMessageBox::critical(this, "Warning", "Configuration not loaded properly!\n Some of the predifined attributes are missing from the configuration file.\n Consult the provided default file and restart the application");
         exit(0);
     }
-    populateScene();
-
+    //populateScene();
+    //populateSceneSectored();
+    populateSceneNormal();
     l2View = new View("L2 Cache");
     l2View->view()->setScene(scene);
 
@@ -49,8 +51,8 @@ void CacheVisualizer::populateScene(){
         for (int j = -7000; j < 7000; j += 70) {
             ++yy;
 
-            QColor color(Qt::white);
-            QGraphicsItem *item = new cacheline(color, xx, yy);
+            QColor color(Qt::gray);
+            QGraphicsItem *item = new cacheline(color, xx, yy,0);
             item->setPos(QPointF(i, j));
             scene->addItem(item);
 
@@ -61,7 +63,100 @@ void CacheVisualizer::populateScene(){
 }
 
 
+void CacheVisualizer::populateSceneSectored(){
+    scene = new QGraphicsScene(this);
+    scene->setBackgroundBrush(Qt::white);
 
+    //Used config Data to draw the scene
+    int xx = 0, yy =0;
+    int numLines = 0;
+
+    for (int i = 0; i < 0; i+=1 ){
+        for (int j = 0; j < 0; j+=1){
+
+        }
+    }
+
+
+
+//    for (int i = -11000; i < 11000; i += 110) {
+//        ++xx;
+//        for (int j = -7000; j < 7000; j += 70) {
+//            ++yy;
+
+//            QColor color(Qt::gray);
+//            QGraphicsItem *item = new cacheline(color, xx, yy);
+//            item->setPos(QPointF(i, j));
+//            scene->addItem(item);
+
+//            ++numLines;
+//        }
+//    }
+    printf("DREW: %d \n", numLines);
+}
+
+void CacheVisualizer::populateSceneNormal(){
+    scene = new QGraphicsScene(this);
+    scene->setBackgroundBrush(Qt::white);
+
+    //Used config Data to draw the scene
+    int xx = 0, yy =0;
+    int numSets = 0;
+    int i = 0, j = 0;
+    int j_start = 0, i_start = 0, i_end = 0, j_inc = 40, i_inc = 380, j_gap = 40 * 2;
+    int j_next_line = j_gap + (j_inc * way_size_l2);
+    int j_iter = way_size_l2 * j_inc;
+
+    //Have to check if display dimensions of the set (i.e. 4096 sets = 64 x 64
+    int dispDims = int(sqrt(num_sets_l2));
+    printf("DispDims: %d\n",dispDims);
+    int dispDims2 = dispDims * dispDims;
+    //use 'diff' sets to draw on last line
+    int diff = num_sets_l2 - dispDims2;
+    int extraLines = (diff < dispDims) ? 1 : 2;
+
+//    bool unevenDims = false;
+//    if (diff != 0){
+//        unevenDims = true;
+//        extraLines++;
+//        if (diff - dispDims > 0){
+//            //dispDims + dispDims + 1 is how many extra sets are required for perfect 'sqrt'
+//            extraLines++;
+//        }
+//    }
+
+    //Multiplication with even always results in even number
+    int i_total_range = dispDims * i_inc;
+    i_total_range /= 2;
+    i_start = -i_total_range;
+    i_end = i_total_range;
+    i = i_start;
+
+    int j_total_range = (dispDims + extraLines) * j_inc;
+    j_total_range /= 2;
+    j_start = -j_total_range;
+    j = j_start;
+
+
+
+
+    for (int s = 1; s < num_sets_l2+1; s++){
+        for (int l = j; l < j + j_iter; l+=j_inc) {
+            QColor color(Qt::gray);
+            QGraphicsItem *line = new cacheline(color, xx, yy, s-1);
+            line->setPos(QPointF(i, l));
+            scene->addItem(line);
+        }
+
+        if(s % dispDims == 0){
+            i = i_start;
+            j += j_next_line;
+        } else {
+            i+=i_inc;
+        }
+    }
+
+}
 
 void CacheVisualizer::on_actionExit_triggered()
 {
@@ -130,7 +225,9 @@ void CacheVisualizer::on_actionStop_triggered()
 void CacheVisualizer::on_actionClear_triggered()
 {
     scene->clear();
-    populateScene();
+    //populateScene();
+    //populateSceneSectored();
+    populateSceneNormal();
     l2View->view()->setScene(scene);
 
     //l2View->show();

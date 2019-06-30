@@ -1,11 +1,12 @@
 #include "cacheline.h"
 #include <QtWidgets>
 
-cacheline::cacheline(const QColor &color, int x, int y)
+cacheline::cacheline(const QColor &color, int x, int y, int setID)
 {
     this->x = x;
     this->y = y;
     this->color = color;
+    this->set_idx = setID;
     setZValue((x + y) % 2);
 
     setFlags(ItemIsSelectable);
@@ -14,13 +15,13 @@ cacheline::cacheline(const QColor &color, int x, int y)
 
 QRectF cacheline::boundingRect() const
 {
-    return QRectF(0, 0, 110, 70);
+    return QRectF(0, 0, 440, 70);
 }
 
 QPainterPath cacheline::shape() const
 {
     QPainterPath path;
-    path.addRect(14, 14, 82, 42);
+    path.addRect(14, 14, 328, 42);
     return path;
 }
 
@@ -31,18 +32,18 @@ void cacheline::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
     QColor fillColor = (option->state & QStyle::State_Selected) ? color.darker(150) : color;
     if (option->state & QStyle::State_MouseOver)
-        fillColor = fillColor.lighter(125);
+        fillColor = fillColor.lighter(150);
 
     const qreal lod = option->levelOfDetailFromTransform(painter->worldTransform());
     if (lod < 0.2) {
         if (lod < 0.125) {
-            painter->fillRect(QRectF(0, 0, 110, 70), fillColor);
+            painter->fillRect(QRectF(0, 0, 440, 70), fillColor);
             return;
         }
 
         QBrush b = painter->brush();
         painter->setBrush(fillColor);
-        painter->drawRect(13, 13, 97, 57);
+        painter->drawRect(13, 13, 388, 57);
         painter->setBrush(b);
         return;
     }
@@ -55,47 +56,36 @@ void cacheline::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
     pen.setWidth(width);
     QBrush b = painter->brush();
-    painter->setBrush(QBrush(fillColor.darker(option->state & QStyle::State_Sunken ? 120 : 100)));
+    painter->setBrush(QBrush(fillColor.darker(option->state & QStyle::State_Sunken ? 100 : 100)));
 
-    painter->drawRect(QRect(14, 14, 79, 39));
+    painter->drawRect(QRect(14, 14, 316, 39));
     painter->setBrush(b);
 
-    if (lod >= 1) {
-        painter->setPen(QPen(Qt::gray, 1));
-        painter->drawLine(15, 54, 94, 54);
-        painter->drawLine(94, 53, 94, 15);
-        painter->setPen(QPen(Qt::black, 0));
-    }
+    if (lod >= 0.5) {
 
-    // Display cache line data
-    if (lod >= 2) {
-        QFont font("Times", 10);
+        QFont font("Times", 76);
         font.setStyleStrategy(QFont::ForceOutline);
         painter->setFont(font);
         painter->save();
         painter->scale(0.1, 0.1);
-        painter->drawText(170, 180, QString("Cache Line at at %1x%2").arg(x).arg(y));
+        painter->drawText(170, 240, QString("Cache Line at %1x%2").arg(x).arg(y));
+        painter->drawText(170, 340, QString("Set Index: %1").arg(set_idx));
         painter->restore();
     }
 
-    // Draw lines
-    QVarLengthArray<QLineF, 36> lines;
-    if (lod >= 0.5) {
-        for (int i = 0; i <= 10; i += (lod > 0.5 ? 1 : 2)) {
-            //lines.append(QLineF(18 + 7 * i, 13, 18 + 7 * i, 5));
-            //lines.append(QLineF(18 + 7 * i, 54, 18 + 7 * i, 62));
-        }
-        for (int i = 0; i <= 6; i += (lod > 0.5 ? 1 : 2)) {
-            //lines.append(QLineF(5, 18 + i * 5, 13, 18 + i * 5));
-            //lines.append(QLineF(94, 18 + i * 5, 102, 18 + i * 5));
-        }
+    // Display cache line data
+    if (lod >= 2) {
+        QFont font("Times", 76);
+        font.setStyleStrategy(QFont::ForceOutline);
+        painter->setFont(font);
+        painter->save();
+        painter->scale(0.1, 0.1);
+        painter->drawText(170, 240, QString("Cache Line at %1x%2").arg(x).arg(y));
+        painter->drawText(170, 340, QString("Set Index: %1").arg(set_idx));
+        painter->restore();
     }
-    if (lod >= 0.4) {
 
-    }
-    painter->drawLines(lines.data(), lines.size());
 
-    // Draw red ink
     if (stuff.size() > 1) {
         QPen p = painter->pen();
         painter->setPen(QPen(Qt::red, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));

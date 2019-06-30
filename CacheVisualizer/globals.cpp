@@ -28,6 +28,7 @@ int bytes_in_set_l2;
 int num_sets_l2;
 int num_sectors_l2;
 int num_clines_l2;
+int sectorsPerSetL2;
 
 int bytes_in_set_l1;
 int num_sets_l1;
@@ -65,6 +66,7 @@ void printGlobals(){
     printf("Total # of sets (L2): %d\n",num_sets_l2);
     printf("Total # of sectors (L2): %d\n",num_sectors_l2);
     printf("Total # of bytes in set (L2): %d\n",bytes_in_set_l2);
+    printf("Total # of sectors in set (L2): %d\n",sectorsPerSetL2);
     printf("Total # of cache lines(L1): %d\n",num_clines_l1);
     printf("Total # of sets (L1): %d\n",num_sets_l1);
     printf("Total # of bytes in set (L1): %d\n",bytes_in_set_l1);
@@ -76,6 +78,7 @@ void computeConfig(){
     num_sets_l2 = num_clines_l2 / way_size_l2;
     num_sectors_l2 = num_sets_l2 * (line_size/sector_size);
     bytes_in_set_l2 = way_size_l2 * line_size;
+    sectorsPerSetL2 = way_size_l2 * (line_size / sector_size);
 
     num_clines_l1 = l1_size / line_size;
     num_sets_l1 = num_clines_l1 / way_size_l1;

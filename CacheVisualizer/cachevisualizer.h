@@ -53,6 +53,8 @@ private:
     QSplitter *h2Splitter;
     View *l2View;
     void populateScene();
+    void populateSceneSectored();
+    void populateSceneNormal();
     void setupMatrix();
 };
 
