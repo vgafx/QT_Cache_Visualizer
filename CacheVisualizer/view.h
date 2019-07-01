@@ -30,7 +30,7 @@ class View : public QFrame
 {
     Q_OBJECT
 public:
-    explicit View(const QString &name, QWidget *parent = 0);
+    explicit View(const QString &name, QWidget *parent = nullptr);
     QGraphicsView *view() const;
 public slots:
     void zoomIn(int level = 1);
@@ -42,15 +42,14 @@ private slots:
     void setResetButtonEnabled();
     void setupMatrix();
     void togglePointerMode();
-    //void toggleOpenGL();
 
 private:
     GraphicsView *graphicsView;
     QLabel *label;
     QLabel *label2;
+    QLabel *idxLabel;
     QToolButton *selectModeButton;
     QToolButton *dragModeButton;
-    //QToolButton *openGlButton;
     QToolButton *resetButton;
     QSlider *zoomSlider;
 };
@@ -59,4 +58,4 @@ private:
 
 
 
-#endif // VIEW_H
+#endif

@@ -100,7 +100,7 @@ void CacheVisualizer::populateSceneNormal(){
     scene->setBackgroundBrush(Qt::white);
 
     //Used config Data to draw the scene
-    int xx = 0, yy =0;
+    int xx = -1, yy =0;
     int numSets = 0;
     int i = 0, j = 0;
     int j_start = 0, i_start = 0, j_end = 0, i_inc = 40, j_inc = 380, i_gap = 40 * 2;
@@ -128,16 +128,20 @@ void CacheVisualizer::populateSceneNormal(){
     i = i_start;
 
     for (int s = 1; s < num_sets_l2+1; s++){
+        ++xx;
         for (int l = i; l < i + i_iter; l+=i_inc) {
             QColor color(Qt::gray);
             QGraphicsItem *line = new cacheline(color, xx, yy, s-1);
             line->setPos(QPointF(j, l));
             scene->addItem(line);
+            ++yy;
         }
-
+        yy -= way_size_l2;
         if(s % wideDimsCol == 0){
             j = j_start;
             i += i_next_line;
+            xx=-1;
+            yy+=way_size_l2;
         } else {
             j+=j_inc;
         }

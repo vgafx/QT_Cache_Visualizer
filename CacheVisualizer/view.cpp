@@ -49,7 +49,7 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent)
     zoomOutIcon->setIcon(QPixmap(":icons/zoomout.png"));
     zoomOutIcon->setIconSize(iconSize);
     zoomSlider = new QSlider;
-    zoomSlider->setMinimum(27);
+    zoomSlider->setMinimum(5);
     zoomSlider->setMaximum(315);
     zoomSlider->setValue(140);
     zoomSlider->setTickPosition(QSlider::TicksRight);
@@ -74,19 +74,13 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent)
     dragModeButton->setText(tr("Drag"));
     dragModeButton->setCheckable(true);
     dragModeButton->setChecked(false);
-    //openGlButton = new QToolButton;
-    //openGlButton->setText(tr("OpenGL"));
-    //openGlButton->setCheckable(true);
-//#ifndef QT_NO_OPENGL
-    //openGlButton->setEnabled(QGLFormat::hasOpenGL());
-//#else
-    //openGlButton->setEnabled(false);
-//#endif
 
     QButtonGroup *pointerModeGroup = new QButtonGroup(this);
     pointerModeGroup->setExclusive(true);
     pointerModeGroup->addButton(selectModeButton);
     pointerModeGroup->addButton(dragModeButton);
+
+    idxLabel = new QLabel("Set Index: 0 - Visual Coordinates (col-row): 0x0");
 
     labelLayout->addWidget(label);
     labelLayout->addStretch();
@@ -101,6 +95,7 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent)
     topLayout->addWidget(graphicsView, 1, 0);
     topLayout->addLayout(zoomSliderLayout, 1, 1);
     topLayout->addWidget(resetButton, 2, 1);
+    topLayout->addWidget(idxLabel, 2, 0);
     setLayout(topLayout);
 
     connect(resetButton, &QAbstractButton::clicked, this, &View::resetView);

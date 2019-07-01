@@ -1,5 +1,6 @@
 #include "cacheline.h"
 #include <QtWidgets>
+#include <QToolTip>
 
 cacheline::cacheline(const QColor &color, int x, int y, int setID)
 {
@@ -32,7 +33,7 @@ void cacheline::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
     QColor fillColor = (option->state & QStyle::State_Selected) ? color.darker(150) : color;
     if (option->state & QStyle::State_MouseOver)
-        fillColor = fillColor.lighter(150);
+        fillColor = fillColor.lighter(70);
 
     const qreal lod = option->levelOfDetailFromTransform(painter->worldTransform());
     if (lod < 0.2) {
@@ -102,7 +103,21 @@ void cacheline::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
 void cacheline::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    QGraphicsItem::mousePressEvent(event);
-    printf("Cache Line pressed!!!\n");
+    if (event->button() == Qt::RightButton){
+        QGraphicsItem::mousePressEvent(event);
+        QString tltip = QString("Hello set: %1 \n This is a second line..\nNow the 3rd one comes...\nTest TestTestTestTestTestTestTestTestTest\n.....................").arg(this->set_idx);
+        event->accept();
+        QPoint t_pos = event->screenPos();
+        QToolTip::showText(t_pos,tltip);
+
+    }
+
+
+
+    //QToolTip::showText(QPoint(this->x),tltip);
+    //this->setToolTip(tltip);
+    //this->toolTip().;
+    //printf("Cache Line pressed!!!\n");
     update();
 }
+
