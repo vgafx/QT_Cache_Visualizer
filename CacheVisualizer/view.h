@@ -32,11 +32,13 @@ class View : public QFrame
 public:
     explicit View(const QString &name, QWidget *parent = nullptr);
     QGraphicsView *view() const;
+
 public slots:
     void zoomIn(int level = 1);
     void zoomOut(int level = 1);
     void zoomInPressed();
     void zoomOutPressed();
+    //void renewLabels(int set, int x, int y);
 private slots:
     void resetView();
     void setResetButtonEnabled();
@@ -47,7 +49,7 @@ private:
     GraphicsView *graphicsView;
     QLabel *label;
     QLabel *label2;
-    QLabel *idxLabel;
+    //QLabel *idxLabel;
     QToolButton *selectModeButton;
     QToolButton *dragModeButton;
     QToolButton *resetButton;

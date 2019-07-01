@@ -80,7 +80,7 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent)
     pointerModeGroup->addButton(selectModeButton);
     pointerModeGroup->addButton(dragModeButton);
 
-    idxLabel = new QLabel("Set Index: 0 - Visual Coordinates (col-row): 0x0");
+    //idxLabel = new QLabel("Set Index: 0 - Visual Coordinates (col-row): 0x0");
 
     labelLayout->addWidget(label);
     labelLayout->addStretch();
@@ -88,14 +88,13 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent)
     labelLayout->addWidget(selectModeButton);
     labelLayout->addWidget(dragModeButton);
     labelLayout->addStretch();
-    //labelLayout->addWidget(openGlButton);
 
     QGridLayout *topLayout = new QGridLayout;
     topLayout->addLayout(labelLayout, 0, 0);
     topLayout->addWidget(graphicsView, 1, 0);
     topLayout->addLayout(zoomSliderLayout, 1, 1);
     topLayout->addWidget(resetButton, 2, 1);
-    topLayout->addWidget(idxLabel, 2, 0);
+    //topLayout->addWidget(idxLabel, 2, 0);
     setLayout(topLayout);
 
     connect(resetButton, &QAbstractButton::clicked, this, &View::resetView);
@@ -106,9 +105,10 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent)
             this, &View::setResetButtonEnabled);
     connect(selectModeButton, &QAbstractButton::toggled, this, &View::togglePointerMode);
     connect(dragModeButton, &QAbstractButton::toggled, this, &View::togglePointerMode);
-    //connect(openGlButton, &QAbstractButton::toggled, this, &View::toggleOpenGL);
     connect(zoomInIcon, &QAbstractButton::clicked, this, &View::zoomInPressed);
     connect(zoomOutIcon, &QAbstractButton::clicked, this, &View::zoomOutPressed);
+    //connect( , &Q ,this, &View::renewLabels);
+
 
     setupMatrix();
 
@@ -153,11 +153,9 @@ void View::togglePointerMode()
     graphicsView->setInteractive(selectModeButton->isChecked());
 }
 
-//void View::toggleOpenGL()
-//{
-//#ifndef QT_NO_OPENGL
-    //graphicsView->setViewport(openGlButton->isChecked() ? new QGLWidget(QGLFormat(QGL::SampleBuffers)) : new QWidget);
-//#endif
+//void View::renewLabels(int set, int x, int y){
+   // QString lbl = QString("Set Index: %1 - Visual Coordinates (col-row): %2x%3").arg(set).arg(x).arg(y);
+    //idxLabel->setText(lbl);
 //}
 
 void View::zoomIn(int level)

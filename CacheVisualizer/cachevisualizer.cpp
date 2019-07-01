@@ -8,7 +8,7 @@
 #include <QLabel>
 #include <QGridLayout>
 #include <QHBoxLayout>
-#include <QSplitter>
+
 
 
 CacheVisualizer::CacheVisualizer(QWidget *parent) :
@@ -16,8 +16,7 @@ CacheVisualizer::CacheVisualizer(QWidget *parent) :
     ui(new Ui::CacheVisualizer)
 {
     ui->setupUi(this);
-    //QWidget *uiGrid = new QWidget;
-    //QGridLayout *layout = new QGridLayout;
+
     if (missingConfigAttribute){
         QMessageBox::critical(this, "Warning", "Configuration not loaded properly!\n Some of the predifined attributes are missing from the configuration file.\n Consult the provided default file and restart the application");
         exit(0);
@@ -126,6 +125,8 @@ void CacheVisualizer::populateSceneNormal(){
     i_total_range /= 2;
     i_start = -i_total_range;
     i = i_start;
+
+    View * vRef = l2View;
 
     for (int s = 1; s < num_sets_l2+1; s++){
         ++xx;

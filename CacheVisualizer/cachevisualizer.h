@@ -49,8 +49,6 @@ private:
     Ui::CacheVisualizer *ui;
     QString currentFile="";
     QGraphicsScene *scene;
-    QSplitter *h1Splitter;
-    QSplitter *h2Splitter;
     View *l2View;
     void populateScene();
     void populateSceneSectored();

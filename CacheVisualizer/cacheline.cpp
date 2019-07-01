@@ -1,6 +1,7 @@
 #include "cacheline.h"
 #include <QtWidgets>
 #include <QToolTip>
+#include "view.h"
 
 cacheline::cacheline(const QColor &color, int x, int y, int setID)
 {
@@ -105,19 +106,20 @@ void cacheline::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::RightButton){
         QGraphicsItem::mousePressEvent(event);
-        QString tltip = QString("Hello set: %1 \n This is a second line..\nNow the 3rd one comes...\nTest TestTestTestTestTestTestTestTestTest\n.....................").arg(this->set_idx);
+        QString tltip = QString("Hello set: %1 \n This is a second line..\nThis is a third line\nTest TestTestTestTestTestTestTestTestTest\n.....................").arg(this->set_idx);
         event->accept();
         QPoint t_pos = event->screenPos();
         QToolTip::showText(t_pos,tltip);
 
     }
-
-
-
-    //QToolTip::showText(QPoint(this->x),tltip);
-    //this->setToolTip(tltip);
-    //this->toolTip().;
     //printf("Cache Line pressed!!!\n");
+    update();
+}
+
+void cacheline::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
+
+    //printf("Set: %d hovered\n", this->set_idx);
+    //View::renewLabels(this->set_idx, this->x, this->y);
     update();
 }
 
