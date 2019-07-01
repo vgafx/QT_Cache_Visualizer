@@ -103,58 +103,72 @@ void CacheVisualizer::populateSceneNormal(){
     int xx = 0, yy =0;
     int numSets = 0;
     int i = 0, j = 0;
-    int j_start = 0, i_start = 0, i_end = 0, j_inc = 40, i_inc = 380, j_gap = 40 * 2;
-    int j_next_line = j_gap + (j_inc * way_size_l2);
-    int j_iter = way_size_l2 * j_inc;
+    int j_start = 0, i_start = 0, j_end = 0, i_inc = 40, j_inc = 380, i_gap = 40 * 2;
+    int i_next_line = i_gap + (i_inc * way_size_l2);
+    int i_iter = way_size_l2 * i_inc;
+    int extra_lines = 0;
 
+    //num_sets_l2 = 8192;
     //Have to check if display dimensions of the set (i.e. 4096 sets = 64 x 64
     int dispDims = int(sqrt(num_sets_l2));
-    printf("DispDims: %d\n",dispDims);
-    int dispDims2 = dispDims * dispDims;
-    //use 'diff' sets to draw on last line
-    int diff = num_sets_l2 - dispDims2;
-    int extraLines = (diff < dispDims) ? 1 : 2;
-
-//    bool unevenDims = false;
-//    if (diff != 0){
-//        unevenDims = true;
-//        extraLines++;
-//        if (diff - dispDims > 0){
-//            //dispDims + dispDims + 1 is how many extra sets are required for perfect 'sqrt'
-//            extraLines++;
-//        }
-//    }
-
-    //Multiplication with even always results in even number
-    int i_total_range = dispDims * i_inc;
-    i_total_range /= 2;
-    i_start = -i_total_range;
-    i_end = i_total_range;
-    i = i_start;
-
-    int j_total_range = (dispDims + extraLines) * j_inc;
+    int wideDimsCol = dispDims + (dispDims / 2);
+    int j_total_range = wideDimsCol * j_inc;
     j_total_range /= 2;
-    j_start = -j_total_range;
+    j_start = - j_total_range;
+    j_end = j_total_range;
     j = j_start;
 
-
-
+    int wideDimesRow = int(num_sets_l2 / wideDimsCol);
+    if (num_sets_l2 % wideDimsCol != 0){
+        extra_lines = 1;
+    }
+    int i_total_range = (wideDimesRow + extra_lines) * i_inc;
+    i_total_range /= 2;
+    i_start = -i_total_range;
+    i = i_start;
 
     for (int s = 1; s < num_sets_l2+1; s++){
-        for (int l = j; l < j + j_iter; l+=j_inc) {
+        for (int l = i; l < i + i_iter; l+=i_inc) {
             QColor color(Qt::gray);
             QGraphicsItem *line = new cacheline(color, xx, yy, s-1);
-            line->setPos(QPointF(i, l));
+            line->setPos(QPointF(j, l));
             scene->addItem(line);
         }
 
-        if(s % dispDims == 0){
-            i = i_start;
-            j += j_next_line;
+        if(s % wideDimsCol == 0){
+            j = j_start;
+            i += i_next_line;
         } else {
-            i+=i_inc;
+            j+=j_inc;
         }
     }
+
+    //REVERSE i and j if uncommenting this
+//    int i_total_range = dispDims * i_inc;
+//    i_total_range /= 2;
+//    i_start = -i_total_range;
+//    i_end = i_total_range;
+//    i = i_start;
+
+//    int j_total_range = (dispDims + extraLines) * j_inc;
+//    j_total_range /= 2;
+//    j_start = -j_total_range;
+//    j = j_start;
+//    for (int s = 1; s < num_sets_l2+1; s++){
+//        for (int l = j; l < j + j_iter; l+=j_inc) {
+//            QColor color(Qt::gray);
+//            QGraphicsItem *line = new cacheline(color, xx, yy, s-1);
+//            line->setPos(QPointF(i, l));
+//            scene->addItem(line);
+//        }
+
+//        if(s % dispDims == 0){
+//            i = i_start;
+//            j += j_next_line;
+//        } else {
+//            i+=i_inc;
+//        }
+//    }
 
 }
 
