@@ -9,6 +9,13 @@ cacheline::cacheline(const QColor &color, int x, int y, int setID)
     this->y = y;
     this->color = color;
     this->set_idx = setID;
+    this->age = 0;
+    this->address_low=0;
+    this->address_high=127;
+    this->setDataStructure("DataAr");
+    this->tag = 0;
+    this->block_offest = 0;
+    this->flipAllSectors(0);
     setZValue((x + y) % 2);
 
     setFlags(ItemIsSelectable);
@@ -106,7 +113,10 @@ void cacheline::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::RightButton){
         QGraphicsItem::mousePressEvent(event);
-        QString tltip = QString("Hello set: %1 \n This is a second line..\nThis is a third line\nTest TestTestTestTestTestTestTestTestTest\n.....................").arg(this->set_idx);
+        QString tltip = QString("Set Index:  %1 \nLine Coordinates:  %2 x %3 \nAddres Range:  %4 - %5 "
+                                "\nData Structure:  %6\nSectors Filled:  %7 - %8 - %9 - %10\nTag:  %11 \nAge:  %12")
+                .arg(this->set_idx).arg(this->x).arg(this->y).arg(this->address_low).arg(this->address_high)
+                .arg(QString::fromStdString(this->data_structure)).arg(this->sector_one_filled).arg(this->sector_two_filled).arg(this->sector_three_filled).arg(this->sector_four_filled).arg(this->tag).arg(this->age);
         event->accept();
         QPoint t_pos = event->screenPos();
         QToolTip::showText(t_pos,tltip);
@@ -123,3 +133,99 @@ void cacheline::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
     update();
 }
 
+int cacheline::getAge(){
+    return this->age;
+}
+
+void cacheline::setAge(int inAge){
+    this->age = inAge;
+}
+
+void cacheline:: activateSector(int secID){
+    switch (secID){
+    case 1:
+        this->sector_one_filled = true;
+        break;
+    case 2:
+        this->sector_two_filled = true;
+        break;
+    case 3:
+        this->sector_three_filled = true;
+        break;
+    case 4:
+        this->sector_four_filled = true;
+        break;
+    }
+}
+
+
+void cacheline:: invalidateSector(int secID){
+    switch (secID){
+    case 1:
+        this->sector_one_filled = false;
+        break;
+    case 2:
+        this->sector_two_filled = false;
+        break;
+    case 3:
+        this->sector_three_filled = false;
+        break;
+    case 4:
+        this->sector_four_filled = false;
+        break;
+    }
+}
+
+void cacheline::flipAllSectors(int on_off){
+    if(on_off == 0){
+        this->sector_one_filled = 0;
+        this->sector_two_filled = 0;
+        this->sector_three_filled = 0;
+        this->sector_four_filled = 0;
+    } else if(on_off == 1){
+        this->sector_one_filled = 1;
+        this->sector_two_filled = 2;
+        this->sector_three_filled = 3;
+        this->sector_four_filled = 4;
+    }
+}
+
+void cacheline::setAddressLow(unsigned long long add_low){
+    this->address_low = add_low;
+}
+
+void cacheline::setAddressHigh(unsigned long long add_high){
+    this->address_high = add_high;
+}
+
+unsigned long long cacheline::getAddressLow(){
+    return this->address_low;
+}
+
+unsigned long long cacheline::getAddressHigh(){
+    return this->address_high;
+}
+
+void cacheline::setTag(int in_tag){
+    this->tag = in_tag;
+}
+
+int cacheline::getTag(){
+    return this->tag;
+}
+
+void cacheline::setBlockOffset(int b_offset){
+    this->block_offest = b_offset;
+}
+
+int cacheline::getBlockOffset(){
+    return this->block_offest;
+}
+
+void cacheline::setDataStructure(std::string d_name){
+    this->data_structure = d_name;
+}
+
+std::string cacheline::getDataStructure(){
+    return this->data_structure;
+}

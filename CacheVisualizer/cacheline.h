@@ -12,6 +12,21 @@ public:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) override;
+    int getAge();
+    void setAge(int age);
+    void activateSector(int sector);
+    void invalidateSector(int secID);
+    void flipAllSectors(int onoff);
+    void setAddressLow(unsigned long long addlow);
+    void setAddressHigh(unsigned long long addhigh);
+    unsigned long long getAddressLow();
+    unsigned long long getAddressHigh();
+    void setTag(int tag);
+    void setBlockOffset(int bf);
+    void setDataStructure(std::string ds);
+    int getTag();
+    int getBlockOffset();
+    std::string getDataStructure();
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
@@ -21,6 +36,16 @@ private:
     int x;
     int y;
     int set_idx;
+    int age;
+    int tag;
+    int block_offest;
+    unsigned long long address_low;
+    unsigned long long address_high;
+    std::string data_structure;
+    bool sector_one_filled;
+    bool sector_two_filled;
+    bool sector_three_filled;
+    bool sector_four_filled;
     QColor color;
     QVector<QPointF> stuff;
 };
