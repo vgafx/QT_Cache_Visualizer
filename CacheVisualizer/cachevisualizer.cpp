@@ -3,11 +3,13 @@
 #include "globals.h"
 #include "cacheline.h"
 #include "view.h"
+#include "statuscontroller.h"
 #include <math.h>
 
 #include <QLabel>
 #include <QGridLayout>
 #include <QHBoxLayout>
+
 
 
 
@@ -22,13 +24,13 @@ CacheVisualizer::CacheVisualizer(QWidget *parent) :
         exit(0);
     }
     //populateScene();
-    //populateSceneSectored();
     populateSceneNormal();
     l2View = new View("L2 Cache");
     l2View->view()->setScene(scene);
 
     l2View->show();
     setCentralWidget(l2View);
+    createStatusBar();
 }
 
 CacheVisualizer::~CacheVisualizer()
@@ -51,7 +53,7 @@ void CacheVisualizer::populateScene(){
             ++yy;
 
             QColor color(Qt::gray);
-            QGraphicsItem *item = new cacheline(color, xx, yy,0);
+            QGraphicsItem *item = new cacheline(color, xx, yy,0,nullptr);
             item->setPos(QPointF(i, j));
             scene->addItem(item);
 
@@ -62,41 +64,12 @@ void CacheVisualizer::populateScene(){
 }
 
 
-void CacheVisualizer::populateSceneSectored(){
-    scene = new QGraphicsScene(this);
-    scene->setBackgroundBrush(Qt::white);
-
-    //Used config Data to draw the scene
-    int xx = 0, yy =0;
-    int numLines = 0;
-
-    for (int i = 0; i < 0; i+=1 ){
-        for (int j = 0; j < 0; j+=1){
-
-        }
-    }
-
-
-
-//    for (int i = -11000; i < 11000; i += 110) {
-//        ++xx;
-//        for (int j = -7000; j < 7000; j += 70) {
-//            ++yy;
-
-//            QColor color(Qt::gray);
-//            QGraphicsItem *item = new cacheline(color, xx, yy);
-//            item->setPos(QPointF(i, j));
-//            scene->addItem(item);
-
-//            ++numLines;
-//        }
-//    }
-    printf("DREW: %d \n", numLines);
-}
-
 void CacheVisualizer::populateSceneNormal(){
     scene = new QGraphicsScene(this);
     scene->setBackgroundBrush(Qt::white);
+    //Dummy controller for updates
+    stsC = new statusController();
+    connect(stsC, &statusController::clickSignal, this, &CacheVisualizer::updateStatusBar);
 
     //Used config Data to draw the scene
     int xx = -1, yy =0;
@@ -126,13 +99,11 @@ void CacheVisualizer::populateSceneNormal(){
     i_start = -i_total_range;
     i = i_start;
 
-    View * vRef = l2View;
-
     for (int s = 1; s < num_sets_l2+1; s++){
         ++xx;
         for (int l = i; l < i + i_iter; l+=i_inc) {
             QColor color(Qt::gray);
-            QGraphicsItem *line = new cacheline(color, xx, yy, s-1);
+            QGraphicsItem *line = new cacheline(color, xx, yy, s-1, stsC);
             line->setPos(QPointF(j, l));
             scene->addItem(line);
             ++yy;
@@ -148,32 +119,7 @@ void CacheVisualizer::populateSceneNormal(){
         }
     }
 
-    //REVERSE i and j if uncommenting this
-//    int i_total_range = dispDims * i_inc;
-//    i_total_range /= 2;
-//    i_start = -i_total_range;
-//    i_end = i_total_range;
-//    i = i_start;
 
-//    int j_total_range = (dispDims + extraLines) * j_inc;
-//    j_total_range /= 2;
-//    j_start = -j_total_range;
-//    j = j_start;
-//    for (int s = 1; s < num_sets_l2+1; s++){
-//        for (int l = j; l < j + j_iter; l+=j_inc) {
-//            QColor color(Qt::gray);
-//            QGraphicsItem *line = new cacheline(color, xx, yy, s-1);
-//            line->setPos(QPointF(i, l));
-//            scene->addItem(line);
-//        }
-
-//        if(s % dispDims == 0){
-//            i = i_start;
-//            j += j_next_line;
-//        } else {
-//            i+=i_inc;
-//        }
-//    }
 
 }
 
@@ -181,6 +127,7 @@ void CacheVisualizer::on_actionExit_triggered()
 {
     printf("Exit Option Pressed\n");
     //!!Maybe clean up before quitting
+    //
     QApplication::quit();
     exit(0);
 }
@@ -198,7 +145,6 @@ void CacheVisualizer::on_actionOpen_Trace_triggered()
         QMessageBox::critical(this, "Warning", "Cannot Open file : " + file.errorString());
         return;
     }
-    //setWindowTitle(trace_fname);
     QTextStream in(&file);
     QString text = in.readAll();
     //!! Do something with the trace data
@@ -276,8 +222,10 @@ void CacheVisualizer::on_actionChange_Configuration_File_triggered()
         QMessageBox::critical(this, "Warning", "Operation aborted!\nOne or more required attributes is missing from the specified configuration file.\nLoad a file that adheres to the default specifications");
     }
     file.close();
-
-    //!! Re-draw the scene here...
+    scene->clear();
+    populateSceneNormal();
+    l2View->view()->setScene(scene);
+    //!! change cacheline referenes stored
 
 }
 
@@ -347,11 +295,25 @@ void CacheVisualizer::on_actionSave_Simulation_Results_triggered()
         }
         QTextStream out(&file);
         //!! fill QString text with output data
-        QString text;
+        QString text = "test";
         out << text;
         file.close();
 
     }
+}
+
+void CacheVisualizer::createStatusBar(){
+    //lineEditStatusBar.setReadOnly(true);
+    //printf("ledit allign %s \n",lineEditStatusBar.alignment());
+    //lineEditStatusBar
+    //statusBar()->addPermanentWidget(&lineEditStatusBar);
+    statusBar()->showMessage(tr("Ready"));
+}
+
+void CacheVisualizer::updateStatusBar(QString sts){
+    //stsC->setStatusText(sts);
+    //lineEditStatusBar.setText(sts);
+    statusBar()->showMessage(sts);
 }
 
 

@@ -107,8 +107,6 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent)
     connect(dragModeButton, &QAbstractButton::toggled, this, &View::togglePointerMode);
     connect(zoomInIcon, &QAbstractButton::clicked, this, &View::zoomInPressed);
     connect(zoomOutIcon, &QAbstractButton::clicked, this, &View::zoomOutPressed);
-    //connect( , &Q ,this, &View::renewLabels);
-
 
     setupMatrix();
 

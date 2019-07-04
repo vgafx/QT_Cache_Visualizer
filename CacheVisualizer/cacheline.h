@@ -4,11 +4,12 @@
 #include <QColor>
 #include <QGraphicsItem>
 #include <QWidget>
+#include "statuscontroller.h"
 
 class cacheline: public QGraphicsItem
 {
 public:
-    cacheline(const QColor &color, int x, int y, int setID);
+    cacheline(const QColor &color, int x, int y, int setID, statusController *in);
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) override;
@@ -27,9 +28,9 @@ public:
     int getTag();
     int getBlockOffset();
     std::string getDataStructure();
+    statusController *sts;
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
-    void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
 
 //Maybe make coords publicaly accessible?
 private:
@@ -48,6 +49,7 @@ private:
     bool sector_four_filled;
     QColor color;
     QVector<QPointF> stuff;
+
 };
 
 #endif // CACHELINE_H

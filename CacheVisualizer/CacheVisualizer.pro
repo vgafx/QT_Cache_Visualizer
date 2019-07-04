@@ -32,6 +32,7 @@ SOURCES += \
         grid.cpp \
         main.cpp \
         cachevisualizer.cpp \
+        statuscontroller.cpp \
         threadblock.cpp \
         view.cpp
 
@@ -42,6 +43,7 @@ HEADERS += \
         globals.h \
         grid.h \
         main.h \
+        statuscontroller.h \
         threadblock.h \
         view.h
 

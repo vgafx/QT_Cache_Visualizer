@@ -3,7 +3,7 @@
 #include <QToolTip>
 #include "view.h"
 
-cacheline::cacheline(const QColor &color, int x, int y, int setID)
+cacheline::cacheline(const QColor &color, int x, int y, int setID, statusController *in)
 {
     this->x = x;
     this->y = y;
@@ -15,6 +15,7 @@ cacheline::cacheline(const QColor &color, int x, int y, int setID)
     this->setDataStructure("DataAr");
     this->tag = 0;
     this->block_offest = 0;
+    this->sts = in;
     this->flipAllSectors(0);
     setZValue((x + y) % 2);
 
@@ -120,18 +121,18 @@ void cacheline::mousePressEvent(QGraphicsSceneMouseEvent *event)
         event->accept();
         QPoint t_pos = event->screenPos();
         QToolTip::showText(t_pos,tltip);
-
+    } else if (event->button() == Qt::LeftButton){
+        printf("Left Click\n");
+        QGraphicsItem::mousePressEvent(event);
+        QString sts_txt = QString("Set Index:  %1 \nAddres Range:  %2 - %3 \nData Structure:  %4\nSectors Filled:  %5 - %6 - %7 - %8\nTag:  %9 \nAge:  %10")
+                .arg(this->set_idx).arg(this->address_low).arg(this->address_high).arg(QString::fromStdString(this->data_structure)).arg(this->sector_one_filled).arg(this->sector_two_filled).arg(this->sector_three_filled).arg(this->sector_four_filled).arg(this->tag).arg(this->age);
+        event->accept();
+        sts->setStatusText(sts_txt);
     }
-    //printf("Cache Line pressed!!!\n");
+
     update();
 }
 
-void cacheline::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
-
-    //printf("Set: %d hovered\n", this->set_idx);
-    //View::renewLabels(this->set_idx, this->x, this->y);
-    update();
-}
 
 int cacheline::getAge(){
     return this->age;

@@ -6,8 +6,11 @@
 #include <QFileDialog>
 #include <QTextStream>
 #include <QMessageBox>
+#include <QLineEdit>
+
 #include "fileio.h"
 #include "view.h"
+#include "statuscontroller.h"
 
 class QGraphicsScene;
 class QSplitter;
@@ -21,6 +24,7 @@ class CacheVisualizer : public QMainWindow
     Q_OBJECT
 
 public:
+    statusController *stsC;
     explicit CacheVisualizer(QWidget *parent = nullptr);
     ~CacheVisualizer();
 
@@ -50,10 +54,15 @@ private:
     QString currentFile="";
     QGraphicsScene *scene;
     View *l2View;
+    //QLineEdit lineEditStatusBar;
+
     void populateScene();
     void populateSceneSectored();
     void populateSceneNormal();
     void setupMatrix();
+    void createStatusBar();
+public slots:
+    void updateStatusBar(QString sts);
 };
 
 #endif // CACHEVISUALIZER_H
