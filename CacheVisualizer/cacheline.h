@@ -13,6 +13,7 @@ public:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) override;
+    void setColor(const QColor &color);
     int getAge();
     void setAge(int age);
     void activateSector(int sector);
@@ -29,6 +30,7 @@ public:
     int getBlockOffset();
     std::string getDataStructure();
     statusController *sts;
+
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 

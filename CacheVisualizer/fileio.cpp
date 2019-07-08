@@ -223,7 +223,11 @@ bool readConfigFromQstream(QTextStream &configData){
 }
 
 
+bool readTraceDataFromQstream(QTextStream &traceData){
 
+    traceData.seek(0);
+
+}
 
 
 

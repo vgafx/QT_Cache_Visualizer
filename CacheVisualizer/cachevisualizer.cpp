@@ -5,6 +5,8 @@
 #include "view.h"
 #include "statuscontroller.h"
 #include <math.h>
+#include <utility>
+#include <map>
 
 #include <QLabel>
 #include <QGridLayout>
@@ -103,7 +105,10 @@ void CacheVisualizer::populateSceneNormal(){
         ++xx;
         for (int l = i; l < i + i_iter; l+=i_inc) {
             QColor color(Qt::gray);
-            QGraphicsItem *line = new cacheline(color, xx, yy, s-1, stsC);
+            cacheline *line = new cacheline(color, xx, yy, s-1, stsC);
+            cline_info c_info{line ,line->getTag() ,line->getAge()};
+            idx_map.insert(std::pair<int,cline_info>(s-1, c_info));
+            //idx_map.insert(s-1,c_info);
             line->setPos(QPointF(j, l));
             scene->addItem(line);
             ++yy;
@@ -118,7 +123,6 @@ void CacheVisualizer::populateSceneNormal(){
             j+=j_inc;
         }
     }
-
 
 
 }
@@ -148,6 +152,9 @@ void CacheVisualizer::on_actionOpen_Trace_triggered()
     QTextStream in(&file);
     QString text = in.readAll();
     //!! Do something with the trace data
+
+
+
 
     file.close();
 
@@ -189,6 +196,7 @@ void CacheVisualizer::on_actionStop_triggered()
 */
 void CacheVisualizer::on_actionClear_triggered()
 {
+    idx_map.clear();
     scene->clear();
     //populateScene();
     //populateSceneSectored();
@@ -226,6 +234,7 @@ void CacheVisualizer::on_actionChange_Configuration_File_triggered()
     populateSceneNormal();
     l2View->view()->setScene(scene);
     //!! change cacheline referenes stored
+    idx_map.clear();
 
 }
 
@@ -304,8 +313,6 @@ void CacheVisualizer::on_actionSave_Simulation_Results_triggered()
 
 void CacheVisualizer::createStatusBar(){
     //lineEditStatusBar.setReadOnly(true);
-    //printf("ledit allign %s \n",lineEditStatusBar.alignment());
-    //lineEditStatusBar
     //statusBar()->addPermanentWidget(&lineEditStatusBar);
     statusBar()->showMessage(tr("Ready"));
 }
@@ -318,3 +325,27 @@ void CacheVisualizer::updateStatusBar(QString sts){
 
 
 
+
+void CacheVisualizer::on_actionDebug_Action_triggered()
+{
+    printf("Debug Functionality\n");
+    //multimap<int, cline_info>::iterator it;
+//    for(int si=0; si<num_sets_l2; si++){
+//        std::pair <std::multimap<int,cline_info>::iterator, std::multimap<int,cline_info>::iterator> ret;
+//        ret = idx_map.equal_range(si);
+//        for (std::multimap<int,cline_info>::iterator it = ret.first; it!=ret.second; it++){
+//            cacheline *temp = it->second.cline_ptr;
+//            temp->setAge(10);
+//        }
+//    }
+    std::pair <std::multimap<int,cline_info>::iterator, std::multimap<int,cline_info>::iterator> ret;
+    ret = idx_map.equal_range(0);
+    for (std::multimap<int,cline_info>::iterator it = ret.first; it!=ret.second; it++){
+        it->second.cline_ptr->setColor(Qt::red);
+        it->second.cline_ptr->update();
+        //update();
+        //cacheline *temp = it->second.cline_ptr;
+        //temp->setColor(Qt::green);
+    }
+
+}

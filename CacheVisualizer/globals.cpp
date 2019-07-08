@@ -38,6 +38,8 @@ bool simulation_done=false;
 bool trace_loaded=false;
 bool config_loaded=false;
 
+std::multimap<int, cline_info> idx_map;
+
 globals::globals()
 {
 

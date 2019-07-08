@@ -1,4 +1,9 @@
 #include <string>
+#include <map>
+#include <QColor>
+#include <QGraphicsItem>
+#include "cacheline.h"
+
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
@@ -43,6 +48,30 @@ extern int num_clines_l1;
 extern bool simulation_done;
 extern bool trace_loaded;
 extern bool config_loaded;
+
+struct cline_info{
+    cacheline *cline_ptr;
+    int tag;
+    int age;
+};
+
+extern std::multimap<int, cline_info> idx_map;
+
+struct input_entry{
+    int idx;
+    int idy;
+    int idz;
+    int block_x;
+    int block_y;
+    int block_z;
+    int warp_id;
+    std::string data_str;
+    int operation; //0 = read, 1 = write
+    unsigned long long ds_index;
+    unsigned long long address;
+    unsigned long long cycles;
+};
+
 
 class globals
 {

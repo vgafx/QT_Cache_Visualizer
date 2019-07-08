@@ -49,6 +49,8 @@ private slots:
 
     void on_actionSave_Simulation_Results_triggered();
 
+    void on_actionDebug_Action_triggered();
+
 private:
     Ui::CacheVisualizer *ui;
     QString currentFile="";

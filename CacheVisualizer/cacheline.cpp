@@ -1,8 +1,10 @@
-#include "cacheline.h"
+
 #include <QtWidgets>
 #include <QToolTip>
 #include "view.h"
+#include "cacheline.h"
 
+/*Constructor*/
 cacheline::cacheline(const QColor &color, int x, int y, int setID, statusController *in)
 {
     this->x = x;
@@ -23,6 +25,9 @@ cacheline::cacheline(const QColor &color, int x, int y, int setID, statusControl
     setAcceptHoverEvents(true);
 }
 
+/*Sizes of the visual representation
+ * The drawing function depends on these
+ */
 QRectF cacheline::boundingRect() const
 {
     return QRectF(0, 0, 440, 70);
@@ -47,13 +52,13 @@ void cacheline::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     const qreal lod = option->levelOfDetailFromTransform(painter->worldTransform());
     if (lod < 0.2) {
         if (lod < 0.125) {
-            painter->fillRect(QRectF(0, 0, 440, 70), fillColor);
+            painter->fillRect(QRectF(0, 0, 340, 50), fillColor);
             return;
         }
 
         QBrush b = painter->brush();
         painter->setBrush(fillColor);
-        painter->drawRect(13, 13, 388, 57);
+        painter->drawRect(13, 13, 288, 39);
         painter->setBrush(b);
         return;
     }
@@ -71,8 +76,8 @@ void cacheline::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     painter->drawRect(QRect(14, 14, 316, 39));
     painter->setBrush(b);
 
+    //Display cache line info if zoomed in.
     if (lod >= 0.5) {
-
         QFont font("Times", 76);
         font.setStyleStrategy(QFont::ForceOutline);
         painter->setFont(font);
@@ -96,17 +101,17 @@ void cacheline::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     }
 
 
-    if (stuff.size() > 1) {
-        QPen p = painter->pen();
-        painter->setPen(QPen(Qt::red, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-        painter->setBrush(Qt::NoBrush);
-        QPainterPath path;
-        path.moveTo(stuff.first());
-        for (int i = 1; i < stuff.size(); ++i)
-            path.lineTo(stuff.at(i));
-        painter->drawPath(path);
-        painter->setPen(p);
-    }
+//    if (stuff.size() > 1) {
+//        QPen p = painter->pen();
+//        painter->setPen(QPen(Qt::red, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+//        painter->setBrush(Qt::NoBrush);
+//        QPainterPath path;
+//        path.moveTo(stuff.first());
+//        for (int i = 1; i < stuff.size(); ++i)
+//            path.lineTo(stuff.at(i));
+//        painter->drawPath(path);
+//        painter->setPen(p);
+//    }
 }
 
 
@@ -131,15 +136,6 @@ void cacheline::mousePressEvent(QGraphicsSceneMouseEvent *event)
     }
 
     update();
-}
-
-
-int cacheline::getAge(){
-    return this->age;
-}
-
-void cacheline::setAge(int inAge){
-    this->age = inAge;
 }
 
 void cacheline:: activateSector(int secID){
@@ -191,6 +187,16 @@ void cacheline::flipAllSectors(int on_off){
     }
 }
 
+/*Setters & getters for the cacheline object*/
+
+int cacheline::getAge(){
+    return this->age;
+}
+
+void cacheline::setAge(int inAge){
+    this->age = inAge;
+}
+
 void cacheline::setAddressLow(unsigned long long add_low){
     this->address_low = add_low;
 }
@@ -229,4 +235,8 @@ void cacheline::setDataStructure(std::string d_name){
 
 std::string cacheline::getDataStructure(){
     return this->data_structure;
+}
+
+void cacheline::setColor(const QColor &color){
+    this->color = color;
 }
