@@ -4,6 +4,7 @@
 #include "cacheline.h"
 #include "view.h"
 #include "statuscontroller.h"
+#include "simulation.h"
 #include <math.h>
 #include <utility>
 #include <map>
@@ -29,9 +30,9 @@ CacheVisualizer::CacheVisualizer(QWidget *parent) :
     populateSceneNormal();
     l2View = new View("L2 Cache");
     l2View->view()->setScene(scene);
-
     l2View->show();
     setCentralWidget(l2View);
+    mySim = new simulation();
     createStatusBar();
 }
 
@@ -75,7 +76,6 @@ void CacheVisualizer::populateSceneNormal(){
 
     //Used config Data to draw the scene
     int xx = -1, yy =0;
-    int numSets = 0;
     int i = 0, j = 0;
     int j_start = 0, i_start = 0, j_end = 0, i_inc = 40, j_inc = 380, i_gap = 40 * 2;
     int i_next_line = i_gap + (i_inc * way_size_l2);
@@ -150,10 +150,15 @@ void CacheVisualizer::on_actionOpen_Trace_triggered()
         return;
     }
     QTextStream in(&file);
-    QString text = in.readAll();
+    //QString text = in.readAll();
     //!! Do something with the trace data
-
-
+    bool result = readTraceDataFromQstream(in, mySim);
+    if(result){
+        printf("Trace file read succesfully\n!");
+        QMessageBox::information(this, "Info", "Trace File loaded successfully!\n" );
+    } else {
+        QMessageBox::critical(this, "Warning", "Operation aborted!\nSomething went wrong when reading the trace input.\nLoad a file that adheres to the default specifications");
+    }
 
 
     file.close();

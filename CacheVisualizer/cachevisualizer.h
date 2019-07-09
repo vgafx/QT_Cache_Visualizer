@@ -11,6 +11,7 @@
 #include "fileio.h"
 #include "view.h"
 #include "statuscontroller.h"
+#include "simulation.h"
 
 class QGraphicsScene;
 class QSplitter;
@@ -25,6 +26,7 @@ class CacheVisualizer : public QMainWindow
 
 public:
     statusController *stsC;
+    simulation *mySim;
     explicit CacheVisualizer(QWidget *parent = nullptr);
     ~CacheVisualizer();
 

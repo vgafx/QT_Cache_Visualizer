@@ -1,5 +1,8 @@
+/*Functions for reading from input files*/
+
 #include "fileio.h"
 #include "globals.h"
+#include "simulation.h"
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -223,9 +226,127 @@ bool readConfigFromQstream(QTextStream &configData){
 }
 
 
-bool readTraceDataFromQstream(QTextStream &traceData){
+bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
 
     traceData.seek(0);
+    bool seenEqual = false;
+    bool seenPlus = false;
+    bool encounteredProblem = false;
+
+    while(!traceData.atEnd()){
+        QString line = traceData.readLine();
+        if(!line.isEmpty() && line.at(0) != '#'){
+            if (line.at(0) == '='){seenEqual = true;}
+            if (line.at(0) == '+'){seenPlus = true;}
+            //Get the launch configuration
+            if (!seenEqual){
+                QStringList linesplit = line.split(":");
+                std::string att, val;
+                att = linesplit[0].toStdString();
+                val = linesplit[1].toStdString();
+                printf("Read: att=%s,val=%s\n",att.c_str(),val.c_str());
+                if(att == "numBlocks"){
+                    sim->setNumBlocks(std::stoi(val));
+                } else if (att == "numThreadsPerBlock"){
+                    sim->setThreadsPerBlock(std::stoi(val));
+                } else if (att == "blockDimensions"){
+                    QStringList val_split = QString::fromStdString(val).split("-");
+                    if (val_split.size() != 3){
+                        traceData.flush();
+                        printf("RF1\n");
+                        return false;
+                    } else {
+                        sim->setBlocks_x(val_split[0].toInt());
+                        sim->setBlocks_y(val_split[1].toInt());
+                        sim->setBlocks_z(val_split[2].toInt());
+                    }
+                } else if (att == "threadDimensions"){
+                    QStringList val_split = QString::fromStdString(val).split("-");
+                    if (val_split.size() != 3){
+                        traceData.flush();
+                        printf("RF2\n");
+                        return false;
+                    } else {
+                        sim->setThreads_x(val_split[0].toInt());
+                        sim->setThreads_y(val_split[1].toInt());
+                        sim->setThreads_z(val_split[2].toInt());
+                    }
+                }
+            }//end launch config
+
+            //Get the block scheduling info
+            if (!seenPlus && seenEqual){
+                if (line.isEmpty() || line.at(0) == '='){continue;}
+                QStringList linesplit = line.trimmed().split(",");
+                if (linesplit.size() != 3){
+                    printf("RF3\n");
+                    traceData.flush();
+                    return false;
+                } else {
+                    QStringList entrysplit1 = linesplit[0].split(":");
+                    QStringList entrysplit2 = linesplit[1].split(":");
+                    QStringList entrysplit3 = linesplit[2].split(":");
+                    QStringList block_vals = entrysplit1[1].split("-");
+                    if (entrysplit1.size() != 2 && entrysplit2.size() != 2 && entrysplit2.size() != 2 && block_vals.size() != 3){
+                        traceData.flush();
+                        printf("RF4\n");
+                        return false;
+                    }
+                    std::string attribute1, attribute2, attribute3;
+
+                    attribute1 = entrysplit1[0].trimmed().toStdString();
+                    attribute2 = entrysplit2[0].trimmed().toStdString();
+                    attribute3 = entrysplit3[0].trimmed().toStdString();
+                    block_vals = entrysplit1[1].split("-");
+
+                    if (attribute1 == "B" && attribute2 == "SM" && attribute3 == "GT"){
+                        //Replace with ds
+                        int bx = block_vals[0].toInt();
+                        int by = block_vals[1].toInt();
+                        int bz = block_vals[2].toInt();
+                        int smid = entrysplit2[1].toInt();
+                        long long gtime = entrysplit3[1].toLongLong();
+                        //printf("bx:%d, by:%d, bz:%d, smid:%d, gtime:%llu\n",bx,by,bz,smid,gtime);
+                    } else {
+                        traceData.flush();
+                        printf("RF5\n");
+                        return false;
+                    }
+                }
+            }//end block scheduling info
+
+            //Finally get the trace input
+            if (seenPlus && seenEqual){
+                if (line.isEmpty() || line.at(0) == '+'){continue;}
+                QStringList linesplit = line.split(",");
+                if (linesplit.size() != 9){
+                    traceData.flush();
+                    printf("RF6\n");
+                    return false;
+                } else {
+                    int tx = linesplit[0].toInt();
+                    int ty = linesplit[1].toInt();
+                    QStringList b_info = linesplit[2].split('-');
+                    int blockx = b_info[0].toInt();
+                    int blocky = b_info[1].toInt();
+                    int wid = linesplit[3].toInt();
+                    std::string dsn = linesplit[4].toStdString();
+                    std::string s_op = linesplit[5].toStdString();
+                    int operation;
+                    if (s_op == "R"){
+                        operation = 0;
+                    } else if (s_op == "W"){
+                        operation = 1;
+                    }
+                    long long ds_idx = linesplit[6].toLongLong();
+                    long long address = linesplit[7].toLongLong();
+                    long long cycles = linesplit[8].toLongLong();
+                }
+            }
+        }//end if empty/comment
+
+    }//end of trace reading
+    return true;
 
 }
 

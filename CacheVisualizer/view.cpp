@@ -1,3 +1,4 @@
+/*Implements the viewing functionality of the application*/
 #include "view.h"
 #ifndef QT_NO_OPENGL
 #include <QtOpenGL>
