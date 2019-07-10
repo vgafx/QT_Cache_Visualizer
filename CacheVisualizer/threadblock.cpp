@@ -1,15 +1,17 @@
 #include "threadblock.h"
+#include "globals.h"
 
 //define
-threadBlock::threadBlock(int threadNum, int id, int dim, int tx, int ty, int sm, int cc_warps)
+threadBlock::threadBlock(int threadNum, int idx, int idy, int dim, int tx, int ty, int sm)
 {
     this->numThreads = threadNum;
     this->blockDim = dim;
-    this->blockId = id;
+    this->blockIdX = idx;
+    this->blockIdY = idy;
     this->numThreadsX = tx;
     this->numThreadsY = ty;
     this->mappedToSM = sm;
-    this->concurrentWarps = cc_warps;
+    this->concurrentWarps = concurrent_warps;
     this->retired = false;
     this->running = false;
 }

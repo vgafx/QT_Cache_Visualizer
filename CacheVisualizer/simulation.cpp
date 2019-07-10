@@ -1,6 +1,8 @@
 #include "simulation.h"
+#include "threadblock.h"
 #include <algorithm>
 #include <string>
+
 
 simulation::simulation()
 {
@@ -9,6 +11,12 @@ simulation::simulation()
     this->readyToStart = false;
     this->numBlocks = 0;
     this->threadsPerBlock = 0;
+    this->threads_x = 0;
+    this->threads_y = 0;
+    this->threads_z = 0;
+    this->blocks_x = 0;
+    this->blocks_y = 0;
+    this->blocks_z = 0;
 }
 
 
@@ -41,6 +49,29 @@ void simulation::sortSchedulingEntries(){
     //}
 }
 
+void simulation::configureDims(){
+    int total_t_dims = 3, total_b_dims = 3;
+    if (this->threads_z == 0){total_t_dims--;}
+    if (this->threads_y == 0){total_t_dims--;}
+    if (this->blocks_z == 0){total_b_dims--;}
+    if (this->blocks_y == 0){total_b_dims--;}
+    this->threadDims = total_t_dims;
+    this->blockDims = total_b_dims;
+}
+
+void simulation::generateBlocks(){
+    for (it=block_schedule.begin(); it != block_schedule.end(); it++) {
+        threadBlock *blk = new threadBlock(this->threadsPerBlock, it->block_id_x, it->block_id_y, this->blockDims, this->threads_x, this->threads_y, it->sm_id);
+        blocks.insert(std::pair<int,threadBlock>(it->sm_id,*blk));
+    }
+}
+
+void simulation::printBlocks(){
+    for (std::multimap<int,threadBlock>::iterator it=blocks.begin(); it!=blocks.end(); ++it){
+        //!!Verify!!
+        printf("BX: %d BY: %d SM: %d\n",it->second.getBlockIdX(), it->second.getBlockIdY(), it->second.getMappedToSM());
+    }
+}
 
 /*Setters and Getters*/
 int simulation::getNumBlocks() const
@@ -151,4 +182,24 @@ int simulation::getThreads_z() const
 void simulation::setThreads_z(int value)
 {
     threads_z = value;
+}
+
+int simulation::getBlockDims() const
+{
+    return blockDims;
+}
+
+void simulation::setBlockDims(int value)
+{
+    blockDims = value;
+}
+
+int simulation::getThreadDims() const
+{
+    return threadDims;
+}
+
+void simulation::setThreadDims(int value)
+{
+    threadDims = value;
 }

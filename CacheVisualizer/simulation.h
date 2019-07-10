@@ -1,6 +1,7 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
 #include <list>
+#include <map>
 #include "threadblock.h"
 
 
@@ -22,11 +23,15 @@ public:
     simulation();
     std::list<schedule_entry> block_schedule;
     std::list<schedule_entry>::iterator it;
+    std::multimap<int, threadBlock> blocks;
 
 
     void cleanAll();
     void sortSchedulingEntries();
     void addScheduleEntry(int bx, int by, int sm, long long t);
+    void configureDims();
+    void generateBlocks();
+    void printBlocks();
 
     int getNumBlocks() const;
     void setNumBlocks(int value);
@@ -61,15 +66,23 @@ public:
     int getThreads_z() const;
     void setThreads_z(int value);
 
+    int getBlockDims() const;
+    void setBlockDims(int value);
+
+    int getThreadDims() const;
+    void setThreadDims(int value);
+
 private:
     int numBlocks;
     int blocks_x;
     int blocks_y;
     int blocks_z;
+    int blockDims;
     int threadsPerBlock;
     int threads_x;
     int threads_y;
     int threads_z;
+    int threadDims;
     bool pauseFlag;
     bool stopFlag;
     bool readyToStart;

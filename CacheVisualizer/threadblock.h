@@ -5,7 +5,7 @@
 class threadBlock
 {
 public:
-    threadBlock(int threadNum, int id, int dim, int tx, int ty, int sm, int cc_warps);
+    threadBlock(int threadNum, int idx, int idy, int dim, int tx, int ty, int sm);
 
     int getNumWarps() const;
     void setNumWarps(int value);

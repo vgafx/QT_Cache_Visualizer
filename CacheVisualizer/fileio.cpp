@@ -348,6 +348,10 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
 
     }//end of trace reading
     sim->sortSchedulingEntries();
+    //move outside
+    sim->configureDims();
+    sim->generateBlocks();
+    sim->printBlocks();
     return true;
 
 }
