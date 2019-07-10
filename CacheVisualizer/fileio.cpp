@@ -306,6 +306,7 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
                         int bz = block_vals[2].toInt();
                         int smid = entrysplit2[1].toInt();
                         long long gtime = entrysplit3[1].toLongLong();
+                        sim->addScheduleEntry(bx, by, smid, gtime);
                         //printf("bx:%d, by:%d, bz:%d, smid:%d, gtime:%llu\n",bx,by,bz,smid,gtime);
                     } else {
                         traceData.flush();
@@ -346,6 +347,7 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
         }//end if empty/comment
 
     }//end of trace reading
+    sim->sortSchedulingEntries();
     return true;
 
 }

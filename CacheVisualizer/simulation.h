@@ -1,11 +1,32 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
+#include <list>
+#include "threadblock.h"
 
 
 class simulation
 {
+
+    struct schedule_entry{
+        int block_id_x;
+        int block_id_y;
+        int sm_id;
+        long long g_time;
+
+        bool operator<(const schedule_entry& a)const{
+            return g_time < a.g_time;
+        }
+    };
+
 public:
     simulation();
+    std::list<schedule_entry> block_schedule;
+    std::list<schedule_entry>::iterator it;
+
+
+    void cleanAll();
+    void sortSchedulingEntries();
+    void addScheduleEntry(int bx, int by, int sm, long long t);
 
     int getNumBlocks() const;
     void setNumBlocks(int value);

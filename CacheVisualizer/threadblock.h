@@ -5,56 +5,66 @@
 class threadBlock
 {
 public:
-    threadBlock();
-    unsigned int getNumWarps() const;
-    void setNumWarps(unsigned int value);
-    unsigned int getNumThreadsZ() const;
-    void setNumThreadsZ(unsigned int value);
+    threadBlock(int threadNum, int id, int dim, int tx, int ty, int sm, int cc_warps);
 
-    unsigned int getNumThreadsY() const;
-    void setNumThreadsY(unsigned int value);
+    int getNumWarps() const;
+    void setNumWarps(int value);
 
-    unsigned int getNumThreadsX() const;
-    void setNumThreadsX(unsigned int value);
+    int getNumThreadsZ() const;
+    void setNumThreadsZ(int value);
 
-    unsigned int getNumThreads() const;
-    void setNumThreads(unsigned int value);
+    int getNumThreadsY() const;
+    void setNumThreadsY(int value);
 
-    unsigned int getMappedToSM() const;
-    void setMappedToSM(unsigned int value);
+    int getNumThreadsX() const;
+    void setNumThreadsX(int value);
 
-    unsigned int getBlockId() const;
-    void setBlockId(unsigned int value);
+    int getNumThreads() const;
+    void setNumThreads(int value);
 
-    unsigned int getBlockIdX() const;
-    void setBlockIdX(unsigned int value);
+    int getMappedToSM() const;
+    void setMappedToSM(int value);
 
-    unsigned int getBlockIdY() const;
-    void setBlockIdY(unsigned int value);
+    int getBlockId() const;
+    void setBlockId(int value);
 
-    unsigned int getBlockIdZ() const;
-    void setBlockIdZ(unsigned int value);
+    int getBlockIdX() const;
+    void setBlockIdX(int value);
 
-    unsigned int getBlockDim() const;
-    void setBlockDim(unsigned int value);
+    int getBlockIdY() const;
+    void setBlockIdY(int value);
+
+    int getBlockIdZ() const;
+    void setBlockIdZ(int value);
+
+    int getBlockDim() const;
+    void setBlockDim(int value);
 
     int getConcurrentWarps() const;
     void setConcurrentWarps(int value);
 
+    bool getRetired() const;
+    void setRetired(bool value);
+
+    bool getRunning() const;
+    void setRunning(bool value);
+
 private:
-    unsigned int blockDim;
-    unsigned int blockId;
-    unsigned int blockIdX;
-    unsigned int blockIdY;
-    unsigned int blockIdZ;
-    unsigned int mappedToSM;
-    unsigned int numThreads;
-    unsigned int numThreadsX;
-    unsigned int numThreadsY;
-    unsigned int numThreadsZ;
-    unsigned int numWarps;
-    unsigned long long nextAddress;
+    int blockDim;
+    int blockId;
+    int blockIdX;
+    int blockIdY;
+    int blockIdZ;
+    int mappedToSM;
+    int numThreads;
+    int numThreadsX;
+    int numThreadsY;
+    int numThreadsZ;
+    int numWarps;
+    long long nextAddress;
     int concurrentWarps;
+    bool retired;
+    bool running;
     //Data Structure for holding the instruction stream
 
 

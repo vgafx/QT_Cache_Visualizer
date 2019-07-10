@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
     printGlobals();
 
     QApplication a(argc, argv);
+    //a.setWindowIcon(QIcon(":App.png"));
     CacheVisualizer w;
     w.show();
 

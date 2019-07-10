@@ -1,4 +1,6 @@
 #include "simulation.h"
+#include <algorithm>
+#include <string>
 
 simulation::simulation()
 {
@@ -9,6 +11,38 @@ simulation::simulation()
     this->threadsPerBlock = 0;
 }
 
+
+void simulation::cleanAll(){
+    block_schedule.clear();
+    this->stopFlag = false;
+    this->pauseFlag = false;
+    this->readyToStart = false;
+    this->numBlocks = 0;
+    this->threadsPerBlock = 0;
+    this->threads_x = 0;
+    this->threads_y = 0;
+    this->threads_z = 0;
+    this->blocks_x = 0;
+    this->blocks_y = 0;
+    this->blocks_z = 0;
+}
+
+
+void simulation::addScheduleEntry(int bx, int by, int sm, long long t){
+    schedule_entry entry{bx, by, sm, t};
+    block_schedule.push_back(entry);
+}
+
+void simulation::sortSchedulingEntries(){
+    //std::sort(block_schedule.begin(), block_schedule.end());
+    block_schedule.sort();
+    //for (it=block_schedule.begin(); it != block_schedule.end(); it++){
+    //    printf("X:%d Y:%d SM:%d T:%llu\n", it->block_id_x, it->block_id_y, it->sm_id, it->g_time);
+    //}
+}
+
+
+/*Setters and Getters*/
 int simulation::getNumBlocks() const
 {
     return numBlocks;

@@ -13,6 +13,7 @@
         <file>icons/open.png</file>
         <file>icons/zoomout.png</file>
         <file>icons/zoomin.png</file>
+        <file>icons/App.png</file>
     </qresource>
     <qresource prefix="/">
         <file>icons/zoomout.png</file>

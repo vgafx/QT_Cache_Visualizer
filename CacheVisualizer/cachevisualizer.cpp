@@ -142,6 +142,8 @@ void CacheVisualizer::on_actionExit_triggered()
 */
 void CacheVisualizer::on_actionOpen_Trace_triggered()
 {
+    QMessageBox::information(this, "Info", "Loading a trace file might take a while depending on the size\n" );
+
     QString trace_fname = QFileDialog::getOpenFileName(this, tr("Open trace"), "", tr("Trace Files (*.trc)"));
     QFile file(trace_fname);
     currentFile = trace_fname;

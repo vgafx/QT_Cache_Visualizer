@@ -1,119 +1,127 @@
 #include "threadblock.h"
 
 //define
-threadBlock::threadBlock()
+threadBlock::threadBlock(int threadNum, int id, int dim, int tx, int ty, int sm, int cc_warps)
 {
-
+    this->numThreads = threadNum;
+    this->blockDim = dim;
+    this->blockId = id;
+    this->numThreadsX = tx;
+    this->numThreadsY = ty;
+    this->mappedToSM = sm;
+    this->concurrentWarps = cc_warps;
+    this->retired = false;
+    this->running = false;
 }
 
 
 /*Setters and Getters*/
-unsigned int threadBlock::getNumWarps() const
+int threadBlock::getNumWarps() const
 {
     return numWarps;
 }
 
-void threadBlock::setNumWarps(unsigned int value)
+void threadBlock::setNumWarps(int value)
 {
     numWarps = value;
 }
 
-unsigned int threadBlock::getNumThreadsZ() const
+int threadBlock::getNumThreadsZ() const
 {
     return numThreadsZ;
 }
 
-void threadBlock::setNumThreadsZ(unsigned int value)
+void threadBlock::setNumThreadsZ(int value)
 {
     numThreadsZ = value;
 }
 
-unsigned int threadBlock::getNumThreadsY() const
+int threadBlock::getNumThreadsY() const
 {
     return numThreadsY;
 }
 
-void threadBlock::setNumThreadsY(unsigned int value)
+void threadBlock::setNumThreadsY(int value)
 {
     numThreadsY = value;
 }
 
-unsigned int threadBlock::getNumThreadsX() const
+int threadBlock::getNumThreadsX() const
 {
     return numThreadsX;
 }
 
-void threadBlock::setNumThreadsX(unsigned int value)
+void threadBlock::setNumThreadsX(int value)
 {
     numThreadsX = value;
 }
 
-unsigned int threadBlock::getNumThreads() const
+int threadBlock::getNumThreads() const
 {
     return numThreads;
 }
 
-void threadBlock::setNumThreads(unsigned int value)
+void threadBlock::setNumThreads(int value)
 {
     numThreads = value;
 }
 
-unsigned int threadBlock::getMappedToSM() const
+int threadBlock::getMappedToSM() const
 {
     return mappedToSM;
 }
 
-void threadBlock::setMappedToSM(unsigned int value)
+void threadBlock::setMappedToSM(int value)
 {
     mappedToSM = value;
 }
 
-unsigned int threadBlock::getBlockId() const
+int threadBlock::getBlockId() const
 {
     return blockId;
 }
 
-void threadBlock::setBlockId(unsigned int value)
+void threadBlock::setBlockId(int value)
 {
     blockId = value;
 }
 
-unsigned int threadBlock::getBlockIdX() const
+int threadBlock::getBlockIdX() const
 {
     return blockIdX;
 }
 
-void threadBlock::setBlockIdX(unsigned int value)
+void threadBlock::setBlockIdX(int value)
 {
     blockIdX = value;
 }
 
-unsigned int threadBlock::getBlockIdY() const
+int threadBlock::getBlockIdY() const
 {
     return blockIdY;
 }
 
-void threadBlock::setBlockIdY(unsigned int value)
+void threadBlock::setBlockIdY(int value)
 {
     blockIdY = value;
 }
 
-unsigned int threadBlock::getBlockIdZ() const
+int threadBlock::getBlockIdZ() const
 {
     return blockIdZ;
 }
 
-void threadBlock::setBlockIdZ(unsigned int value)
+void threadBlock::setBlockIdZ(int value)
 {
     blockIdZ = value;
 }
 
-unsigned int threadBlock::getBlockDim() const
+int threadBlock::getBlockDim() const
 {
     return blockDim;
 }
 
-void threadBlock::setBlockDim(unsigned int value)
+void threadBlock::setBlockDim(int value)
 {
     blockDim = value;
 }
@@ -126,6 +134,26 @@ int threadBlock::getConcurrentWarps() const
 void threadBlock::setConcurrentWarps(int value)
 {
     concurrentWarps = value;
+}
+
+bool threadBlock::getRetired() const
+{
+    return retired;
+}
+
+void threadBlock::setRetired(bool value)
+{
+    retired = value;
+}
+
+bool threadBlock::getRunning() const
+{
+    return running;
+}
+
+void threadBlock::setRunning(bool value)
+{
+    running = value;
 }
 
 

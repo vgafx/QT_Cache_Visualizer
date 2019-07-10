@@ -29,7 +29,6 @@ SOURCES += \
         cacheline.cpp \
         fileio.cpp \
         globals.cpp \
-        grid.cpp \
         main.cpp \
         cachevisualizer.cpp \
         simulation.cpp \
@@ -42,7 +41,6 @@ HEADERS += \
         cachevisualizer.h \
         fileio.h \
         globals.h \
-        grid.h \
         main.h \
         simulation.h \
         statuscontroller.h \
