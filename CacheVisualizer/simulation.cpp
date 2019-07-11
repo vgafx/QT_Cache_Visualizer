@@ -22,6 +22,11 @@ simulation::simulation()
 
 void simulation::cleanAll(){
     block_schedule.clear();
+    for (std::multimap<int,threadBlock>::iterator it=blocks.begin(); it!=blocks.end(); ++it){
+        it->second.clearAllData();
+    }
+
+    blocks.clear();
     this->stopFlag = false;
     this->pauseFlag = false;
     this->readyToStart = false;
@@ -68,10 +73,31 @@ void simulation::generateBlocks(){
 
 void simulation::printBlocks(){
     for (std::multimap<int,threadBlock>::iterator it=blocks.begin(); it!=blocks.end(); ++it){
-        //!!Verify!!
         printf("BX: %d BY: %d SM: %d\n",it->second.getBlockIdX(), it->second.getBlockIdY(), it->second.getMappedToSM());
     }
 }
+
+void simulation::printBlockAccessLists(){
+    for (std::multimap<int,threadBlock>::iterator it=blocks.begin(); it!=blocks.end(); ++it){
+        it->second.printInstructionStream();
+    }
+}
+
+
+void simulation::mapAccessToBlock(int in_tx, int in_ty, int in_bx, int in_by, int in_wid, std::string in_dsname, int in_oper, long long in_idx, long long in_address, long long in_cycles){
+    for (std::multimap<int,threadBlock>::iterator it=blocks.begin(); it!=blocks.end(); ++it) {
+        if (in_bx == it->second.getBlockIdX() && in_by == it->second.getBlockIdY()){
+            it->second.addAccessToLocalList(in_tx, in_ty, in_wid, in_dsname, in_oper, in_idx, in_address, in_cycles);
+        }
+    }
+}
+
+void simulation::sortAllBlockAccesses(){
+    for (std::multimap<int,threadBlock>::iterator it=blocks.begin(); it!=blocks.end(); ++it){
+        it->second.sortAccessEntries();
+    }
+}
+
 
 /*Setters and Getters*/
 int simulation::getNumBlocks() const

@@ -29,9 +29,12 @@ public:
     void cleanAll();
     void sortSchedulingEntries();
     void addScheduleEntry(int bx, int by, int sm, long long t);
+    void mapAccessToBlock(int in_tx, int in_ty, int in_bx, int in_by, int in_wid, std::string in_dsname, int in_oper, long long in_idx, long long in_address, long long in_cycles);
     void configureDims();
     void generateBlocks();
     void printBlocks();
+    void sortAllBlockAccesses();
+    void printBlockAccessLists();
 
     int getNumBlocks() const;
     void setNumBlocks(int value);

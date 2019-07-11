@@ -231,6 +231,7 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
     traceData.seek(0);
     bool seenEqual = false;
     bool seenPlus = false;
+    bool allowOnce = true;
     bool encounteredProblem = false;
 
     while(!traceData.atEnd()){
@@ -318,6 +319,12 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
 
             //Finally get the trace input
             if (seenPlus && seenEqual){
+                if(allowOnce){
+                    sim->sortSchedulingEntries();
+                    sim->configureDims();
+                    sim->generateBlocks();
+                    allowOnce = false;
+                }
                 if (line.isEmpty() || line.at(0) == '+'){continue;}
                 QStringList linesplit = line.split(",");
                 if (linesplit.size() != 9){
@@ -342,16 +349,16 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
                     long long ds_idx = linesplit[6].toLongLong();
                     long long address = linesplit[7].toLongLong();
                     long long cycles = linesplit[8].toLongLong();
+                    sim->mapAccessToBlock(tx, ty, blockx, blocky, wid, dsn, operation, ds_idx, address, cycles);
                 }
             }
         }//end if empty/comment
 
     }//end of trace reading
-    sim->sortSchedulingEntries();
-    //move outside
-    sim->configureDims();
-    sim->generateBlocks();
-    sim->printBlocks();
+    //!!Maybe sort outside of this function?
+    sim->sortAllBlockAccesses();
+    //sim->printBlockAccessLists();
+    //sim->printBlocks();
     return true;
 
 }

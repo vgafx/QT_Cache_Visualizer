@@ -17,6 +17,26 @@ threadBlock::threadBlock(int threadNum, int idx, int idy, int dim, int tx, int t
 }
 
 
+void threadBlock::addAccessToLocalList(int in_tx, int in_ty, int in_wid, std::string in_dsname, int in_oper, long long in_idx, long long in_address, long long in_cycles){
+    mem_acc_list access_entry{in_tx, in_ty, in_wid, in_dsname, in_oper, in_idx, in_address, in_cycles};
+    instruction_stream.push_back(access_entry);
+}
+
+void threadBlock::sortAccessEntries(){
+    instruction_stream.sort();
+}
+
+void threadBlock::printInstructionStream(){
+    printf("-----BLOCK----: %d", this->blockIdX);
+    for (it = instruction_stream.begin(); it != instruction_stream.end(); it++) {
+        printf("TX: %d TY: %d W: %d DS: %s OP: %d IDX: %llu ADD: %llu CYC: %llu\n", it->l_tx, it->l_ty, it->warp_id, it->ds_name.c_str(), it->operation, it->ds_idx, it->address, it->cycles);
+    }
+}
+
+void threadBlock::clearAllData(){
+    instruction_stream.clear();
+}
+
 /*Setters and Getters*/
 int threadBlock::getNumWarps() const
 {
