@@ -356,7 +356,7 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
 
     }//end of trace reading
     //!!Maybe sort outside of this function?
-    sim->sortAllBlockAccesses();
+    //sim->sortAllBlockAccesses();
     //sim->printBlockAccessLists();
     //sim->printBlocks();
     return true;

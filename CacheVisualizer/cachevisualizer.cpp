@@ -142,6 +142,17 @@ void CacheVisualizer::on_actionExit_triggered()
 */
 void CacheVisualizer::on_actionOpen_Trace_triggered()
 {
+    if (trace_loaded){
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, "Trace already loaded", "A trace file is already loaded!\nSelect Yes to erase the previous trace data and load a new file\nSelect No to keep the old data and not load a new trace",QMessageBox::Yes|QMessageBox::No);
+        if (reply == QMessageBox::Yes){
+            mySim->cleanAll();
+        } else {
+            return;
+        }
+        trace_loaded = false;
+    }
+
     QMessageBox::information(this, "Info", "Depending on the input size, opening a trace file might take a while\n" );
 
     QString trace_fname = QFileDialog::getOpenFileName(this, tr("Open trace"), "", tr("Trace Files (*.trc)"));
@@ -158,6 +169,7 @@ void CacheVisualizer::on_actionOpen_Trace_triggered()
     if(result){
         printf("Trace file read succesfully\n!");
         QMessageBox::information(this, "Info", "Trace File loaded successfully!\n" );
+        trace_loaded = true;
     } else {
         QMessageBox::critical(this, "Warning", "Operation aborted!\nSomething went wrong when reading the trace input.\nLoad a file that adheres to the default specifications");
     }
