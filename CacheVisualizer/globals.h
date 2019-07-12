@@ -31,6 +31,7 @@ extern int l1_load_granularity;
 extern int l2_load_granularity;
 extern std::string architecture;
 extern std::string chip;
+extern int data_type_bytes;
 
 extern bool missingConfigAttribute;
 
@@ -48,6 +49,9 @@ extern int num_clines_l1;
 extern bool simulation_done;
 extern bool trace_loaded;
 extern bool config_loaded;
+extern bool sim_mode_selected;
+extern int sim_mode; //0=autoplay , 1= step wise
+
 
 struct cline_info{
     cacheline *cline_ptr;

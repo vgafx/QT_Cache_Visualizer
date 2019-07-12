@@ -21,6 +21,7 @@ int l1_load_granularity=128;
 int l2_load_granularity=32;
 std::string architecture="2nd generation Maxwell";
 std::string chip="GM200-400-A1";
+int data_type_bytes=4;//!!Add this in config file
 
 bool missingConfigAttribute = false;
 
@@ -37,6 +38,8 @@ int num_clines_l1;
 bool simulation_done=false;
 bool trace_loaded=false;
 bool config_loaded=false;
+bool sim_mode_selected=false;
+extern int sim_mode=0;
 
 std::multimap<int, cline_info> idx_map;
 

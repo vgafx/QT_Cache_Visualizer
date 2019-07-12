@@ -5,6 +5,7 @@
 threadBlock::threadBlock(int threadNum, int idx, int idy, int dim, int tx, int ty, int sm)
 {
     this->numThreads = threadNum;
+    this->numWarps = threadNum / warp_size;
     this->blockDim = dim;
     this->blockIdX = idx;
     this->blockIdY = idy;
@@ -14,6 +15,14 @@ threadBlock::threadBlock(int threadNum, int idx, int idy, int dim, int tx, int t
     this->concurrentWarps = concurrent_warps;
     this->retired = false;
     this->running = false;
+}
+
+void threadBlock::configureDims(){
+
+}
+
+void threadBlock::formWarps(){
+
 }
 
 
@@ -34,6 +43,7 @@ void threadBlock::printInstructionStream(){
 }
 
 void threadBlock::clearAllData(){
+    //this->running = false;
     instruction_stream.clear();
 }
 

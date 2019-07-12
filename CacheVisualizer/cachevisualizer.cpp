@@ -12,7 +12,7 @@
 #include <QLabel>
 #include <QGridLayout>
 #include <QHBoxLayout>
-
+#include <QActionGroup>
 
 
 
@@ -34,6 +34,16 @@ CacheVisualizer::CacheVisualizer(QWidget *parent) :
     setCentralWidget(l2View);
     mySim = new simulation();
     createStatusBar();
+    //autoplay
+    m_e_group = new QActionGroup(this);
+    QAction *act = this->menuBar()->actions().at(1);
+    QAction *chld_act = act->menu()->actions().at(4);
+    QAction *g_chld_act1 = chld_act->menu()->actions().at(0);
+    QAction *g_chld_act2 = chld_act->menu()->actions().at(1);
+    m_e_group->addAction(g_chld_act1);
+    m_e_group->addAction(g_chld_act2);
+    m_e_group->setExclusive(true);
+
 }
 
 CacheVisualizer::~CacheVisualizer()
@@ -188,8 +198,11 @@ void CacheVisualizer::on_actionStart_triggered()
     if(!trace_loaded){
         //QMessageBox::error(this, "Warning", "Cannot Open file : ");
         QMessageBox::critical(this, "No Trace Data", "No Trace data were loaded for simulation.\nLoad a trace file first and try again");
-    } else {
+        return;
+    }
 
+    if (!sim_mode_selected){
+        QMessageBox::critical(this, "No Mode Selected", "The simulation mode is not set.\nSelect a simulation mode from the menu options before running a simulation");
     }
 
 }
@@ -312,7 +325,7 @@ void CacheVisualizer::on_actionSave_Simulation_Results_triggered()
 {
     if(!simulation_done){
         printf("Simulation Data not ready!\n");
-        QMessageBox::warning(this, "Warning", "Simulation data not ready for saving. Complete a simulation and then use this option." );
+        QMessageBox::warning(this, "Warning", "Simulation data not ready for saving. Complete a simulation and then use this option.");
         return;
     } else {
         QString simResultsName = QFileDialog::getSaveFileName(this, "Save As");
@@ -367,4 +380,27 @@ void CacheVisualizer::on_actionDebug_Action_triggered()
         //temp->setColor(Qt::green);
     }
 
+}
+
+
+void CacheVisualizer::on_autoplay_triggered()
+{
+    sim_mode = 0;
+    sim_mode_selected = true;
+}
+
+void CacheVisualizer::on_actionManual_Step_wise_triggered()
+{
+    sim_mode = 1;
+    sim_mode_selected = true;
+}
+
+void CacheVisualizer::on_actionNext_Step_triggered()
+{
+    printf("Enter pressed\n");
+    if(sim_mode_selected && sim_mode == 1){
+        //Run the next simulation step
+        printf("Taking sim step\n");
+
+    }
 }

@@ -7,6 +7,7 @@
 #include <QTextStream>
 #include <QMessageBox>
 #include <QLineEdit>
+#include <QActionGroup>
 
 #include "fileio.h"
 #include "view.h"
@@ -53,12 +54,18 @@ private slots:
 
     void on_actionDebug_Action_triggered();
 
+    void on_autoplay_triggered();
+
+    void on_actionManual_Step_wise_triggered();
+
+    void on_actionNext_Step_triggered();
+
 private:
     Ui::CacheVisualizer *ui;
     QString currentFile="";
     QGraphicsScene *scene;
     View *l2View;
-    //QLineEdit lineEditStatusBar;
+    QActionGroup *m_e_group;
 
     void populateScene();
     void populateSceneSectored();

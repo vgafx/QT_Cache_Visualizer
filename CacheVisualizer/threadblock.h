@@ -21,6 +21,18 @@ class threadBlock
         }
     };
 
+    struct warp{
+        int myX_l;
+        int myX_h;
+        int myY_l;
+        int myY_h;
+        int id;
+        long long add_low;
+        long long add_high;
+        bool coalesced_access;
+        bool not_consecutive_ids;
+    };
+
 
 public:
     threadBlock(int threadNum, int idx, int idy, int dim, int tx, int ty, int sm);
@@ -74,7 +86,8 @@ public:
     bool getRunning() const;
     void setRunning(bool value);
 
-
+    void configureDims();
+    void formWarps();
 private:
     int blockDim;
     int blockId;
@@ -91,6 +104,7 @@ private:
     int concurrentWarps;
     bool retired;
     bool running;
+
 
 };
 

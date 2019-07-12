@@ -50,15 +50,17 @@
     </property>
     <widget class="QMenu" name="menuSpeed">
      <property name="title">
-      <string>Speed</string>
+      <string>Simulation Mode</string>
      </property>
-     <addaction name="action100"/>
+     <addaction name="autoplay"/>
+     <addaction name="actionManual_Step_wise"/>
     </widget>
     <addaction name="actionStart"/>
     <addaction name="actionPause"/>
     <addaction name="actionStop"/>
     <addaction name="actionClear"/>
     <addaction name="menuSpeed"/>
+    <addaction name="actionNext_Step"/>
     <addaction name="actionDebug_Action"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -144,9 +146,12 @@
     <string>Exit</string>
    </property>
   </action>
-  <action name="action100">
+  <action name="autoplay">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
-    <string>100%</string>
+    <string>Autoplay</string>
    </property>
   </action>
   <action name="actionPrint_Configuration">
@@ -179,6 +184,22 @@
   <action name="actionDebug_Action">
    <property name="text">
     <string>Debug Action</string>
+   </property>
+  </action>
+  <action name="actionManual_Step_wise">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Manual - Step wise</string>
+   </property>
+  </action>
+  <action name="actionNext_Step">
+   <property name="text">
+    <string>Next Step</string>
+   </property>
+   <property name="shortcut">
+    <string>Return</string>
    </property>
   </action>
  </widget>
