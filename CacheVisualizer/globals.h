@@ -31,7 +31,7 @@ extern int l1_load_granularity;
 extern int l2_load_granularity;
 extern std::string architecture;
 extern std::string chip;
-extern int data_type_bytes;
+extern int data_type_bytes; //!! add to config
 
 extern bool missingConfigAttribute;
 
@@ -51,6 +51,26 @@ extern bool trace_loaded;
 extern bool config_loaded;
 extern bool sim_mode_selected;
 extern int sim_mode; //0=autoplay , 1= step wise
+
+#define EMPTY_RET -1
+#define NO_RET -2
+
+#define READ 0
+#define WRITE 1
+
+#define MASK_7bit 127
+#define MASK_8bit 255
+#define MASK_9bit 511
+#define MASK_10bit 1023
+#define MASK_11bit 2047
+#define MASK_12bit 4095
+#define MASK_13bit 8191
+#define MASK_14bit 16383
+#define MASK_15bit 32767
+#define MASK_16bit 65535
+
+
+#define BLOCK_OFFSET_BITS 7
 
 
 struct cline_info{
@@ -75,6 +95,37 @@ struct input_entry{
     unsigned long long address;
     unsigned long long cycles;
 };
+
+struct update_line_info{
+    int set_idx;
+    int oper;
+    std::string name;
+    long long add_low;
+    long long add_high;
+    long long idx_low;
+    long long idx_high;
+    long long cycles;
+    bool s0;
+    bool s1;
+    bool s2;
+    bool s3;
+
+//    bool operator<(const update_line_info& a)const{
+//        return cycles < a.cycles;
+//    }
+};
+
+struct distinct_entries{
+    int set_id;
+    long long min_add;
+    long long max_add;
+    long long min_idx;
+    long long max_idx;
+    bool sec0, sec1, sec2, sec3;
+};
+
+
+
 
 
 class globals

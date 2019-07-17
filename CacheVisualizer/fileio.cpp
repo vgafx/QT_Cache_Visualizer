@@ -232,9 +232,11 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
     bool seenEqual = false;
     bool seenPlus = false;
     bool allowOnce = true;
-    bool encounteredProblem = false;
+    //bool encounteredProblem = false;
+    //qDebug("Begun reading from QStream");
 
     while(!traceData.atEnd()){
+        //qDebug("Started reading lines\n");
         QString line = traceData.readLine();
         if(!line.isEmpty() && line.at(0) != '#'){
             if (line.at(0) == '='){seenEqual = true;}
@@ -254,7 +256,7 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
                     QStringList val_split = QString::fromStdString(val).split("-");
                     if (val_split.size() != 3){
                         traceData.flush();
-                        printf("RF1\n");
+                        qDebug("RF1\n");
                         return false;
                     } else {
                         sim->setBlocks_x(val_split[0].toInt());
@@ -265,7 +267,7 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
                     QStringList val_split = QString::fromStdString(val).split("-");
                     if (val_split.size() != 3){
                         traceData.flush();
-                        printf("RF2\n");
+                        qDebug("RF2\n");
                         return false;
                     } else {
                         sim->setThreads_x(val_split[0].toInt());
@@ -280,7 +282,7 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
                 if (line.isEmpty() || line.at(0) == '='){continue;}
                 QStringList linesplit = line.trimmed().split(",");
                 if (linesplit.size() != 3){
-                    printf("RF3\n");
+                    qDebug("RF3\n");
                     traceData.flush();
                     return false;
                 } else {
@@ -290,7 +292,7 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
                     QStringList block_vals = entrysplit1[1].split("-");
                     if (entrysplit1.size() != 2 && entrysplit2.size() != 2 && entrysplit2.size() != 2 && block_vals.size() != 3){
                         traceData.flush();
-                        printf("RF4\n");
+                        qDebug("RF4\n");
                         return false;
                     }
                     std::string attribute1, attribute2, attribute3;
@@ -311,7 +313,7 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
                         //printf("bx:%d, by:%d, bz:%d, smid:%d, gtime:%llu\n",bx,by,bz,smid,gtime);
                     } else {
                         traceData.flush();
-                        printf("RF5\n");
+                        qDebug("RF5\n");
                         return false;
                     }
                 }
@@ -320,16 +322,18 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
             //Finally get the trace input
             if (seenPlus && seenEqual){
                 if(allowOnce){
+                    //qDebug("Allow Once S\n");
                     sim->sortSchedulingEntries();
                     sim->configureDims();
                     sim->generateBlocks();
                     allowOnce = false;
+                    //qDebug("Allow Once F\n");
                 }
                 if (line.isEmpty() || line.at(0) == '+'){continue;}
                 QStringList linesplit = line.split(",");
                 if (linesplit.size() != 9){
                     traceData.flush();
-                    printf("RF6\n");
+                    qDebug("RF6\n");
                     return false;
                 } else {
                     int tx = linesplit[0].toInt();
@@ -342,19 +346,22 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
                     std::string s_op = linesplit[5].toStdString();
                     int operation;
                     if (s_op == "R"){
-                        operation = 0;
+                        operation = READ;
                     } else if (s_op == "W"){
-                        operation = 1;
+                        operation = WRITE;
                     }
                     long long ds_idx = linesplit[6].toLongLong();
                     long long address = linesplit[7].toLongLong();
                     long long cycles = linesplit[8].toLongLong();
+                    //qDebug("Map\n");
                     sim->mapAccessToBlock(tx, ty, blockx, blocky, wid, dsn, operation, ds_idx, address, cycles);
+                    //qDebug("Map F\n");
                 }
             }
         }//end if empty/comment
 
     }//end of trace reading
+    //qDebug("Finished reading from QStream");
     //!!Maybe sort outside of this function?
     //sim->sortAllBlockAccesses();
     //sim->printBlockAccessLists();

@@ -1,7 +1,9 @@
 #include "simulation.h"
+#include "globals.h"
 #include "threadblock.h"
 #include <algorithm>
 #include <string>
+#include <cmath>
 
 
 simulation::simulation()
@@ -17,19 +19,39 @@ simulation::simulation()
     this->blocks_x = 0;
     this->blocks_y = 0;
     this->blocks_z = 0;
+    this->current_active_blocks = 0;
+    this->isRunning = false;
+
+    //!!Need to make this safe...
+    int result = int(log2(num_sets_l2));
+    //printf("S BITS: %.2f \n", result);
+    switch (result) {
+        case 7: this->bit_mask = MASK_7bit; break;
+        case 8: this->bit_mask = MASK_8bit; break;
+        case 9: this->bit_mask = MASK_9bit; break;
+        case 10: this->bit_mask = MASK_10bit; break;
+        case 11: this->bit_mask = MASK_11bit; break;
+        case 12: this->bit_mask = MASK_12bit; break;
+        case 13: this->bit_mask = MASK_13bit; break;
+        case 14: this->bit_mask = MASK_14bit; break;
+        case 15: this->bit_mask = MASK_15bit; break;
+        case 16: this->bit_mask = MASK_16bit; break;
+        default: printf("Error in bitmask resolution!\n"); break;
+    }
 }
 
 
 void simulation::cleanAll(){
     block_schedule.clear();
-    for (std::multimap<int,threadBlock>::iterator it=blocks.begin(); it!=blocks.end(); ++it){
-        it->second.clearAllData();
+    for (b_it=blocks.begin(); b_it!=blocks.end(); ++b_it){
+        b_it->second.clearAllData();
     }
 
     blocks.clear();
     this->stopFlag = false;
     this->pauseFlag = false;
     this->readyToStart = false;
+    this->isRunning = false;
     this->numBlocks = 0;
     this->threadsPerBlock = 0;
     this->threads_x = 0;
@@ -47,11 +69,7 @@ void simulation::addScheduleEntry(int bx, int by, int sm, long long t){
 }
 
 void simulation::sortSchedulingEntries(){
-    //std::sort(block_schedule.begin(), block_schedule.end());
     block_schedule.sort();
-    //for (it=block_schedule.begin(); it != block_schedule.end(); it++){
-    //    printf("X:%d Y:%d SM:%d T:%llu\n", it->block_id_x, it->block_id_y, it->sm_id, it->g_time);
-    //}
 }
 
 void simulation::configureDims(){
@@ -65,27 +83,74 @@ void simulation::configureDims(){
 }
 
 void simulation::generateBlocks(){
-    for (it=block_schedule.begin(); it != block_schedule.end(); it++) {
-        threadBlock *blk = new threadBlock(this->threadsPerBlock, it->block_id_x, it->block_id_y, this->blockDims, this->threads_x, this->threads_y, it->sm_id);
+    int count = 0;
+    for (it = block_schedule.begin(); it != block_schedule.end(); it++) {
+        threadBlock *blk = new threadBlock(this->threadsPerBlock, it->block_id_x, it->block_id_y, this->blockDims, this->threads_x, this->threads_y, it->sm_id, this->bit_mask);
         blocks.insert(std::pair<int,threadBlock>(it->sm_id,*blk));
+        count++;
+    }
+    this->numBlocks = count;
+}
+
+
+void simulation::prepareInitialBlocks(){
+    int max_blocks = std::min(num_sm, int(block_schedule.size()));
+    int first_blocks = 0;
+    for (auto it = block_schedule.begin(); it != block_schedule.end(); it++) {
+        if (first_blocks < max_blocks){
+            blocks.find(it->sm_id)->second.setRunning(true);
+            first_blocks++;
+        }
+    }
+    for (int i = 0; i < first_blocks; i++) {
+        block_schedule.pop_front();
     }
 }
 
-void simulation::printBlocks(){
-    for (std::multimap<int,threadBlock>::iterator it=blocks.begin(); it!=blocks.end(); ++it){
-        printf("BX: %d BY: %d SM: %d\n",it->second.getBlockIdX(), it->second.getBlockIdY(), it->second.getMappedToSM());
+void simulation::swapInactiveBlock(int retired_id){
+    blocks.find(retired_id)->second.setRunning(false);
+    blocks.find(retired_id)->second.setRetired(true);
+
+    if(block_schedule.empty()){ //No more blocks to schedule
+        //!! handle this
+    } else {
+        for (auto it = block_schedule.begin(); it != block_schedule.end(); it++) {
+            if (it->sm_id == retired_id){
+                blocks.find(it->sm_id)->second.setRunning(true);
+            }
+        }
     }
 }
 
-void simulation::printBlockAccessLists(){
-    for (std::multimap<int,threadBlock>::iterator it=blocks.begin(); it!=blocks.end(); ++it){
-        it->second.printInstructionStream();
+
+int simulation::findNextInstructionFromBlocks(){
+    long long min_cyc = LLONG_MAX;
+    int id = 0;
+    for (auto it = blocks.begin(); it != blocks.end(); it++) {
+        if (it->second.getRunning()){
+            if (it->second.getNextCycleVal() < min_cyc){
+                min_cyc = it->second.getNextCycleVal();
+                id = it->second.getMappedToSM();
+            }
+        }
     }
+    return id;
 }
+
+std::list<update_line_info> simulation::getUpdateInfoFromBlock(){
+    std::list<update_line_info> tmp_list;
+    int block_id = this->findNextInstructionFromBlocks();
+    tmp_list = blocks.find(block_id)->second.getUpdateInfo();
+
+    return tmp_list;
+}
+
+
+
 
 
 void simulation::mapAccessToBlock(int in_tx, int in_ty, int in_bx, int in_by, int in_wid, std::string in_dsname, int in_oper, long long in_idx, long long in_address, long long in_cycles){
-    for (std::multimap<int,threadBlock>::iterator it=blocks.begin(); it!=blocks.end(); ++it) {
+    for (auto it = blocks.begin(); it != blocks.end(); ++it) {
         if (in_bx == it->second.getBlockIdX() && in_by == it->second.getBlockIdY()){
             it->second.addAccessToLocalList(in_tx, in_ty, in_wid, in_dsname, in_oper, in_idx, in_address, in_cycles);
         }
@@ -93,11 +158,29 @@ void simulation::mapAccessToBlock(int in_tx, int in_ty, int in_bx, int in_by, in
 }
 
 void simulation::sortAllBlockAccesses(){
-    for (std::multimap<int,threadBlock>::iterator it=blocks.begin(); it!=blocks.end(); ++it){
+    for (auto it = blocks.begin(); it != blocks.end(); ++it){
         it->second.sortAccessEntries();
     }
 }
 
+/*Debug Functions*/
+void simulation::printBlocks(){
+    for (auto it = blocks.begin(); it != blocks.end(); ++it){
+        printf("BX: %d BY: %d SM: %d\n",it->second.getBlockIdX(), it->second.getBlockIdY(), it->second.getMappedToSM());
+    }
+}
+
+void simulation::printBlockAccessLists(){
+    for (auto it = blocks.begin(); it != blocks.end(); ++it){
+        it->second.printInstructionStream();
+    }
+}
+
+void simulation::printSchedule(){
+    for (auto it=block_schedule.begin(); it != block_schedule.end(); it++){
+        printf("X:%d Y:%d SM:%d T:%llu\n", it->block_id_x, it->block_id_y, it->sm_id, it->g_time);
+    }
+}
 
 /*Setters and Getters*/
 int simulation::getNumBlocks() const
@@ -108,6 +191,16 @@ int simulation::getNumBlocks() const
 void simulation::setNumBlocks(int value)
 {
     numBlocks = value;
+}
+
+bool simulation::getIsRunning() const
+{
+    return isRunning;
+}
+
+void simulation::setIsRunning(bool value)
+{
+    isRunning = value;
 }
 
 int simulation::getThreadsPerBlock() const
@@ -228,4 +321,23 @@ int simulation::getThreadDims() const
 void simulation::setThreadDims(int value)
 {
     threadDims = value;
+}
+
+int simulation::getCurrent_active_blocks() const
+{
+    return current_active_blocks;
+}
+
+void simulation::setCurrent_active_blocks(int value)
+{
+    current_active_blocks = value;
+}
+int simulation::getBit_mask() const
+{
+    return bit_mask;
+}
+
+void simulation::setBit_mask(int value)
+{
+    bit_mask = value;
 }

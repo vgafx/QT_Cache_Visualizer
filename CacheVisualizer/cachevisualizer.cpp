@@ -33,7 +33,7 @@ CacheVisualizer::CacheVisualizer(QWidget *parent) :
     l2View->show();
     setCentralWidget(l2View);
     mySim = new simulation();
-    createStatusBar();
+
     //autoplay
     m_e_group = new QActionGroup(this);
     QAction *act = this->menuBar()->actions().at(1);
@@ -43,7 +43,7 @@ CacheVisualizer::CacheVisualizer(QWidget *parent) :
     m_e_group->addAction(g_chld_act1);
     m_e_group->addAction(g_chld_act2);
     m_e_group->setExclusive(true);
-
+    createStatusBar();
 }
 
 CacheVisualizer::~CacheVisualizer()
@@ -203,6 +203,16 @@ void CacheVisualizer::on_actionStart_triggered()
 
     if (!sim_mode_selected){
         QMessageBox::critical(this, "No Mode Selected", "The simulation mode is not set.\nSelect a simulation mode from the menu options before running a simulation");
+        return;
+    }
+
+    mySim->sortAllBlockAccesses();
+    mySim->prepareInitialBlocks();
+
+    if (sim_mode == 0){ //if autoplay
+
+    } else {
+        QMessageBox::information(this, "Setup Completed", "The simulation has been set up in step-wise mode\nUse the Next Step option from this menu to proceed through it.");
     }
 
 }
@@ -380,6 +390,23 @@ void CacheVisualizer::on_actionDebug_Action_triggered()
         //temp->setColor(Qt::green);
     }
 
+    //WORKS
+    std::vector<long long> test = {81723146496, 81723146500, 81723146504, 81723146508, 81723146512, 81723146516, 81723146520,
+                                  81723146524, 81723146528, 81723146532, 81723146536, 81723146540, 81723146544, 81723146548,
+                                  81723146552, 81723146556, 81723146560, 81723146564, 81723146568, 81723146572, 81723146576,
+                                  81723146580, 81723146584, 81723146588, 81723146592, 81723146596, 81723146600, 81723146604,
+                                  81723146608, 81723146612, 81723146616, 81723146620, 81723670784};
+
+    for (size_t i = 0; i < test.size(); i++) {
+        long long tmp_add = test.at(i);
+        long long set_idx = tmp_add >> BLOCK_OFFSET_BITS;
+
+        long long tag = set_idx >> 12;
+        set_idx &= MASK_12bit;
+        printf("Element %d, Add: %llu, Set_ID: %d, Tag_ID:%d\n", i, test.at(i), set_idx, tag);
+
+    }
+
 }
 
 
@@ -401,6 +428,22 @@ void CacheVisualizer::on_actionNext_Step_triggered()
     if(sim_mode_selected && sim_mode == 1){
         //Run the next simulation step
         printf("Taking sim step\n");
+        std::list<update_line_info> visual_upd;
+        visual_upd = mySim->getUpdateInfoFromBlock();
+
+        if (visual_upd.empty()){
+            //!!handle
+            qDebug("No more instructions available\n");
+            printf("No more instructions available\n");
+        } else {
+            for (auto it = visual_upd.begin(); it != visual_upd.end(); it++) {
+                std::pair <std::multimap<int,cline_info>::iterator, std::multimap<int,cline_info>::iterator> ret;
+                ret = idx_map.equal_range(it->set_idx);
+
+
+            }
+
+        }
 
     }
 }

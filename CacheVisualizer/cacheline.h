@@ -38,6 +38,8 @@ protected:
 private:
     int x;
     int y;
+    int idx_low;
+    int idx_high;
     int set_idx;
     int age;
     int tag;

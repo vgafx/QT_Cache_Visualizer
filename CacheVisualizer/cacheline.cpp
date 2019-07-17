@@ -14,6 +14,8 @@ cacheline::cacheline(const QColor &color, int x, int y, int setID, statusControl
     this->age = 0;
     this->address_low=0;
     this->address_high=127;
+    this->idx_low = 0;
+    this->idx_high = 31;
     this->setDataStructure("DataAr");
     this->tag = 0;
     this->block_offest = 0;
@@ -119,18 +121,18 @@ void cacheline::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::RightButton){
         QGraphicsItem::mousePressEvent(event);
-        QString tltip = QString("Set Index:  %1 \nLine Coordinates:  %2 x %3 \nAddres Range:  %4 - %5 "
-                                "\nData Structure:  %6\nSectors Filled:  %7 - %8 - %9 - %10\nTag:  %11 \nAge:  %12")
+        QString tltip = QString("Set Index:  %1 \nLine Coordinates:  %2 x %3 \nAddress Range:  %4 - %5 "
+                                "\nData Structure:  %6\nIndex Range: %7 - %8 \nSectors Filled:  %9 - %10 - %11 - %10\nTag:  %12 \nAge:  %13")
                 .arg(this->set_idx).arg(this->x).arg(this->y).arg(this->address_low).arg(this->address_high)
-                .arg(QString::fromStdString(this->data_structure)).arg(this->sector_one_filled).arg(this->sector_two_filled).arg(this->sector_three_filled).arg(this->sector_four_filled).arg(this->tag).arg(this->age);
+                .arg(QString::fromStdString(this->data_structure)).arg(this->idx_low).arg(this->idx_high).arg(this->sector_one_filled).arg(this->sector_two_filled).arg(this->sector_three_filled).arg(this->sector_four_filled).arg(this->tag).arg(this->age);
         event->accept();
         QPoint t_pos = event->screenPos();
         QToolTip::showText(t_pos,tltip);
     } else if (event->button() == Qt::LeftButton){
         printf("Left Click\n");
         QGraphicsItem::mousePressEvent(event);
-        QString sts_txt = QString("Set Index:  %1 \nAddres Range:  %2 - %3 \nData Structure:  %4\nSectors Filled:  %5 - %6 - %7 - %8\nTag:  %9 \nAge:  %10")
-                .arg(this->set_idx).arg(this->address_low).arg(this->address_high).arg(QString::fromStdString(this->data_structure)).arg(this->sector_one_filled).arg(this->sector_two_filled).arg(this->sector_three_filled).arg(this->sector_four_filled).arg(this->tag).arg(this->age);
+        QString sts_txt = QString("Set Index:  %1, \nAddres Range:  %2 - %3, \nData Structure:  %4, \nIndex Range: %5 - %6, \nSectors Filled:  %7 - %8 - %9 - %10, \nTag:  %11, \nAge:  %12")
+                .arg(this->set_idx).arg(this->address_low).arg(this->address_high).arg(QString::fromStdString(this->data_structure)).arg(this->idx_low).arg(this->idx_high).arg(this->sector_one_filled).arg(this->sector_two_filled).arg(this->sector_three_filled).arg(this->sector_four_filled).arg(this->tag).arg(this->age);
         event->accept();
         sts->setStatusText(sts_txt);
     }

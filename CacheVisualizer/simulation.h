@@ -24,6 +24,7 @@ public:
     std::list<schedule_entry> block_schedule;
     std::list<schedule_entry>::iterator it;
     std::multimap<int, threadBlock> blocks;
+    std::multimap<int, threadBlock>::iterator b_it; //wierd behaviour using this. Maybe remove.
 
 
     void cleanAll();
@@ -75,6 +76,23 @@ public:
     int getThreadDims() const;
     void setThreadDims(int value);
 
+    int getCurrent_active_blocks() const;
+    void setCurrent_active_blocks(int value);
+
+    int getBit_mask() const;
+    void setBit_mask(int value);
+
+    void prepareInitialBlocks();
+    bool getIsRunning() const;
+    void setIsRunning(bool value);
+
+    void printSchedule();
+
+    int findNextInstructionFromBlocks();
+    std::list<update_line_info> getUpdateInfoFromBlock();
+
+
+    void swapInactiveBlock(int retired_id);
 private:
     int numBlocks;
     int blocks_x;
@@ -86,9 +104,12 @@ private:
     int threads_y;
     int threads_z;
     int threadDims;
+    int current_active_blocks;
+    int bit_mask;
     bool pauseFlag;
     bool stopFlag;
     bool readyToStart;
+    bool isRunning;
 };
 
 #endif // SIMULATION_H
