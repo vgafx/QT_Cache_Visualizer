@@ -140,22 +140,27 @@ void updateSceneFromInfo(std::list<update_line_info> up_info){
             ret = idx_map.equal_range(it->set_idx);
             for (auto s_it = ret.first; s_it != ret.second; s_it++) {
                 if(s_it->second.cline_ptr->getTag() == it->tag){ //write hit
-                    s_it->second.cline_ptr->setAddressLow(it->add_low);
-                    s_it->second.cline_ptr->setAddressHigh(it->add_high);
-                    s_it->second.cline_ptr->setIdxLow(it->idx_low);
-                    s_it->second.cline_ptr->setIdxHigh(it->idx_high);
-                    s_it->second.cline_ptr->setDataStructure(it->name);
-                    s_it->second.cline_ptr->setAge(0);
-                    s_it->second.age = 0; //!!decide on if to keep in struct
-                    s_it->second.tag = it->tag; //!!decide on if to keep in struct
-                    s_it->second.cline_ptr->setSector_one_filled(it->s0);
-                    s_it->second.cline_ptr->setSector_two_filled(it->s1);
-                    s_it->second.cline_ptr->setSector_three_filled(it->s2);
-                    s_it->second.cline_ptr->setSector_four_filled(it->s3);
-                    QColor color(Qt::green);
-                    s_it->second.cline_ptr->setColor(color);
-                    s_it->second.cline_ptr->update();
-
+                    if(s_it->second.cline_ptr->getSector_one_filled() == it->s0 && s_it->second.cline_ptr->getSector_two_filled() == it->s1
+                            && s_it->second.cline_ptr->getSector_three_filled() == it->s2 && s_it->second.cline_ptr->getSector_four_filled() == it->s3){
+                        //Full hit
+                        s_it->second.cline_ptr->setAge(0);
+                    } else {
+                        s_it->second.cline_ptr->setAddressLow(it->add_low);
+                        s_it->second.cline_ptr->setAddressHigh(it->add_high);
+                        s_it->second.cline_ptr->setIdxLow(it->idx_low);
+                        s_it->second.cline_ptr->setIdxHigh(it->idx_high);
+                        s_it->second.cline_ptr->setDataStructure(it->name);
+                        s_it->second.cline_ptr->setAge(0);
+                        s_it->second.age = 0; //!!decide on if to keep in struct
+                        s_it->second.tag = it->tag; //!!decide on if to keep in struct
+                        s_it->second.cline_ptr->setSector_one_filled(it->s0);
+                        s_it->second.cline_ptr->setSector_two_filled(it->s1);
+                        s_it->second.cline_ptr->setSector_three_filled(it->s2);
+                        s_it->second.cline_ptr->setSector_four_filled(it->s3);
+                        QColor color(Qt::green);
+                        s_it->second.cline_ptr->setColor(color);
+                        s_it->second.cline_ptr->update();
+                    }
                     found_data_on_write = true;
                     hit_tag = it->tag;
                 }
