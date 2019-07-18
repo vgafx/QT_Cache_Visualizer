@@ -27,6 +27,7 @@ CONFIG += c++11
 
 SOURCES += \
         cacheline.cpp \
+        cacherules.cpp \
         fileio.cpp \
         globals.cpp \
         main.cpp \
@@ -38,6 +39,7 @@ SOURCES += \
 
 HEADERS += \
         cacheline.h \
+        cacherules.h \
         cachevisualizer.h \
         fileio.h \
         globals.h \

@@ -44,6 +44,7 @@ std::list<update_line_info> threadBlock::getUpdateInfo(){
                 long long cur_ds_idx = instruction_stream.front().ds_idx;
                 int cur_sector_id = this->generateSectorIndex(cur_address);
                 int cur_set_id = this->generateSetIndex(cur_address);
+                int cur_line_tag = this->generateLineTag(cur_address);
                 bool s0 = false, s1 = false, s2 = false, s3 = false;
                 switch(cur_sector_id){
                     case 0: s0 = true; break;
@@ -52,12 +53,12 @@ std::list<update_line_info> threadBlock::getUpdateInfo(){
                     case 3: s3 = true; break;
                 }
                 if(uniq_entries.empty()){//Record the first update entry
-                    distinct_entries first_entry = {cur_set_id, cur_address, cur_address, cur_ds_idx, cur_ds_idx, s0, s1, s2, s3};
+                    distinct_entries first_entry = {cur_set_id, cur_line_tag, cur_address, cur_address, cur_ds_idx, cur_ds_idx, s0, s1, s2, s3};
                     uniq_entries.push_back(first_entry);
                 } else {
                     //Check whether we have already seen this set idx
                     for (size_t s = 0; s < uniq_entries.size(); s++) {
-                        if (cur_set_id == uniq_entries.at(s).set_id){ //If yes, Update min, max, and filled vectors
+                        if (cur_set_id == uniq_entries.at(s).set_id && cur_line_tag == uniq_entries.at(s).tag){ //If yes, Update min, max, and filled vectors
                             if (cur_address < uniq_entries.at(s).min_add){uniq_entries.at(s).min_add = cur_address;}
                             if (cur_address > uniq_entries.at(s).max_add){uniq_entries.at(s).max_add = cur_address;}
                             if (cur_ds_idx < uniq_entries.at(s).min_idx){uniq_entries.at(s).min_idx = cur_ds_idx;}
@@ -66,8 +67,8 @@ std::list<update_line_info> threadBlock::getUpdateInfo(){
                             if (s1 != uniq_entries.at(s).sec1){uniq_entries.at(s).sec1 = s1;}
                             if (s2 != uniq_entries.at(s).sec2){uniq_entries.at(s).sec2 = s2;}
                             if (s3 != uniq_entries.at(s).sec3){uniq_entries.at(s).sec3 = s3;}
-                        } else { //Encountered a new set index, so create a new entry
-                            distinct_entries n_entry = {cur_set_id, cur_address, cur_address, cur_ds_idx, cur_ds_idx, s0, s1, s2, s3};
+                        } else { //Encountered a new set index and tag, so create a new entry
+                            distinct_entries n_entry = {cur_set_id, cur_line_tag,cur_address, cur_address, cur_ds_idx, cur_ds_idx, s0, s1, s2, s3};
                             uniq_entries.push_back(n_entry);
 
                         }
@@ -79,11 +80,11 @@ std::list<update_line_info> threadBlock::getUpdateInfo(){
         }
 
         for (size_t o = 0; o < uniq_entries.size(); o++) {
-            update_line_info line_info = {uniq_entries.at(o).set_id, operation, name, uniq_entries.at(o).min_add, uniq_entries.at(o).max_add,
+            update_line_info line_info = {uniq_entries.at(o).set_id, uniq_entries.at(0).tag, operation, name, uniq_entries.at(o).min_add, uniq_entries.at(o).max_add,
                                           uniq_entries.at(o).min_idx, uniq_entries.at(o).max_idx, cycles, uniq_entries.at(o).sec0,
                                           uniq_entries.at(o).sec1, uniq_entries.at(o).sec2, uniq_entries.at(o).sec3};
-            printf("getUpdateInfo()-- SID: %d, OP: %d, NAME: %s, MINAD: %llu, MAXAD: %llu, MINIDX: %llu, MAXIDX: %llu, CYC: %llu, S0: %d,S1: %d,S2: %d,S3: %d\n",
-                   line_info.set_idx, line_info.oper, line_info.name.c_str(),line_info.add_low, line_info.add_high, line_info.idx_low, line_info.idx_high, line_info.cycles,
+            printf("getUpdateInfo()-- SID: %d, TAG: %d , OP: %d, NAME: %s, MINAD: %llu, MAXAD: %llu, MINIDX: %llu, MAXIDX: %llu, CYC: %llu, S0: %d,S1: %d,S2: %d,S3: %d\n",
+                   line_info.set_idx, line_info.tag, line_info.oper, line_info.name.c_str(),line_info.add_low, line_info.add_high, line_info.idx_low, line_info.idx_high, line_info.cycles,
                    line_info.s0, line_info.s1, line_info.s2, line_info.s3);
             ret_update_entries.push_back(line_info);
         }
@@ -95,7 +96,7 @@ std::list<update_line_info> threadBlock::getUpdateInfo(){
 
 
 void threadBlock::updateNextCycleCounter(){
-    if (!instruction_stream.empty()){
+    if (!instruction_stream.empty()){ //!!handle if not empty
         this->nextCycleVal = instruction_stream.front().cycles;
     }
 

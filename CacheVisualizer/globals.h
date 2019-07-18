@@ -98,6 +98,7 @@ struct input_entry{
 
 struct update_line_info{
     int set_idx;
+    int tag;
     int oper;
     std::string name;
     long long add_low;
@@ -117,6 +118,7 @@ struct update_line_info{
 
 struct distinct_entries{
     int set_id;
+    int tag;
     long long min_add;
     long long max_add;
     long long min_idx;

@@ -13,11 +13,12 @@ cacheline::cacheline(const QColor &color, int x, int y, int setID, statusControl
     this->set_idx = setID;
     this->age = 0;
     this->address_low=0;
-    this->address_high=127;
+    this->address_high=0;
     this->idx_low = 0;
-    this->idx_high = 31;
+    this->idx_high = 0;
     this->setDataStructure("DataAr");
     this->tag = 0;
+    this->is_empty = true;
     this->block_offest = 0;
     this->sts = in;
     this->flipAllSectors(0);
@@ -140,6 +141,50 @@ void cacheline::mousePressEvent(QGraphicsSceneMouseEvent *event)
     update();
 }
 
+bool cacheline::getSector_four_filled() const
+{
+    return sector_four_filled;
+}
+
+void cacheline::setSector_four_filled(bool value)
+{
+    sector_four_filled = value;
+}
+
+bool cacheline::getSector_three_filled() const
+{
+    return sector_three_filled;
+}
+
+void cacheline::setSector_three_filled(bool value)
+{
+    sector_three_filled = value;
+}
+
+bool cacheline::getSector_two_filled() const
+{
+    return sector_two_filled;
+}
+
+void cacheline::setSector_two_filled(bool value)
+{
+    sector_two_filled = value;
+}
+
+bool cacheline::getSector_one_filled() const
+{
+    return sector_one_filled;
+}
+
+void cacheline::setSector_one_filled(bool value)
+{
+    sector_one_filled = value;
+}
+
+void cacheline::incAge(){
+    this->age++;
+}
+
 void cacheline:: activateSector(int secID){
     switch (secID){
     case 1:
@@ -183,13 +228,44 @@ void cacheline::flipAllSectors(int on_off){
         this->sector_four_filled = 0;
     } else if(on_off == 1){
         this->sector_one_filled = 1;
-        this->sector_two_filled = 2;
-        this->sector_three_filled = 3;
-        this->sector_four_filled = 4;
+        this->sector_two_filled = 1;
+        this->sector_three_filled = 1;
+        this->sector_four_filled = 1;
     }
 }
 
 /*Setters & getters for the cacheline object*/
+
+
+long long cacheline::getIdxHigh() const
+{
+    return idx_high;
+}
+
+void cacheline::setIdxHigh(long long value)
+{
+    idx_high = value;
+}
+
+long long cacheline::getIdxLow() const
+{
+    return idx_low;
+}
+
+void cacheline::setIdxLow(long long value)
+{
+    idx_low = value;
+}
+
+bool cacheline::getIs_empty() const
+{
+    return is_empty;
+}
+
+void cacheline::setIs_empty(bool value)
+{
+    is_empty = value;
+}
 
 int cacheline::getAge(){
     return this->age;
@@ -199,19 +275,19 @@ void cacheline::setAge(int inAge){
     this->age = inAge;
 }
 
-void cacheline::setAddressLow(unsigned long long add_low){
+void cacheline::setAddressLow(long long add_low){
     this->address_low = add_low;
 }
 
-void cacheline::setAddressHigh(unsigned long long add_high){
+void cacheline::setAddressHigh(long long add_high){
     this->address_high = add_high;
 }
 
-unsigned long long cacheline::getAddressLow(){
+long long cacheline::getAddressLow(){
     return this->address_low;
 }
 
-unsigned long long cacheline::getAddressHigh(){
+long long cacheline::getAddressHigh(){
     return this->address_high;
 }
 

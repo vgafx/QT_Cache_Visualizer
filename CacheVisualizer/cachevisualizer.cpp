@@ -395,7 +395,7 @@ void CacheVisualizer::on_actionDebug_Action_triggered()
                                   81723146524, 81723146528, 81723146532, 81723146536, 81723146540, 81723146544, 81723146548,
                                   81723146552, 81723146556, 81723146560, 81723146564, 81723146568, 81723146572, 81723146576,
                                   81723146580, 81723146584, 81723146588, 81723146592, 81723146596, 81723146600, 81723146604,
-                                  81723146608, 81723146612, 81723146616, 81723146620, 81723670784};
+                                  81723146608, 81723146612, 81723146616, 81723146620, 81723146628,81723670784};
 
     for (size_t i = 0; i < test.size(); i++) {
         long long tmp_add = test.at(i);
@@ -435,10 +435,23 @@ void CacheVisualizer::on_actionNext_Step_triggered()
             //!!handle
             qDebug("No more instructions available\n");
             printf("No more instructions available\n");
+            QMessageBox::information(this, "Simulation Complete", "There are no more available instructions to simulate\nThe simulation is completed");
         } else {
+            //go through the update info returned by the threadblock
             for (auto it = visual_upd.begin(); it != visual_upd.end(); it++) {
+                //First check if it is read / write
+                if (it->oper == READ){
+
+                } else {
+
+
+                }
+
                 std::pair <std::multimap<int,cline_info>::iterator, std::multimap<int,cline_info>::iterator> ret;
                 ret = idx_map.equal_range(it->set_idx);
+                for (auto set_it = ret.first; set_it != ret.second; set_it++) {
+
+                }
 
 
             }
