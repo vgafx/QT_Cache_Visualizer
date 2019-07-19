@@ -123,9 +123,23 @@ void simulation::swapInactiveBlock(int retired_id){
 }
 
 
+bool simulation::isSimulationComplete(){
+    bool ret_val = true;
+    //if(!block_schedule.empty()){ret_val = false;}
+
+    for (auto it = blocks.begin(); it != blocks.end(); it++) {
+        if(!it->second.isFinished()){ret_val = false;}
+    }
+    //qDebug("isSimulationComplete(): %d\n", ret_val);
+    return ret_val;
+}
+
+
+
+
 int simulation::findNextInstructionFromBlocks(){
     long long min_cyc = LLONG_MAX;
-    int id = 0;
+    int id = EMPTY_RET;
     for (auto it = blocks.begin(); it != blocks.end(); it++) {
         if (it->second.getRunning()){
             if (it->second.getNextCycleVal() < min_cyc){
@@ -134,13 +148,19 @@ int simulation::findNextInstructionFromBlocks(){
             }
         }
     }
+    //qDebug("findNextInstructionFromBlocks() - ret: %d\n", id);
     return id;
 }
 
 std::list<update_line_info> simulation::getUpdateInfoFromBlock(){
     std::list<update_line_info> tmp_list;
     int block_id = this->findNextInstructionFromBlocks();
-    tmp_list = blocks.find(block_id)->second.getUpdateInfo();
+    if(block_id != EMPTY_RET){
+        //qDebug("getUpdateInfoFromBlock() - NOT EMPTY\n");
+        tmp_list = blocks.find(block_id)->second.getUpdateInfo();
+    } else {
+        //qDebug("getUpdateInfoFromBlock() - EMPTY!!\n");
+    }
 
     return tmp_list;
 }

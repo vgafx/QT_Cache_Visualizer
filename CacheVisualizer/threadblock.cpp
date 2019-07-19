@@ -28,8 +28,9 @@ threadBlock::threadBlock(int threadNum, int idx, int idy, int dim, int tx, int t
 /*Requires sorted instruction stream*/
 std::list<update_line_info> threadBlock::getUpdateInfo(){
     std::list<update_line_info> ret_update_entries;
-
+    //qDebug("getUpdateInfo() - Entered\n");
     if(!instruction_stream.empty()){
+        //qDebug("getUpdateInfo() - Stream Not Empty\n");
         int operation = instruction_stream.front().operation;
         std::string name = instruction_stream.front().ds_name;
         int wid = instruction_stream.front().warp_id;
@@ -37,9 +38,10 @@ std::list<update_line_info> threadBlock::getUpdateInfo(){
         int entries = std::min(warp_size, int(instruction_stream.size()));
 
         std::vector<distinct_entries> uniq_entries;
-
+        //qDebug("getUpdateInfo() - Looping for %d entries\n",entries);
         for (int i = 0; i < entries; i++) {
             if(wid == instruction_stream.front().warp_id && cycles == instruction_stream.front().cycles){
+                qDebug("Entry: %d\n", i);
                 long long cur_address = instruction_stream.front().address;
                 long long cur_ds_idx = instruction_stream.front().ds_idx;
                 int cur_sector_id = this->generateSectorIndex(cur_address);
@@ -53,38 +55,42 @@ std::list<update_line_info> threadBlock::getUpdateInfo(){
                     case 3: s3 = true; break;
                 }
                 if(uniq_entries.empty()){//Record the first update entry
+                    //qDebug("getUpdateInfo() - First Entry\n");
                     distinct_entries first_entry = {cur_set_id, cur_line_tag, cur_address, cur_address, cur_ds_idx, cur_ds_idx, s0, s1, s2, s3};
                     uniq_entries.push_back(first_entry);
-                } else {
-                    //Check whether we have already seen this set idx
+                } else {//Check whether we have already seen this set idx
+                    bool entry_exists = false;
                     for (size_t s = 0; s < uniq_entries.size(); s++) {
                         if (cur_set_id == uniq_entries.at(s).set_id && cur_line_tag == uniq_entries.at(s).tag){ //If yes, Update min, max, and filled vectors
+                            //qDebug("getUpdateInfo() - Entry already exists\n");
+                            entry_exists = true;
                             if (cur_address < uniq_entries.at(s).min_add){uniq_entries.at(s).min_add = cur_address;}
                             if (cur_address > uniq_entries.at(s).max_add){uniq_entries.at(s).max_add = cur_address;}
                             if (cur_ds_idx < uniq_entries.at(s).min_idx){uniq_entries.at(s).min_idx = cur_ds_idx;}
                             if (cur_ds_idx > uniq_entries.at(s).max_idx){uniq_entries.at(s).max_idx = cur_ds_idx;}
-                            if (s0 != uniq_entries.at(s).sec0){uniq_entries.at(s).sec0 = s0;}
-                            if (s1 != uniq_entries.at(s).sec1){uniq_entries.at(s).sec1 = s1;}
-                            if (s2 != uniq_entries.at(s).sec2){uniq_entries.at(s).sec2 = s2;}
-                            if (s3 != uniq_entries.at(s).sec3){uniq_entries.at(s).sec3 = s3;}
-                        } else { //Encountered a new set index and tag, so create a new entry
-                            distinct_entries n_entry = {cur_set_id, cur_line_tag,cur_address, cur_address, cur_ds_idx, cur_ds_idx, s0, s1, s2, s3};
-                            uniq_entries.push_back(n_entry);
-
+                            if (!uniq_entries.at(s).sec0 && s0){uniq_entries.at(s).sec0 = s0;}
+                            if (!uniq_entries.at(s).sec1 && s1){uniq_entries.at(s).sec1 = s1;}
+                            if (!uniq_entries.at(s).sec2 && s2){uniq_entries.at(s).sec2 = s2;}
+                            if (!uniq_entries.at(s).sec3 && s3){uniq_entries.at(s).sec3 = s3;}
                         }
                     }
+                    if(!entry_exists){//Encountered a new set index and tag, so create a new entry
+                        distinct_entries n_entry = {cur_set_id, cur_line_tag,cur_address, cur_address, cur_ds_idx, cur_ds_idx, s0, s1, s2, s3};
+                        uniq_entries.push_back(n_entry);
+                    }
                 }
+                //qDebug("getUpdateInfo() - poping front\n");
                 instruction_stream.pop_front();
             }
             //Instruction does not match the first picked instruction's wid & cycle counter
         }
-
+        qDebug("getUpdateInfo() - Creating update_line_info\n");
         for (size_t o = 0; o < uniq_entries.size(); o++) {
             update_line_info line_info = {uniq_entries.at(o).set_id, uniq_entries.at(0).tag, operation, name, uniq_entries.at(o).min_add, uniq_entries.at(o).max_add,
                                           uniq_entries.at(o).min_idx, uniq_entries.at(o).max_idx, cycles, uniq_entries.at(o).sec0,
                                           uniq_entries.at(o).sec1, uniq_entries.at(o).sec2, uniq_entries.at(o).sec3};
-            printf("getUpdateInfo()-- SID: %d, TAG: %d , OP: %d, NAME: %s, MINAD: %llu, MAXAD: %llu, MINIDX: %llu, MAXIDX: %llu, CYC: %llu, S0: %d,S1: %d,S2: %d,S3: %d\n",
-                   line_info.set_idx, line_info.tag, line_info.oper, line_info.name.c_str(),line_info.add_low, line_info.add_high, line_info.idx_low, line_info.idx_high, line_info.cycles,
+            qDebug("getUpdateInfo()-E:%lu- SID: %d, TAG: %d , OP: %d, NAME: %s, MINAD: %llu, MAXAD: %llu, MINIDX: %llu, MAXIDX: %llu, CYC: %llu, S0: %d,S1: %d,S2: %d,S3: %d\n",
+                   o,line_info.set_idx, line_info.tag, line_info.oper, line_info.name.c_str(),line_info.add_low, line_info.add_high, line_info.idx_low, line_info.idx_high, line_info.cycles,
                    line_info.s0, line_info.s1, line_info.s2, line_info.s3);
             ret_update_entries.push_back(line_info);
         }
@@ -98,8 +104,12 @@ std::list<update_line_info> threadBlock::getUpdateInfo(){
 void threadBlock::updateNextCycleCounter(){
     if (!instruction_stream.empty()){ //!!handle if not empty
         this->nextCycleVal = instruction_stream.front().cycles;
+    } else {
+        //qDebug("updateNextCycleCounter() EMPTY STREAM\n");
+        this->running = false;
+        this->retired = true;
+        this->nextCycleVal = LLONG_MAX;
     }
-
 }
 
 int threadBlock::generateSetIndex(long long address){

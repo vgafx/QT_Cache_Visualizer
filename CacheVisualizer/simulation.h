@@ -93,6 +93,7 @@ public:
 
 
     void swapInactiveBlock(int retired_id);
+    bool isSimulationComplete();
 private:
     int numBlocks;
     int blocks_x;

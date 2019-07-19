@@ -1,7 +1,8 @@
-#include "cachevisualizer.h"
+﻿#include "cachevisualizer.h"
 #include "ui_cachevisualizer.h"
 #include "globals.h"
 #include "cacheline.h"
+#include "cacherules.h"
 #include "view.h"
 #include "statuscontroller.h"
 #include "simulation.h"
@@ -201,7 +202,7 @@ void CacheVisualizer::on_actionStart_triggered()
         return;
     }
 
-    if (!sim_mode_selected){
+    if(!sim_mode_selected){
         QMessageBox::critical(this, "No Mode Selected", "The simulation mode is not set.\nSelect a simulation mode from the menu options before running a simulation");
         return;
     }
@@ -209,7 +210,7 @@ void CacheVisualizer::on_actionStart_triggered()
     mySim->sortAllBlockAccesses();
     mySim->prepareInitialBlocks();
 
-    if (sim_mode == 0){ //if autoplay
+    if(sim_mode == 0){ //if autoplay
 
     } else {
         QMessageBox::information(this, "Setup Completed", "The simulation has been set up in step-wise mode\nUse the Next Step option from this menu to proceed through it.");
@@ -222,6 +223,11 @@ void CacheVisualizer::on_actionStart_triggered()
 */
 void CacheVisualizer::on_actionPause_triggered()
 {
+    if(sim_mode == 1){
+        QMessageBox::information(this, "Not Applicable", "This option has no effect when the simulation is in step-wise mode.");
+    } else {
+
+    }
 
 }
 
@@ -230,7 +236,11 @@ void CacheVisualizer::on_actionPause_triggered()
 */
 void CacheVisualizer::on_actionStop_triggered()
 {
+    if(sim_mode == 1){
+        QMessageBox::information(this, "Not Applicable", "This option has no effect when the simulation is in step-wise mode.\nTo remove the current simulation data use the Clear option instead.");
+    } else {
 
+    }
 }
 
 /*Menu Bar Trigger
@@ -428,35 +438,22 @@ void CacheVisualizer::on_actionNext_Step_triggered()
     if(sim_mode_selected && sim_mode == 1){
         //Run the next simulation step
         printf("Taking sim step\n");
-        std::list<update_line_info> visual_upd;
-        visual_upd = mySim->getUpdateInfoFromBlock();
-
-        if (visual_upd.empty()){
-            //!!handle
-            qDebug("No more instructions available\n");
-            printf("No more instructions available\n");
-            QMessageBox::information(this, "Simulation Complete", "There are no more available instructions to simulate\nThe simulation is completed");
-        } else {
-            //go through the update info returned by the threadblock
-            for (auto it = visual_upd.begin(); it != visual_upd.end(); it++) {
-                //First check if it is read / write
-                if (it->oper == READ){
-
-                } else {
-
-
-                }
-
-                std::pair <std::multimap<int,cline_info>::iterator, std::multimap<int,cline_info>::iterator> ret;
-                ret = idx_map.equal_range(it->set_idx);
-                for (auto set_it = ret.first; set_it != ret.second; set_it++) {
-
-                }
-
-
-            }
-
-        }
-
+//        if(mySim->isSimulationComplete()){
+//            QMessageBox::information(this, "Simulation Complete", "There are no more available instructions to simulate\nThe simulation is completed");
+//        } else {
+//            std::list<update_line_info> visual_upd;
+//            visual_upd = mySim->getUpdateInfoFromBlock();
+//            while(visual_upd.empty()){
+//                visual_upd.clear();
+//                visual_upd = mySim->getUpdateInfoFromBlock();
+//            }
+//            updateSceneFromInfo(visual_upd);
+//        }
+    if(mySim->isSimulationComplete()){QMessageBox::information(this, "Simulation Complete", "There are no more available instructions to simulate\nThe simulation is completed");}
+    std::list<update_line_info> visual_upd;
+    visual_upd = mySim->getUpdateInfoFromBlock();
+    bool rcv_empty = visual_upd.empty();
+    qDebug("Next Step = is update list empty:%d\n", rcv_empty);
+    updateSceneFromInfo(visual_upd);
     }
 }
