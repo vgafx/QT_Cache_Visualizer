@@ -51,6 +51,7 @@ extern bool trace_loaded;
 extern bool config_loaded;
 extern bool sim_mode_selected;
 extern int sim_mode; //0=autoplay , 1= step wise
+extern bool start_flag;
 
 #define EMPTY_RET -1
 #define NO_RET -2
@@ -111,9 +112,6 @@ struct update_line_info{
     bool s2;
     bool s3;
 
-//    bool operator<(const update_line_info& a)const{
-//        return cycles < a.cycles;
-//    }
 };
 
 struct distinct_entries{

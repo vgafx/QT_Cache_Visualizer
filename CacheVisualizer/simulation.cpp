@@ -130,7 +130,6 @@ bool simulation::isSimulationComplete(){
     for (auto it = blocks.begin(); it != blocks.end(); it++) {
         if(!it->second.isFinished()){ret_val = false;}
     }
-    //qDebug("isSimulationComplete(): %d\n", ret_val);
     return ret_val;
 }
 
@@ -140,15 +139,34 @@ bool simulation::isSimulationComplete(){
 int simulation::findNextInstructionFromBlocks(){
     long long min_cyc = LLONG_MAX;
     int id = EMPTY_RET;
+    int cur_active_blocks = 0;
     for (auto it = blocks.begin(); it != blocks.end(); it++) {
         if (it->second.getRunning()){
+            cur_active_blocks++;
             if (it->second.getNextCycleVal() < min_cyc){
                 min_cyc = it->second.getNextCycleVal();
                 id = it->second.getMappedToSM();
             }
         }
     }
-    //qDebug("findNextInstructionFromBlocks() - ret: %d\n", id);
+
+    if(cur_active_blocks < num_sm){
+        if(!block_schedule.empty()){
+            int fresh_blocks = std::min(int(block_schedule.size()),(num_sm - current_active_blocks));
+            for (int i = 0; i < fresh_blocks; i++) {
+                int temp_id = block_schedule.front().sm_id;
+                blocks.find(temp_id)->second.setRunning(true);
+                if (blocks.find(temp_id)->second.getNextCycleVal() < min_cyc){
+                    min_cyc = blocks.find(temp_id)->second.getNextCycleVal();
+                    id = blocks.find(temp_id)->second.getMappedToSM();
+                }
+                block_schedule.pop_front();
+            }
+
+        }
+
+    }
+
     return id;
 }
 
@@ -156,10 +174,7 @@ std::list<update_line_info> simulation::getUpdateInfoFromBlock(){
     std::list<update_line_info> tmp_list;
     int block_id = this->findNextInstructionFromBlocks();
     if(block_id != EMPTY_RET){
-        //qDebug("getUpdateInfoFromBlock() - NOT EMPTY\n");
         tmp_list = blocks.find(block_id)->second.getUpdateInfo();
-    } else {
-        //qDebug("getUpdateInfoFromBlock() - EMPTY!!\n");
     }
 
     return tmp_list;

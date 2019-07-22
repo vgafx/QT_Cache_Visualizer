@@ -41,7 +41,6 @@ std::list<update_line_info> threadBlock::getUpdateInfo(){
         //qDebug("getUpdateInfo() - Looping for %d entries\n",entries);
         for (int i = 0; i < entries; i++) {
             if(wid == instruction_stream.front().warp_id && cycles == instruction_stream.front().cycles){
-                qDebug("Entry: %d\n", i);
                 long long cur_address = instruction_stream.front().address;
                 long long cur_ds_idx = instruction_stream.front().ds_idx;
                 int cur_sector_id = this->generateSectorIndex(cur_address);
@@ -105,7 +104,6 @@ void threadBlock::updateNextCycleCounter(){
     if (!instruction_stream.empty()){ //!!handle if not empty
         this->nextCycleVal = instruction_stream.front().cycles;
     } else {
-        //qDebug("updateNextCycleCounter() EMPTY STREAM\n");
         this->running = false;
         this->retired = true;
         this->nextCycleVal = LLONG_MAX;

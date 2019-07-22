@@ -39,7 +39,8 @@ bool simulation_done=false;
 bool trace_loaded=false;
 bool config_loaded=false;
 bool sim_mode_selected=false;
-extern int sim_mode=0;
+int sim_mode=0;
+bool start_flag=false;
 
 std::multimap<int, cline_info> idx_map;
 

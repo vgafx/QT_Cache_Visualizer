@@ -197,7 +197,6 @@ void CacheVisualizer::on_actionOpen_Trace_triggered()
 void CacheVisualizer::on_actionStart_triggered()
 {
     if(!trace_loaded){
-        //QMessageBox::error(this, "Warning", "Cannot Open file : ");
         QMessageBox::critical(this, "No Trace Data", "No Trace data were loaded for simulation.\nLoad a trace file first and try again");
         return;
     }
@@ -209,6 +208,7 @@ void CacheVisualizer::on_actionStart_triggered()
 
     mySim->sortAllBlockAccesses();
     mySim->prepareInitialBlocks();
+    start_flag = true;
 
     if(sim_mode == 0){ //if autoplay
 
@@ -434,21 +434,15 @@ void CacheVisualizer::on_actionManual_Step_wise_triggered()
 
 void CacheVisualizer::on_actionNext_Step_triggered()
 {
-    printf("Enter pressed\n");
+    if(!start_flag){
+        QMessageBox::warning(this, "Warning", "The Start menu option must be used before taking a simulation step, as it sets up crucial information!");
+        return;
+    }
+
     if(sim_mode_selected && sim_mode == 1){
         //Run the next simulation step
         printf("Taking sim step\n");
-//        if(mySim->isSimulationComplete()){
-//            QMessageBox::information(this, "Simulation Complete", "There are no more available instructions to simulate\nThe simulation is completed");
-//        } else {
-//            std::list<update_line_info> visual_upd;
-//            visual_upd = mySim->getUpdateInfoFromBlock();
-//            while(visual_upd.empty()){
-//                visual_upd.clear();
-//                visual_upd = mySim->getUpdateInfoFromBlock();
-//            }
-//            updateSceneFromInfo(visual_upd);
-//        }
+
     if(mySim->isSimulationComplete()){QMessageBox::information(this, "Simulation Complete", "There are no more available instructions to simulate\nThe simulation is completed");}
     std::list<update_line_info> visual_upd;
     visual_upd = mySim->getUpdateInfoFromBlock();
