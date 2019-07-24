@@ -211,6 +211,14 @@ void CacheVisualizer::on_actionStart_triggered()
     start_flag = true;
 
     if(sim_mode == 0){ //if autoplay
+        while(mySim->isSimulationComplete() == false){
+            std::list<update_line_info> visual_upd;
+            visual_upd = mySim->getUpdateInfoFromBlock();
+            if(!visual_upd.empty()){
+                updateSceneFromInfo(visual_upd);
+            }
+        }
+    QMessageBox::information(this, "Simulation Completed", "The simulation has been completed. The reults can now be printed");
 
     } else {
         QMessageBox::information(this, "Setup Completed", "The simulation has been set up in step-wise mode\nUse the Next Step option from this menu to proceed through it.");

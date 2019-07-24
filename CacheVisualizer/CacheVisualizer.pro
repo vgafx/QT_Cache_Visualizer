@@ -33,6 +33,7 @@ SOURCES += \
         main.cpp \
         cachevisualizer.cpp \
         simulation.cpp \
+        statistics.cpp \
         statuscontroller.cpp \
         threadblock.cpp \
         view.cpp
@@ -45,6 +46,7 @@ HEADERS += \
         globals.h \
         main.h \
         simulation.h \
+        statistics.h \
         statuscontroller.h \
         threadblock.h \
         view.h
