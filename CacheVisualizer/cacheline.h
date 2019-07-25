@@ -53,6 +53,11 @@ public:
     void setSector_four_filled(bool value);
 
     void incAge();
+    void setFilledOnEmpty();
+    void displayEviction();
+    void displayHit();
+    void displayPartialHit();
+    void displayMiss();
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 

@@ -102,19 +102,6 @@ void cacheline::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         painter->drawText(170, 340, QString("Set Index: %1").arg(set_idx));
         painter->restore();
     }
-
-
-//    if (stuff.size() > 1) {
-//        QPen p = painter->pen();
-//        painter->setPen(QPen(Qt::red, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-//        painter->setBrush(Qt::NoBrush);
-//        QPainterPath path;
-//        path.moveTo(stuff.first());
-//        for (int i = 1; i < stuff.size(); ++i)
-//            path.lineTo(stuff.at(i));
-//        painter->drawPath(path);
-//        painter->setPen(p);
-//    }
 }
 
 
@@ -140,6 +127,32 @@ void cacheline::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
     update();
 }
+
+/*UI Object visual updaters*/
+void cacheline::setFilledOnEmpty(){
+    //??
+}
+
+void cacheline::displayEviction(){
+    QColor color(Qt::red);
+
+}
+
+void cacheline::displayHit(){
+    QColor color(Qt::red);
+
+}
+
+void cacheline::displayPartialHit(){
+    QColor color(Qt::red);
+
+}
+
+void cacheline::displayMiss(){
+    QColor color(Qt::red);
+
+}
+
 
 bool cacheline::getSector_four_filled() const
 {
@@ -234,9 +247,9 @@ void cacheline::flipAllSectors(int on_off){
     }
 }
 
+
+
 /*Setters & getters for the cacheline object*/
-
-
 long long cacheline::getIdxHigh() const
 {
     return idx_high;
