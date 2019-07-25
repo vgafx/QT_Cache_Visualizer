@@ -11,4 +11,6 @@ public:
 };
 
 void updateSceneFromInfo(std::list<update_line_info> up_info, statistics *stat_out);
+
+void updateSceneFromInfoNonSectored(std::list<update_line_info> up_info, statistics *stat_out);
 #endif // CACHERULES_H
