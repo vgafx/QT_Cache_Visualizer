@@ -1,5 +1,6 @@
 #include "cacherules.h"
 #include "globals.h"
+#include "statistics.h"
 
 #include <list>
 #include <map>
@@ -14,7 +15,7 @@ cacherules::cacherules()
 
 
 //!!Include a non-sectored version of this function
-void updateSceneFromInfo(std::list<update_line_info> up_info){
+void updateSceneFromInfo(std::list<update_line_info> up_info, statistics *stat_out){
     bool found_data_on_read = false, found_data_on_write = false, detected_empy_cline = false;
     bool read_once = true, write_once = true;
     int oldest_age = INT_MIN, oldest_tag = 0;
@@ -26,6 +27,7 @@ void updateSceneFromInfo(std::list<update_line_info> up_info){
     }
 
     for (auto it = up_info.begin(); it != up_info.end(); it++) { //For all the update entry returned by the threadblock
+        stat_out->incMemRequests();
         if(it->oper == READ){
             read_once = true;
             ret = idx_map.equal_range(it->set_idx);
@@ -35,10 +37,12 @@ void updateSceneFromInfo(std::list<update_line_info> up_info){
                     if(set_it->second.cline_ptr->getSector_one_filled() == it->s0 && set_it->second.cline_ptr->getSector_two_filled() == it->s1
                             && set_it->second.cline_ptr->getSector_three_filled() == it->s2 && set_it->second.cline_ptr->getSector_four_filled() == it->s3){
                         //Full hit
+                        stat_out->recordReadFullHit();
                         set_it->second.cline_ptr->setAge(0);
                         //qDebug("Full Read Hit\n");
                     } else {
                         //qDebug("Partial Read Hit\n");
+                        stat_out->recordReadPartialHit();
                         if (it->add_low < set_it->second.cline_ptr->getAddressLow()) {set_it->second.cline_ptr->setAddressLow(it->add_low);}
                         if (it->add_high > set_it->second.cline_ptr->getAddressHigh()) {set_it->second.cline_ptr->setAddressHigh(it->add_high);}
                         if (it->idx_low < set_it->second.cline_ptr->getIdxLow()) {set_it->second.cline_ptr->setIdxLow(it->idx_low);}
@@ -89,6 +93,7 @@ void updateSceneFromInfo(std::list<update_line_info> up_info){
                 for (auto r_it = ret.first; r_it != ret.second; r_it++) {
                     if(r_it->second.cline_ptr->getIs_empty() && read_once){
                         qDebug("Read Miss\n");
+                        stat_out->recordReadMiss();
                         r_it->second.cline_ptr->setTag(it->tag);
                         r_it->second.cline_ptr->setAddressLow(it->add_low);
                         r_it->second.cline_ptr->setAddressHigh(it->add_high);
@@ -116,6 +121,7 @@ void updateSceneFromInfo(std::list<update_line_info> up_info){
                     for (auto re_it = ret.first; re_it != ret.second; re_it++) {
                         if(re_it->second.cline_ptr->getTag() == oldest_tag){
                             qDebug("Read Miss + Evict\n");
+                            stat_out->recordReadMiss();
                             re_it->second.cline_ptr->setTag(it->tag);
                             re_it->second.cline_ptr->setAddressLow(it->add_low);
                             re_it->second.cline_ptr->setAddressHigh(it->add_high);
@@ -151,10 +157,12 @@ void updateSceneFromInfo(std::list<update_line_info> up_info){
                     if(s_it->second.cline_ptr->getSector_one_filled() == it->s0 && s_it->second.cline_ptr->getSector_two_filled() == it->s1
                             && s_it->second.cline_ptr->getSector_three_filled() == it->s2 && s_it->second.cline_ptr->getSector_four_filled() == it->s3){
                         //Full hit
+                        stat_out->recordWriteFullHit();
                         s_it->second.cline_ptr->setAge(0);
                         //qDebug("Full Write Hit\n");
                     } else {
                         //qDebug("Partial Write Hit\n");
+                        stat_out->recordWritePartialHit();
                         if (it->add_low < s_it->second.cline_ptr->getAddressLow()) {s_it->second.cline_ptr->setAddressLow(it->add_low);}
                         if (it->add_high > s_it->second.cline_ptr->getAddressHigh()) {s_it->second.cline_ptr->setAddressHigh(it->add_high);}
                         if (it->idx_low < s_it->second.cline_ptr->getIdxLow()) {s_it->second.cline_ptr->setIdxLow(it->idx_low);}
@@ -204,6 +212,7 @@ void updateSceneFromInfo(std::list<update_line_info> up_info){
                 for (auto w_it = ret.first; w_it != ret.second; w_it++) {
                     if(w_it->second.cline_ptr->getIs_empty() && write_once){
                         //qDebug("Write Miss\n");
+                        stat_out->recordWriteMiss();
                         w_it->second.cline_ptr->setTag(it->tag);
                         w_it->second.cline_ptr->setAddressLow(it->add_low);
                         w_it->second.cline_ptr->setAddressHigh(it->add_high);
@@ -231,6 +240,7 @@ void updateSceneFromInfo(std::list<update_line_info> up_info){
                 for (auto we_it = ret.first; we_it != ret.second; we_it++) {
                     if(we_it->second.cline_ptr->getTag() == oldest_tag){
                         //qDebug("Write Miss + Evict\n");
+                        stat_out->recordWriteMiss();
                         we_it->second.cline_ptr->setTag(it->tag);
                         we_it->second.cline_ptr->setAddressLow(it->add_low);
                         we_it->second.cline_ptr->setAddressHigh(it->add_high);

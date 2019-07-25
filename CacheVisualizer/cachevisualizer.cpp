@@ -33,7 +33,8 @@ CacheVisualizer::CacheVisualizer(QWidget *parent) :
     l2View->view()->setScene(scene);
     l2View->show();
     setCentralWidget(l2View);
-    mySim = new simulation();
+    mySim = new simulation(); //!!Remember to destruct these objects at the end or on reset...
+    myStatistics = new statistics();
 
     //autoplay
     m_e_group = new QActionGroup(this);

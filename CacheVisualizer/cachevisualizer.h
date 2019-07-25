@@ -13,6 +13,7 @@
 #include "view.h"
 #include "statuscontroller.h"
 #include "simulation.h"
+#include "statistics.h"
 
 class QGraphicsScene;
 class QSplitter;
@@ -28,6 +29,7 @@ class CacheVisualizer : public QMainWindow
 public:
     statusController *stsC;
     simulation *mySim;
+    statistics *myStatistics;
     explicit CacheVisualizer(QWidget *parent = nullptr);
     ~CacheVisualizer();
 
@@ -62,7 +64,7 @@ private slots:
 
 private:
     Ui::CacheVisualizer *ui;
-    QString currentFile="";
+    QString currentFile=""; //!!why is this here?
     QGraphicsScene *scene;
     View *l2View;
     QActionGroup *m_e_group;

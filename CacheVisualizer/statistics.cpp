@@ -17,6 +17,11 @@ statistics::statistics()
 }
 
 QString statistics::getStatisticsOutput(){
+    QString results = QString("Simulation Results\n Total Memory Requests Issued: %1\nTotal Full Hits: %2\nTotal Partial Hits: %3"
+                              "\nTotal Misses: %4\nRead-Write Statistics\n---------------------------\n"
+                              "Read Full Hits: %5\nRead Partial Hits: %6\nRead Misses: %7\nWrite Full Hits: %8\nWrite Partial Hits: %9\nWrite Misses: %10")
+            .arg(this->total_mem_requests).arg(this->total_full_hits).arg(this->total_partial_hits).arg(this->total_misses).arg(this->r_full_hits).arg(this->r_partial_hits)
+            .arg(this->r_misses_total).arg(this->w_full_hits).arg(this->w_partial_hits).arg(this->w_misses_total);
 
     return this->output;
 }
