@@ -1,3 +1,4 @@
+/*Simple class for recording simulation statistics(cache hits/misses, etc...)*/
 #include "statistics.h"
 
 statistics::statistics()
@@ -61,7 +62,7 @@ void statistics::incMemRequests(){
     this->total_mem_requests++;
 }
 
-
+/*Default Setters & Getters*/
 int statistics::getR_misses_total() const
 {
     return r_misses_total;

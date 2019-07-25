@@ -1,4 +1,5 @@
-﻿#include "cachevisualizer.h"
+﻿/*The main UI class. Handles all user actions*/
+#include "cachevisualizer.h"
 #include "ui_cachevisualizer.h"
 #include "globals.h"
 #include "cacheline.h"

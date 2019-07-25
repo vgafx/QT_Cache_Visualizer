@@ -1,3 +1,5 @@
+/*Class for representing the simulation that the tool runs.
+  It acts as a parent object to the threadblocks*/
 #include "simulation.h"
 #include "globals.h"
 #include "threadblock.h"
@@ -107,6 +109,7 @@ void simulation::prepareInitialBlocks(){
     }
 }
 
+//!!remove
 void simulation::swapInactiveBlock(int retired_id){
     blocks.find(retired_id)->second.setRunning(false);
     blocks.find(retired_id)->second.setRetired(true);
@@ -183,7 +186,7 @@ std::list<update_line_info> simulation::getUpdateInfoFromBlock(){
 
 
 
-
+/*Input & Setup*/
 void simulation::mapAccessToBlock(int in_tx, int in_ty, int in_bx, int in_by, int in_wid, std::string in_dsname, int in_oper, long long in_idx, long long in_address, long long in_cycles){
     for (auto it = blocks.begin(); it != blocks.end(); ++it) {
         if (in_bx == it->second.getBlockIdX() && in_by == it->second.getBlockIdY()){

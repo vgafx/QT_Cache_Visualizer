@@ -1,3 +1,10 @@
+/*Software abstaction for the concept of the threadblock.
+  Multiple instances of this object are created, based on the trace input.
+  Each threadblock is constructed with a container that holds the memory requests
+  issued by it during the actual execution. The concept of the warp is not modeled
+  within the threadblock. Instead, this object comes with functions that re-arrange
+  memory requests as if they are issued by warps.*/
+
 #include "threadblock.h"
 #include "globals.h"
 
@@ -6,7 +13,7 @@
 #include <cmath>
 
 
-
+/*Constructor*/
 threadBlock::threadBlock(int threadNum, int idx, int idy, int dim, int tx, int ty, int sm, int bmask)
 {
     this->numThreads = threadNum;
@@ -25,7 +32,8 @@ threadBlock::threadBlock(int threadNum, int idx, int idy, int dim, int tx, int t
 }
 
 
-/*Requires sorted instruction stream*/
+/*Returns a list of mem accesses, constructed with the visual update in mind.
+ *At most 'warp size' entries are returned per call(Requires sorted instruction stream)*/
 std::list<update_line_info> threadBlock::getUpdateInfo(){
     std::list<update_line_info> ret_update_entries;
     //qDebug("getUpdateInfo() - Entered\n");
@@ -110,12 +118,13 @@ void threadBlock::updateNextCycleCounter(){
     }
 }
 
+
+/*Cache Mapping functions (3)*/
 int threadBlock::generateSetIndex(long long address){
     long long temp_address = address >> BLOCK_OFFSET_BITS;
     temp_address &= this->bit_mask;
     return int(temp_address);
 }
-
 
 int threadBlock::generateSectorIndex(long long address){
     long long tmp_address = address & (line_size-1);
@@ -128,10 +137,18 @@ int threadBlock::generateLineTag(long long address){
     return temp_address >>= int(log2(num_sets_l2));
 }
 
+
+/*Misc*/
 bool threadBlock::isFinished(){
     return (instruction_stream.empty()) ? true : false;
 }
 
+void threadBlock::clearAllData(){
+    instruction_stream.clear();
+}
+
+
+/*Input reading & setup*/
 void threadBlock::addAccessToLocalList(int in_tx, int in_ty, int in_wid, std::string in_dsname, int in_oper, long long in_idx, long long in_address, long long in_cycles){
     mem_acc_list access_entry{in_tx, in_ty, in_wid, in_dsname, in_oper, in_idx, in_address, in_cycles};
     instruction_stream.push_back(access_entry);
@@ -142,16 +159,12 @@ void threadBlock::sortAccessEntries(){
     this->updateNextCycleCounter();
 }
 
+/*Debug function*/
 void threadBlock::printInstructionStream(){
     printf("-----BLOCK----: %d", this->blockIdX);
     for (it = instruction_stream.begin(); it != instruction_stream.end(); it++) {
         printf("TX: %d TY: %d W: %d DS: %s OP: %d IDX: %llu ADD: %llu CYC: %llu\n", it->l_tx, it->l_ty, it->warp_id, it->ds_name.c_str(), it->operation, it->ds_idx, it->address, it->cycles);
     }
-}
-
-void threadBlock::clearAllData(){
-    //this->running = false;
-    instruction_stream.clear();
 }
 
 /*Setters and Getters*/

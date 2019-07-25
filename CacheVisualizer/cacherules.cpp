@@ -1,3 +1,4 @@
+/*Functions implementing cache functionality(checking if a mem request is a hit/miss, handling eviction, etc...)*/
 #include "cacherules.h"
 #include "globals.h"
 #include "statistics.h"

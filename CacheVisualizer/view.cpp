@@ -1,4 +1,5 @@
-/*Implements the viewing functionality of the application*/
+/*Implements the viewing functionality of the application.
+  Handles the zoom in/out, sliders and appends the extra widgets to the main window*/
 #include "view.h"
 #ifndef QT_NO_OPENGL
 #include <QtOpenGL>

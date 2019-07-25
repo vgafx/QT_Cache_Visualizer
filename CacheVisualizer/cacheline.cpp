@@ -1,4 +1,4 @@
-
+/*Class that implements the UI cacheline objects*/
 #include <QtWidgets>
 #include <QToolTip>
 #include "view.h"

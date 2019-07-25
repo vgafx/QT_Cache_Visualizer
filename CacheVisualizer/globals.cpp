@@ -1,3 +1,4 @@
+/*Configuration variables with global scope*/
 #include "globals.h"
 
 /*Init with Titanx configuration on default*/
