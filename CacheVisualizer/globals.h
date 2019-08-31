@@ -31,6 +31,8 @@ extern int l1_load_granularity;
 extern int l2_load_granularity;
 extern std::string architecture;
 extern std::string chip;
+extern int worker_delay;
+extern int global_latency;
 extern int data_type_bytes; //!! add to config
 
 extern bool missingConfigAttribute;
@@ -46,6 +48,7 @@ extern int bytes_in_set_l1;
 extern int num_sets_l1;
 extern int num_clines_l1;
 
+extern int block_offset_bits;
 extern bool simulation_done;
 extern bool trace_loaded;
 extern bool config_loaded;
@@ -59,6 +62,8 @@ extern bool start_flag;
 #define READ 0
 #define WRITE 1
 
+#define MASK_5bit 31
+#define MASK_6bit 63
 #define MASK_7bit 127
 #define MASK_8bit 255
 #define MASK_9bit 511

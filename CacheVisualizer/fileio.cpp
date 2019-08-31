@@ -45,7 +45,8 @@ void initConfigMap(){
     config_att["global"] = 0;
     config_att["l2size"] = 0;
     config_att["l1size"] = 0;
-
+    config_att["autodelay"]=0;
+    config_att["globallatency"]=0;
 }
 
 void readConfig(){
@@ -118,6 +119,12 @@ void readConfig(){
             } else if(attribute=="l1size"){
                 l1_size = std::stoi(value);
                 config_att["l1size"] = 1;
+            } else if(attribute=="globallatency"){
+                global_latency = std::stoi(value);
+                config_att["globallatency"] = 1;
+            } else if(attribute=="autodelay"){
+                worker_delay = std::stoi(value);
+                config_att["autodelay"] = 1;
             } else {
                 printf("Unknown Option\n");
             }
@@ -214,7 +221,11 @@ bool readConfigFromQstream(QTextStream &configData){
                 l2_size = std::stoi(val);
             } else if(att=="l1size"){
                 l1_size = std::stoi(val);
-            } else {
+            } else if(att=="globallatency"){
+                global_latency = std::stoi(val);
+            } else if(att=="autodelay"){
+                worker_delay = std::stoi(val);
+            }else {
                 printf("Unknown Option\n");
             }
         }
@@ -334,30 +345,31 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
                 }
                 if (line.isEmpty() || line.at(0) == '+'){continue;}
                 QStringList linesplit = line.split(",");
-                if (linesplit.size() != 9){
+                if (linesplit.size() != 7){
                     traceData.flush();
                     qDebug("RF6\n");
                     return false;
                 } else {
-                    int tx = linesplit[0].toInt();
-                    int ty = linesplit[1].toInt();
-                    QStringList b_info = linesplit[2].split('-');
+                    //!!changed here
+                    //int tx = linesplit[0].toInt();
+                    //int ty = linesplit[1].toInt();
+                    QStringList b_info = linesplit[0].split('-');
                     int blockx = b_info[0].toInt();
                     int blocky = b_info[1].toInt();
-                    int wid = linesplit[3].toInt();
-                    std::string dsn = linesplit[4].toStdString();
-                    std::string s_op = linesplit[5].toStdString();
+                    int wid = linesplit[1].toInt();
+                    std::string dsn = linesplit[2].toStdString();
+                    std::string s_op = linesplit[3].toStdString();
                     int operation;
                     if (s_op == "R"){
                         operation = READ;
                     } else if (s_op == "W"){
                         operation = WRITE;
                     }
-                    long long ds_idx = linesplit[6].toLongLong();
-                    long long address = linesplit[7].toLongLong();
-                    long long cycles = linesplit[8].toLongLong();
+                    long long ds_idx = linesplit[4].toLongLong();
+                    long long address = linesplit[5].toLongLong();
+                    long long cycles = linesplit[6].toLongLong();
                     //qDebug("Map\n");
-                    sim->mapAccessToBlock(tx, ty, blockx, blocky, wid, dsn, operation, ds_idx, address, cycles);
+                    sim->mapAccessToBlock(wid, wid, blockx, blocky, wid, dsn, operation, ds_idx, address, cycles);
                     //qDebug("Map F\n");
                 }
             }
@@ -365,7 +377,6 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
 
     }//end of trace reading
     //qDebug("Finished reading from QStream");
-    //!!Maybe sort outside of this function?
     //sim->sortAllBlockAccesses();
     //sim->printBlockAccessLists();
     //sim->printBlocks();

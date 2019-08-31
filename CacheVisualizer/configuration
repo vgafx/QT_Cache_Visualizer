@@ -59,4 +59,8 @@ writepolicy=1
 #1 : write allocate (in L2)
 l1loadgranularity=128
 l2loadgranularity=32
+#autoplay delay in milliseconds
+autodelay=200
+#global latency in cycles
+globallatency=400
 

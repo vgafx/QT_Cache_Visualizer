@@ -173,7 +173,7 @@ void CacheVisualizer::on_actionOpen_Trace_triggered()
 
     QString trace_fname = QFileDialog::getOpenFileName(this, tr("Open trace"), "", tr("Trace Files (*.trc)"));
     QFile file(trace_fname);
-    currentFile = trace_fname;
+    //currentFile = trace_fname;
     if(!file.open(QIODevice::ReadOnly | QFile::Text)){
         QMessageBox::critical(this, "Warning", "Cannot Open file : " + file.errorString());
         return;
@@ -382,25 +382,22 @@ void CacheVisualizer::createStatusBar(){
     statusBar()->showMessage(tr("Ready"));
 }
 
+/*Public Slots (2)*/
 void CacheVisualizer::updateStatusBar(QString sts){
     statusBar()->showMessage(sts);
 }
 
+void CacheVisualizer::handleWorkerThreadUpdate(std::list<update_line_info> wrk_upd)
+{
+    //!!sectored?
+    updateSceneFromInfo(wrk_upd, myStatistics);
 
+}
 
 
 void CacheVisualizer::on_actionDebug_Action_triggered()
 {
     printf("Debug Functionality\n");
-    //multimap<int, cline_info>::iterator it;
-//    for(int si=0; si<num_sets_l2; si++){
-//        std::pair <std::multimap<int,cline_info>::iterator, std::multimap<int,cline_info>::iterator> ret;
-//        ret = idx_map.equal_range(si);
-//        for (std::multimap<int,cline_info>::iterator it = ret.first; it!=ret.second; it++){
-//            cacheline *temp = it->second.cline_ptr;
-//            temp->setAge(10);
-//        }
-//    }
     std::pair <std::multimap<int,cline_info>::iterator, std::multimap<int,cline_info>::iterator> ret;
     ret = idx_map.equal_range(0);
     for (std::multimap<int,cline_info>::iterator it = ret.first; it!=ret.second; it++){
@@ -418,13 +415,17 @@ void CacheVisualizer::on_actionDebug_Action_triggered()
                                   81723146580, 81723146584, 81723146588, 81723146592, 81723146596, 81723146600, 81723146604,
                                   81723146608, 81723146612, 81723146616, 81723146620, 81723146628,81723670784};
 
+        for (int i=128; i<4096;i+=32) {
+            int results = int(log2(i));
+            printf("i is %d - log2: %d \n",i,results);
+        }
     for (size_t i = 0; i < test.size(); i++) {
         long long tmp_add = test.at(i);
         long long set_idx = tmp_add >> BLOCK_OFFSET_BITS;
 
         long long tag = set_idx >> 12;
         set_idx &= MASK_12bit;
-        printf("Element %d, Add: %llu, Set_ID: %d, Tag_ID:%d\n", i, test.at(i), set_idx, tag);
+        //printf("Element %d, Add: %llu, Set_ID: %d, Tag_ID:%d\n", i, test.at(i), set_idx, tag);
 
     }
 

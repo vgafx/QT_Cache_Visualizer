@@ -64,7 +64,7 @@ private slots:
 
 private:
     Ui::CacheVisualizer *ui;
-    QString currentFile=""; //!!why is this here?
+    //QString currentFile=""; //!!why is this here?
     QGraphicsScene *scene;
     View *l2View;
     QActionGroup *m_e_group;
@@ -76,6 +76,7 @@ private:
     void createStatusBar();
 public slots:
     void updateStatusBar(QString sts);
+    void handleWorkerThreadUpdate(std::list<update_line_info> wrk_upd);
 };
 
 #endif // CACHEVISUALIZER_H

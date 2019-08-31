@@ -7,6 +7,7 @@
 #include "globals.h"
 #include "threadblock.h"
 
+/*Constructor*/
 simulation::simulation()
 {
     this->stopFlag = false;
@@ -22,12 +23,11 @@ simulation::simulation()
     this->blocks_z = 0;
     this->current_active_blocks = 0;
     this->isRunning = false;
-
-    //!!Need to make this safe...
     int result = int(log2(num_sets_l2));
-    //printf("S BITS: %.2f \n", result);
 
     switch (result) {
+        case 5: this->bit_mask = MASK_5bit; break;
+        case 6: this->bit_mask = MASK_6bit; break;
         case 7: this->bit_mask = MASK_7bit; break;
         case 8: this->bit_mask = MASK_8bit; break;
         case 9: this->bit_mask = MASK_9bit; break;
@@ -64,6 +64,88 @@ void simulation::cleanAll(){
     this->blocks_z = 0;
 }
 
+/*Runtime functions (4)*/
+void simulation::prepareInitialBlocks(){
+    int max_blocks = std::min(num_sm, int(block_schedule.size()));
+    int first_blocks = 0;
+    for (auto it = block_schedule.begin(); it != block_schedule.end(); it++) {
+        if (first_blocks < max_blocks){
+            blocks.find(it->sm_id)->second.setRunning(true);
+            first_blocks++;
+        }
+    }
+    for (int i = 0; i < first_blocks; i++) {
+        block_schedule.pop_front();
+    }
+}
+
+bool simulation::isSimulationComplete(){
+    bool ret_val = true;
+    for (auto it = blocks.begin(); it != blocks.end(); it++) {
+        if(!it->second.isFinished()){ret_val = false;}
+    }
+    return ret_val;
+}
+
+int simulation::findNextInstructionFromBlocks(){
+    long long min_cyc = LLONG_MAX;
+    int id = EMPTY_RET;
+    int cur_active_blocks = 0;
+    for (auto it = blocks.begin(); it != blocks.end(); it++) {
+        if (it->second.getRunning()){
+            cur_active_blocks++;
+            if (it->second.getNextCycleVal() < min_cyc){
+                min_cyc = it->second.getNextCycleVal();
+                id = it->second.getMappedToSM();
+            }
+        }
+    }
+
+    if(cur_active_blocks < num_sm){
+        if(!block_schedule.empty()){
+            int fresh_blocks = std::min(int(block_schedule.size()),(num_sm - current_active_blocks));
+            for (int i = 0; i < fresh_blocks; i++) {
+                int temp_id = block_schedule.front().sm_id;
+                blocks.find(temp_id)->second.setRunning(true);
+                if (blocks.find(temp_id)->second.getNextCycleVal() < min_cyc){
+                    min_cyc = blocks.find(temp_id)->second.getNextCycleVal();
+                    id = blocks.find(temp_id)->second.getMappedToSM();
+                }
+                block_schedule.pop_front();
+            }
+        }
+    }
+
+    return id;
+}
+
+
+std::list<update_line_info> simulation::getUpdateInfoFromBlock(){
+    std::list<update_line_info> tmp_list;
+    int block_id = this->findNextInstructionFromBlocks();
+    if(block_id != EMPTY_RET){
+        tmp_list = blocks.find(block_id)->second.getUpdateInfo();
+    }
+
+    return tmp_list;
+}
+
+
+
+/*Input & Setup functions (6)*/
+void simulation::mapAccessToBlock(int in_tx, int in_ty, int in_bx, int in_by, int in_wid, std::string in_dsname, int in_oper, long long in_idx, long long in_address, long long in_cycles){
+    for (auto it = blocks.begin(); it != blocks.end(); ++it) {
+        if (in_bx == it->second.getBlockIdX() && in_by == it->second.getBlockIdY()){
+            it->second.addAccessToLocalList(in_tx, in_ty, in_wid, in_dsname, in_oper, in_idx, in_address, in_cycles);
+        }
+    }
+}
+
+void simulation::sortAllBlockAccesses(){
+    for (auto it = blocks.begin(); it != blocks.end(); ++it){
+        it->second.sortAccessEntries();
+    }
+}
 
 void simulation::addScheduleEntry(int bx, int by, int sm, long long t){
     schedule_entry entry{bx, by, sm, t};
@@ -93,95 +175,6 @@ void simulation::generateBlocks(){
     }
     this->numBlocks = count;
 }
-
-
-void simulation::prepareInitialBlocks(){
-    int max_blocks = std::min(num_sm, int(block_schedule.size()));
-    int first_blocks = 0;
-    for (auto it = block_schedule.begin(); it != block_schedule.end(); it++) {
-        if (first_blocks < max_blocks){
-            blocks.find(it->sm_id)->second.setRunning(true);
-            first_blocks++;
-        }
-    }
-    for (int i = 0; i < first_blocks; i++) {
-        block_schedule.pop_front();
-    }
-}
-
-bool simulation::isSimulationComplete(){
-    bool ret_val = true;
-    //if(!block_schedule.empty()){ret_val = false;}
-
-    for (auto it = blocks.begin(); it != blocks.end(); it++) {
-        if(!it->second.isFinished()){ret_val = false;}
-    }
-    return ret_val;
-}
-
-
-
-int simulation::findNextInstructionFromBlocks(){
-    long long min_cyc = LLONG_MAX;
-    int id = EMPTY_RET;
-    int cur_active_blocks = 0;
-    for (auto it = blocks.begin(); it != blocks.end(); it++) {
-        if (it->second.getRunning()){
-            cur_active_blocks++;
-            if (it->second.getNextCycleVal() < min_cyc){
-                min_cyc = it->second.getNextCycleVal();
-                id = it->second.getMappedToSM();
-            }
-        }
-    }
-
-    if(cur_active_blocks < num_sm){
-        if(!block_schedule.empty()){
-            int fresh_blocks = std::min(int(block_schedule.size()),(num_sm - current_active_blocks));
-            for (int i = 0; i < fresh_blocks; i++) {
-                int temp_id = block_schedule.front().sm_id;
-                blocks.find(temp_id)->second.setRunning(true);
-                if (blocks.find(temp_id)->second.getNextCycleVal() < min_cyc){
-                    min_cyc = blocks.find(temp_id)->second.getNextCycleVal();
-                    id = blocks.find(temp_id)->second.getMappedToSM();
-                }
-                block_schedule.pop_front();
-            }
-
-        }
-
-    }
-
-    return id;
-}
-
-std::list<update_line_info> simulation::getUpdateInfoFromBlock(){
-    std::list<update_line_info> tmp_list;
-    int block_id = this->findNextInstructionFromBlocks();
-    if(block_id != EMPTY_RET){
-        tmp_list = blocks.find(block_id)->second.getUpdateInfo();
-    }
-
-    return tmp_list;
-}
-
-
-
-/*Input & Setup*/
-void simulation::mapAccessToBlock(int in_tx, int in_ty, int in_bx, int in_by, int in_wid, std::string in_dsname, int in_oper, long long in_idx, long long in_address, long long in_cycles){
-    for (auto it = blocks.begin(); it != blocks.end(); ++it) {
-        if (in_bx == it->second.getBlockIdX() && in_by == it->second.getBlockIdY()){
-            it->second.addAccessToLocalList(in_tx, in_ty, in_wid, in_dsname, in_oper, in_idx, in_address, in_cycles);
-        }
-    }
-}
-
-void simulation::sortAllBlockAccesses(){
-    for (auto it = blocks.begin(); it != blocks.end(); ++it){
-        it->second.sortAccessEntries();
-    }
-}
-
 
 /*Debug Functions*/
 void simulation::printBlocks(){

@@ -1,5 +1,6 @@
 /*Configuration variables with global scope*/
 #include "globals.h"
+#include "math.h"
 
 /*Init with Titanx configuration on default*/
 std::string name="GTX TitanX";
@@ -22,6 +23,8 @@ int l1_load_granularity=128;
 int l2_load_granularity=32;
 std::string architecture="2nd generation Maxwell";
 std::string chip="GM200-400-A1";
+int worker_delay=200;
+int global_latency=400;
 int data_type_bytes=4;//!!Add this in config file
 
 bool missingConfigAttribute = false;
@@ -36,6 +39,7 @@ int bytes_in_set_l1;
 int num_sets_l1;
 int num_clines_l1;
 
+int block_offset_bits;
 bool simulation_done=false;
 bool trace_loaded=false;
 bool config_loaded=false;
@@ -90,4 +94,5 @@ void computeConfig(){
     num_clines_l1 = l1_size / line_size;
     num_sets_l1 = num_clines_l1 / way_size_l1;
     bytes_in_set_l1 = way_size_l1 * line_size;
+    block_offset_bits = int(log2(line_size));
 }
