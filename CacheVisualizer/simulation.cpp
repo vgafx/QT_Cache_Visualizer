@@ -1,12 +1,11 @@
 /*Class for representing the simulation that the tool runs.
   It acts as a parent object to the threadblocks*/
-#include "simulation.h"
-#include "globals.h"
-#include "threadblock.h"
 #include <algorithm>
 #include <string>
 #include <cmath>
-
+#include "simulation.h"
+#include "globals.h"
+#include "threadblock.h"
 
 simulation::simulation()
 {
@@ -27,6 +26,7 @@ simulation::simulation()
     //!!Need to make this safe...
     int result = int(log2(num_sets_l2));
     //printf("S BITS: %.2f \n", result);
+
     switch (result) {
         case 7: this->bit_mask = MASK_7bit; break;
         case 8: this->bit_mask = MASK_8bit; break;
@@ -45,8 +45,8 @@ simulation::simulation()
 
 void simulation::cleanAll(){
     block_schedule.clear();
-    for (b_it=blocks.begin(); b_it!=blocks.end(); ++b_it){
-        b_it->second.clearAllData();
+    for (auto it=blocks.begin(); it!=blocks.end(); ++it){
+        it->second.clearAllData();
     }
 
     blocks.clear();
@@ -109,23 +109,6 @@ void simulation::prepareInitialBlocks(){
     }
 }
 
-//!!remove
-void simulation::swapInactiveBlock(int retired_id){
-    blocks.find(retired_id)->second.setRunning(false);
-    blocks.find(retired_id)->second.setRetired(true);
-
-    if(block_schedule.empty()){ //No more blocks to schedule
-        //!! handle this
-    } else {
-        for (auto it = block_schedule.begin(); it != block_schedule.end(); it++) {
-            if (it->sm_id == retired_id){
-                blocks.find(it->sm_id)->second.setRunning(true);
-            }
-        }
-    }
-}
-
-
 bool simulation::isSimulationComplete(){
     bool ret_val = true;
     //if(!block_schedule.empty()){ret_val = false;}
@@ -135,7 +118,6 @@ bool simulation::isSimulationComplete(){
     }
     return ret_val;
 }
-
 
 
 
@@ -185,7 +167,6 @@ std::list<update_line_info> simulation::getUpdateInfoFromBlock(){
 
 
 
-
 /*Input & Setup*/
 void simulation::mapAccessToBlock(int in_tx, int in_ty, int in_bx, int in_by, int in_wid, std::string in_dsname, int in_oper, long long in_idx, long long in_address, long long in_cycles){
     for (auto it = blocks.begin(); it != blocks.end(); ++it) {
@@ -200,6 +181,7 @@ void simulation::sortAllBlockAccesses(){
         it->second.sortAccessEntries();
     }
 }
+
 
 /*Debug Functions*/
 void simulation::printBlocks(){

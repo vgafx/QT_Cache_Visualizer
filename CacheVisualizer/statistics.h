@@ -3,14 +3,12 @@
 
 #include <QString>
 
-
-
 class statistics
 {
 public:
     statistics();
 
-
+    /*Default setters and getters*/
     int getR_misses_total() const;
     void setR_misses_total(int value);
 
@@ -41,6 +39,7 @@ public:
     int getTotal_mem_requests() const;
     void setTotal_mem_requests(int value);
 
+    /*Custom Functions*/
     void incMemRequests();
     void recordReadMiss();
     void recordReadFullHit();
@@ -50,6 +49,7 @@ public:
     void recordWriteFullHit();
     void estimateTotals();
     QString getStatisticsOutput();
+
 private:
     int r_misses_total;
     int w_misses_total;
@@ -61,9 +61,7 @@ private:
     int total_partial_hits;
     int total_full_hits;
     int total_mem_requests;
-
     QString output;
-
 
 };
 

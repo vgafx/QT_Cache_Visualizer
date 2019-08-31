@@ -73,15 +73,17 @@ extern bool start_flag;
 
 #define BLOCK_OFFSET_BITS 7
 
-
+/*Used by the idx_map to store the pointers to the visual objects*/
 struct cline_info{
     cacheline *cline_ptr;
-    int tag;
+    int tag; //!!Could remove these and store the pointers directly
     int age;
 };
 
+/*The following multimap holds the pointers to the cacheline visual objects*/
 extern std::multimap<int, cline_info> idx_map;
 
+/*Struct to be used by the threadblock containers that hold the trace input*/
 struct input_entry{
     int idx;
     int idy;
@@ -97,6 +99,7 @@ struct input_entry{
     unsigned long long cycles;
 };
 
+/*This kind of struct is returned to and read by the cacherules functions.*/
 struct update_line_info{
     int set_idx;
     int tag;
@@ -114,6 +117,8 @@ struct update_line_info{
 
 };
 
+/*Struct for temporary use before creating update_line_info type structs.
+  Used by the threadblock class*/
 struct distinct_entries{
     int set_id;
     int tag;
@@ -122,10 +127,8 @@ struct distinct_entries{
     long long min_idx;
     long long max_idx;
     bool sec0, sec1, sec2, sec3;
+    long long cycles;
 };
-
-
-
 
 
 class globals

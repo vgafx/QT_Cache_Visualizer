@@ -14,7 +14,6 @@ public:
 
 extern std::map<std::string,int> config_att;
 
-
 void readConfig();
 bool readConfigFromQstream(QTextStream &stream);
 bool readTraceDataFromQstream(QTextStream &stream, simulation *sim);

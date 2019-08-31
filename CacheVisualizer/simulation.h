@@ -7,7 +7,6 @@
 
 class simulation
 {
-
     struct schedule_entry{
         int block_id_x;
         int block_id_y;
@@ -21,14 +20,15 @@ class simulation
 
 public:
     simulation();
+
     std::list<schedule_entry> block_schedule;
     std::list<schedule_entry>::iterator it;
     std::multimap<int, threadBlock> blocks;
-    std::multimap<int, threadBlock>::iterator b_it; //wierd behaviour using this. Maybe remove.
 
-
+    /*Custom functions*/
     void cleanAll();
     void sortSchedulingEntries();
+    void prepareInitialBlocks();
     void addScheduleEntry(int bx, int by, int sm, long long t);
     void mapAccessToBlock(int in_tx, int in_ty, int in_bx, int in_by, int in_wid, std::string in_dsname, int in_oper, long long in_idx, long long in_address, long long in_cycles);
     void configureDims();
@@ -36,7 +36,12 @@ public:
     void printBlocks();
     void sortAllBlockAccesses();
     void printBlockAccessLists();
+    void printSchedule();
+    int findNextInstructionFromBlocks();
+    bool isSimulationComplete();
+    std::list<update_line_info> getUpdateInfoFromBlock();
 
+    /*Auto-generated getters and setters*/
     int getNumBlocks() const;
     void setNumBlocks(int value);
 
@@ -82,18 +87,9 @@ public:
     int getBit_mask() const;
     void setBit_mask(int value);
 
-    void prepareInitialBlocks();
     bool getIsRunning() const;
     void setIsRunning(bool value);
 
-    void printSchedule();
-
-    int findNextInstructionFromBlocks();
-    std::list<update_line_info> getUpdateInfoFromBlock();
-
-
-    void swapInactiveBlock(int retired_id);
-    bool isSimulationComplete();
 private:
     int numBlocks;
     int blocks_x;

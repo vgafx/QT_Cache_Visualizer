@@ -1,9 +1,8 @@
-#include "cachevisualizer.h"
 #include <QApplication>
-
 #include <string>
 #include "fileio.h"
 #include "globals.h"
+#include "cachevisualizer.h"
 
 int main(int argc, char *argv[])
 {
@@ -16,6 +15,7 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
     //a.setWindowIcon(QIcon(":App.png"));
+
     CacheVisualizer w;
     w.show();
 

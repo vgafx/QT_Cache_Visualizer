@@ -10,13 +10,13 @@
 #include <QObject>
 #include <random>
 
-
+//!!Could change this to a non-class file.
 cacherules::cacherules()
 {
 }
 
 
-//!!Include a non-sectored version of this function
+//!!TODO:Include latency(~200ms on R/W cache hits)
 void updateSceneFromInfo(std::list<update_line_info> up_info, statistics *stat_out){
     bool found_data_on_read = false, found_data_on_write = false, detected_empy_cline = false;
     bool read_once = true, write_once = true;
@@ -28,7 +28,7 @@ void updateSceneFromInfo(std::list<update_line_info> up_info, statistics *stat_o
         qDebug("Update Line Passed empty to cache rules\n");
     }
 
-    for (auto it = up_info.begin(); it != up_info.end(); it++) { //For all the update entry returned by the threadblock
+    for (auto it = up_info.begin(); it != up_info.end(); it++) { //For all the update entries returned by the threadblock
         stat_out->incMemRequests();
         if(it->oper == READ){
             read_once = true;

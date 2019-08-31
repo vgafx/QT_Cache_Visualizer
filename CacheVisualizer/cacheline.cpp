@@ -128,23 +128,26 @@ void cacheline::mousePressEvent(QGraphicsSceneMouseEvent *event)
     update();
 }
 
+//!!Instead of manually setting the colors in cacherules call these.
 /*UI Object visual updaters*/
 void cacheline::setFilledOnEmpty(){
     //??
 }
 
 void cacheline::displayEviction(){
-    QColor color(Qt::red);
-
+    QColor evict_color(Qt::red);
+    this->setColor(evict_color);
+    QColor fresh_line_color(Qt::darkGreen);
+    this->setColor(fresh_line_color);
 }
 
 void cacheline::displayHit(){
-    QColor color(Qt::red);
-
+    QColor color(Qt::green);
+    this->setColor(color);
 }
 
 void cacheline::displayPartialHit(){
-    QColor color(Qt::red);
+    QColor color(Qt::green);
 
 }
 
@@ -153,6 +156,142 @@ void cacheline::displayMiss(){
 
 }
 
+/*Custom functions*/
+void cacheline::incAge(){
+    this->age++;
+}
+
+void cacheline:: activateSector(int secID){
+    switch (secID){
+    case 1:
+        this->sector_one_filled = true;
+        break;
+    case 2:
+        this->sector_two_filled = true;
+        break;
+    case 3:
+        this->sector_three_filled = true;
+        break;
+    case 4:
+        this->sector_four_filled = true;
+        break;
+    }
+}
+
+void cacheline:: invalidateSector(int secID){
+    switch (secID){
+    case 1:
+        this->sector_one_filled = false;
+        break;
+    case 2:
+        this->sector_two_filled = false;
+        break;
+    case 3:
+        this->sector_three_filled = false;
+        break;
+    case 4:
+        this->sector_four_filled = false;
+        break;
+    }
+}
+
+void cacheline::flipAllSectors(int on_off){
+    if(on_off == 0){
+        this->sector_one_filled = 0;
+        this->sector_two_filled = 0;
+        this->sector_three_filled = 0;
+        this->sector_four_filled = 0;
+    } else if(on_off == 1){
+        this->sector_one_filled = 1;
+        this->sector_two_filled = 1;
+        this->sector_three_filled = 1;
+        this->sector_four_filled = 1;
+    }
+}
+
+
+/*Setters & getters for the cacheline object*/
+long long cacheline::getIdxHigh() const
+{
+    return idx_high;
+}
+
+void cacheline::setIdxHigh(long long value)
+{
+    idx_high = value;
+}
+
+long long cacheline::getIdxLow() const
+{
+    return idx_low;
+}
+
+void cacheline::setIdxLow(long long value)
+{
+    idx_low = value;
+}
+
+bool cacheline::getIs_empty() const
+{
+    return is_empty;
+}
+
+void cacheline::setIs_empty(bool value)
+{
+    is_empty = value;
+}
+
+int cacheline::getAge()const{
+    return this->age;
+}
+
+void cacheline::setAge(int inAge){
+    this->age = inAge;
+}
+
+void cacheline::setAddressLow(long long add_low){
+    this->address_low = add_low;
+}
+
+void cacheline::setAddressHigh(long long add_high){
+    this->address_high = add_high;
+}
+
+long long cacheline::getAddressLow()const{
+    return this->address_low;
+}
+
+long long cacheline::getAddressHigh()const{
+    return this->address_high;
+}
+
+void cacheline::setTag(int in_tag){
+    this->tag = in_tag;
+}
+
+int cacheline::getTag()const{
+    return this->tag;
+}
+
+void cacheline::setBlockOffset(int b_offset){
+    this->block_offest = b_offset;
+}
+
+int cacheline::getBlockOffset()const{
+    return this->block_offest;
+}
+
+void cacheline::setDataStructure(std::string d_name){
+    this->data_structure = d_name;
+}
+
+std::string cacheline::getDataStructure()const{
+    return this->data_structure;
+}
+
+void cacheline::setColor(const QColor &color){
+    this->color = color;
+}
 
 bool cacheline::getSector_four_filled() const
 {
@@ -192,142 +331,4 @@ bool cacheline::getSector_one_filled() const
 void cacheline::setSector_one_filled(bool value)
 {
     sector_one_filled = value;
-}
-
-void cacheline::incAge(){
-    this->age++;
-}
-
-void cacheline:: activateSector(int secID){
-    switch (secID){
-    case 1:
-        this->sector_one_filled = true;
-        break;
-    case 2:
-        this->sector_two_filled = true;
-        break;
-    case 3:
-        this->sector_three_filled = true;
-        break;
-    case 4:
-        this->sector_four_filled = true;
-        break;
-    }
-}
-
-
-void cacheline:: invalidateSector(int secID){
-    switch (secID){
-    case 1:
-        this->sector_one_filled = false;
-        break;
-    case 2:
-        this->sector_two_filled = false;
-        break;
-    case 3:
-        this->sector_three_filled = false;
-        break;
-    case 4:
-        this->sector_four_filled = false;
-        break;
-    }
-}
-
-void cacheline::flipAllSectors(int on_off){
-    if(on_off == 0){
-        this->sector_one_filled = 0;
-        this->sector_two_filled = 0;
-        this->sector_three_filled = 0;
-        this->sector_four_filled = 0;
-    } else if(on_off == 1){
-        this->sector_one_filled = 1;
-        this->sector_two_filled = 1;
-        this->sector_three_filled = 1;
-        this->sector_four_filled = 1;
-    }
-}
-
-
-
-/*Setters & getters for the cacheline object*/
-long long cacheline::getIdxHigh() const
-{
-    return idx_high;
-}
-
-void cacheline::setIdxHigh(long long value)
-{
-    idx_high = value;
-}
-
-long long cacheline::getIdxLow() const
-{
-    return idx_low;
-}
-
-void cacheline::setIdxLow(long long value)
-{
-    idx_low = value;
-}
-
-bool cacheline::getIs_empty() const
-{
-    return is_empty;
-}
-
-void cacheline::setIs_empty(bool value)
-{
-    is_empty = value;
-}
-
-int cacheline::getAge(){
-    return this->age;
-}
-
-void cacheline::setAge(int inAge){
-    this->age = inAge;
-}
-
-void cacheline::setAddressLow(long long add_low){
-    this->address_low = add_low;
-}
-
-void cacheline::setAddressHigh(long long add_high){
-    this->address_high = add_high;
-}
-
-long long cacheline::getAddressLow(){
-    return this->address_low;
-}
-
-long long cacheline::getAddressHigh(){
-    return this->address_high;
-}
-
-void cacheline::setTag(int in_tag){
-    this->tag = in_tag;
-}
-
-int cacheline::getTag(){
-    return this->tag;
-}
-
-void cacheline::setBlockOffset(int b_offset){
-    this->block_offest = b_offset;
-}
-
-int cacheline::getBlockOffset(){
-    return this->block_offest;
-}
-
-void cacheline::setDataStructure(std::string d_name){
-    this->data_structure = d_name;
-}
-
-std::string cacheline::getDataStructure(){
-    return this->data_structure;
-}
-
-void cacheline::setColor(const QColor &color){
-    this->color = color;
 }

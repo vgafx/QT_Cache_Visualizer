@@ -26,6 +26,7 @@ CONFIG += c++11
 
 
 SOURCES += \
+        backgroundworker.cpp \
         cacheline.cpp \
         cacherules.cpp \
         fileio.cpp \
@@ -39,6 +40,7 @@ SOURCES += \
         view.cpp
 
 HEADERS += \
+        backgroundworker.h \
         cacheline.h \
         cacherules.h \
         cachevisualizer.h \

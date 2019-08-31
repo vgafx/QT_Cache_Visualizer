@@ -144,7 +144,10 @@ void CacheVisualizer::on_actionExit_triggered()
 {
     printf("Exit Option Pressed\n");
     //!!Maybe clean up before quitting
-    //
+    mySim->cleanAll();
+    //!!Verify that the object destructors work
+    myStatistics->~statistics();
+    mySim->~simulation();
     QApplication::quit();
     exit(0);
 }
@@ -176,8 +179,7 @@ void CacheVisualizer::on_actionOpen_Trace_triggered()
         return;
     }
     QTextStream in(&file);
-    //QString text = in.readAll();
-    //!! Do something with the trace data
+
     bool result = readTraceDataFromQstream(in, mySim);
     if(result){
         printf("Trace file read succesfully\n!");
@@ -212,12 +214,13 @@ void CacheVisualizer::on_actionStart_triggered()
     mySim->prepareInitialBlocks();
     start_flag = true;
 
+    //!!Launch the worker thread here
     if(sim_mode == 0){ //if autoplay
         while(mySim->isSimulationComplete() == false){
             std::list<update_line_info> visual_upd;
             visual_upd = mySim->getUpdateInfoFromBlock();
             if(!visual_upd.empty()){
-                updateSceneFromInfo(visual_upd);
+                updateSceneFromInfo(visual_upd, myStatistics);
             }
         }
     QMessageBox::information(this, "Simulation Completed", "The simulation has been completed. The reults can now be printed");
@@ -231,6 +234,7 @@ void CacheVisualizer::on_actionStart_triggered()
 /*Menu Bar Trigger
   Pauses the simulation
 */
+//!!Activate flag for worker thread
 void CacheVisualizer::on_actionPause_triggered()
 {
     if(sim_mode == 1){
@@ -261,7 +265,6 @@ void CacheVisualizer::on_actionClear_triggered()
     idx_map.clear();
     scene->clear();
     //populateScene();
-    //populateSceneSectored();
     populateSceneNormal();
     l2View->view()->setScene(scene);
 
@@ -366,7 +369,9 @@ void CacheVisualizer::on_actionSave_Simulation_Results_triggered()
         }
         QTextStream out(&file);
         //!! fill QString text with output data
-        QString text = "test";
+        QString text = "";
+        //!!Debug this
+        text = myStatistics->getStatisticsOutput();
         out << text;
         file.close();
 
@@ -374,14 +379,10 @@ void CacheVisualizer::on_actionSave_Simulation_Results_triggered()
 }
 
 void CacheVisualizer::createStatusBar(){
-    //lineEditStatusBar.setReadOnly(true);
-    //statusBar()->addPermanentWidget(&lineEditStatusBar);
     statusBar()->showMessage(tr("Ready"));
 }
 
 void CacheVisualizer::updateStatusBar(QString sts){
-    //stsC->setStatusText(sts);
-    //lineEditStatusBar.setText(sts);
     statusBar()->showMessage(sts);
 }
 
@@ -458,6 +459,6 @@ void CacheVisualizer::on_actionNext_Step_triggered()
     visual_upd = mySim->getUpdateInfoFromBlock();
     bool rcv_empty = visual_upd.empty();
     qDebug("Next Step = is update list empty:%d\n", rcv_empty);
-    updateSceneFromInfo(visual_upd);
+    updateSceneFromInfo(visual_upd, myStatistics);
     }
 }

@@ -1,13 +1,12 @@
 /*Implements the viewing functionality of the application.
   Handles the zoom in/out, sliders and appends the extra widgets to the main window*/
-#include "view.h"
 #ifndef QT_NO_OPENGL
 #include <QtOpenGL>
 #else
 #include <QtWidgets>
 #endif
 #include <qmath.h>
-
+#include "view.h"
 
 #if QT_CONFIG(wheelevent)
 void GraphicsView::wheelEvent(QWheelEvent *e)
@@ -23,7 +22,6 @@ void GraphicsView::wheelEvent(QWheelEvent *e)
     }
 }
 #endif
-
 
 
 View::View(const QString &name, QWidget *parent) : QFrame(parent)
@@ -82,8 +80,6 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent)
     pointerModeGroup->addButton(selectModeButton);
     pointerModeGroup->addButton(dragModeButton);
 
-    //idxLabel = new QLabel("Set Index: 0 - Visual Coordinates (col-row): 0x0");
-
     labelLayout->addWidget(label);
     labelLayout->addStretch();
     labelLayout->addWidget(label2);
@@ -96,7 +92,6 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent)
     topLayout->addWidget(graphicsView, 1, 0);
     topLayout->addLayout(zoomSliderLayout, 1, 1);
     topLayout->addWidget(resetButton, 2, 1);
-    //topLayout->addWidget(idxLabel, 2, 0);
     setLayout(topLayout);
 
     connect(resetButton, &QAbstractButton::clicked, this, &View::resetView);
@@ -152,11 +147,6 @@ void View::togglePointerMode()
                               : QGraphicsView::ScrollHandDrag);
     graphicsView->setInteractive(selectModeButton->isChecked());
 }
-
-//void View::renewLabels(int set, int x, int y){
-   // QString lbl = QString("Set Index: %1 - Visual Coordinates (col-row): %2x%3").arg(set).arg(x).arg(y);
-    //idxLabel->setText(lbl);
-//}
 
 void View::zoomIn(int level)
 {

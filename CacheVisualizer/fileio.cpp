@@ -13,6 +13,8 @@
 
 #define FILENAME "configuration"
 
+//!!TODO: Add a L2 latency field in the config file and while reading the config setup
+
 using namespace std;
 
 std::map<std::string,int> config_att;
@@ -21,6 +23,7 @@ std::map<std::string,int> config_att;
 fileIO::fileIO()
 {
 }
+
 
 
 void initConfigMap(){

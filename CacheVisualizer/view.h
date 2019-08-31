@@ -38,7 +38,6 @@ public slots:
     void zoomOut(int level = 1);
     void zoomInPressed();
     void zoomOutPressed();
-    //void renewLabels(int set, int x, int y);
 private slots:
     void resetView();
     void setResetButtonEnabled();
@@ -49,15 +48,11 @@ private:
     GraphicsView *graphicsView;
     QLabel *label;
     QLabel *label2;
-    //QLabel *idxLabel;
     QToolButton *selectModeButton;
     QToolButton *dragModeButton;
     QToolButton *resetButton;
     QSlider *zoomSlider;
 };
-
-
-
 
 
 #endif

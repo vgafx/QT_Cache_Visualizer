@@ -4,14 +4,11 @@
   issued by it during the actual execution. The concept of the warp is not modeled
   within the threadblock. Instead, this object comes with functions that re-arrange
   memory requests as if they are issued by warps.*/
-
-#include "threadblock.h"
-#include "globals.h"
-
 #include <climits>
 #include <algorithm>
 #include <cmath>
-
+#include "threadblock.h"
+#include "globals.h"
 
 /*Constructor*/
 threadBlock::threadBlock(int threadNum, int idx, int idy, int dim, int tx, int ty, int sm, int bmask)
@@ -29,6 +26,8 @@ threadBlock::threadBlock(int threadNum, int idx, int idy, int dim, int tx, int t
     this->running = false;
     this->nextCycleVal =0;
     this->bit_mask = bmask;
+    //!!Debug for safety
+    this->tag_line_offset = int(log2(num_sets_l2));
 }
 
 
@@ -51,6 +50,7 @@ std::list<update_line_info> threadBlock::getUpdateInfo(){
             if(wid == instruction_stream.front().warp_id && cycles == instruction_stream.front().cycles){
                 long long cur_address = instruction_stream.front().address;
                 long long cur_ds_idx = instruction_stream.front().ds_idx;
+                long long cur_cycles = instruction_stream.front().cycles;
                 int cur_sector_id = this->generateSectorIndex(cur_address);
                 int cur_set_id = this->generateSetIndex(cur_address);
                 int cur_line_tag = this->generateLineTag(cur_address);
@@ -63,7 +63,7 @@ std::list<update_line_info> threadBlock::getUpdateInfo(){
                 }
                 if(uniq_entries.empty()){//Record the first update entry
                     //qDebug("getUpdateInfo() - First Entry\n");
-                    distinct_entries first_entry = {cur_set_id, cur_line_tag, cur_address, cur_address, cur_ds_idx, cur_ds_idx, s0, s1, s2, s3};
+                    distinct_entries first_entry = {cur_set_id, cur_line_tag, cur_address, cur_address, cur_ds_idx, cur_ds_idx, s0, s1, s2, s3,cur_cycles};
                     uniq_entries.push_back(first_entry);
                 } else {//Check whether we have already seen this set idx
                     bool entry_exists = false;
@@ -82,11 +82,10 @@ std::list<update_line_info> threadBlock::getUpdateInfo(){
                         }
                     }
                     if(!entry_exists){//Encountered a new set index and tag, so create a new entry
-                        distinct_entries n_entry = {cur_set_id, cur_line_tag,cur_address, cur_address, cur_ds_idx, cur_ds_idx, s0, s1, s2, s3};
+                        distinct_entries n_entry = {cur_set_id, cur_line_tag,cur_address, cur_address, cur_ds_idx, cur_ds_idx, s0, s1, s2, s3,cur_cycles};
                         uniq_entries.push_back(n_entry);
                     }
                 }
-                //qDebug("getUpdateInfo() - poping front\n");
                 instruction_stream.pop_front();
             }
             //Instruction does not match the first picked instruction's wid & cycle counter
@@ -94,7 +93,7 @@ std::list<update_line_info> threadBlock::getUpdateInfo(){
         qDebug("getUpdateInfo() - Creating update_line_info\n");
         for (size_t o = 0; o < uniq_entries.size(); o++) {
             update_line_info line_info = {uniq_entries.at(o).set_id, uniq_entries.at(0).tag, operation, name, uniq_entries.at(o).min_add, uniq_entries.at(o).max_add,
-                                          uniq_entries.at(o).min_idx, uniq_entries.at(o).max_idx, cycles, uniq_entries.at(o).sec0,
+                                          uniq_entries.at(o).min_idx, uniq_entries.at(o).max_idx, uniq_entries.at(o).cycles, uniq_entries.at(o).sec0,
                                           uniq_entries.at(o).sec1, uniq_entries.at(o).sec2, uniq_entries.at(o).sec3};
             qDebug("getUpdateInfo()-E:%lu- SID: %d, TAG: %d , OP: %d, NAME: %s, MINAD: %llu, MAXAD: %llu, MINIDX: %llu, MAXIDX: %llu, CYC: %llu, S0: %d,S1: %d,S2: %d,S3: %d\n",
                    o,line_info.set_idx, line_info.tag, line_info.oper, line_info.name.c_str(),line_info.add_low, line_info.add_high, line_info.idx_low, line_info.idx_high, line_info.cycles,
@@ -134,7 +133,8 @@ int threadBlock::generateSectorIndex(long long address){
 int threadBlock::generateLineTag(long long address){
     //!!Needs work
     long long temp_address = address >> BLOCK_OFFSET_BITS;
-    return temp_address >>= int(log2(num_sets_l2));
+    //!!Verify that >>= works
+    return int(temp_address >>= this->tag_line_offset);
 }
 
 

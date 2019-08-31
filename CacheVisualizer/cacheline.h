@@ -12,24 +12,38 @@ public:
     cacheline(const QColor &color, int x, int y, int setID, statusController *in);
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
+    statusController *sts;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) override;
     void setColor(const QColor &color);
-    int getAge();
-    void setAge(int age);
     void activateSector(int sector);
     void invalidateSector(int secID);
     void flipAllSectors(int onoff);
-    void setAddressLow(long long addlow);
-    void setAddressHigh(long long addhigh);
-    long long getAddressLow();
-    long long getAddressHigh();
-    void setTag(int tag);
+    void incAge();
+    void setFilledOnEmpty();
+    void displayEviction();
+    void displayHit();
+    void displayPartialHit();
+    void displayMiss();
+
+
+    /*Setters and getters*/
+    int getBlockOffset() const;
     void setBlockOffset(int bf);
+
+    int getAge() const;
+    void setAge(int age);
+
+    int getTag() const;
+    void setTag(int tag);
+
+    std::string getDataStructure() const;
     void setDataStructure(std::string ds);
-    int getTag();
-    int getBlockOffset();
-    std::string getDataStructure();
-    statusController *sts;
+
+    long long getAddressLow() const;
+    void setAddressLow(long long addlow);
+
+    long long getAddressHigh() const;
+    void setAddressHigh(long long addhigh);
 
     bool getIs_empty() const;
     void setIs_empty(bool value);
@@ -52,16 +66,9 @@ public:
     bool getSector_four_filled() const;
     void setSector_four_filled(bool value);
 
-    void incAge();
-    void setFilledOnEmpty();
-    void displayEviction();
-    void displayHit();
-    void displayPartialHit();
-    void displayMiss();
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 
-//Maybe make coords publicaly accessible?
 private:
     int x;
     int y;

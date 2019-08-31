@@ -4,11 +4,7 @@
 #include <list>
 #include <map>
 #include <vector>
-
 #include "globals.h"
-
-//declare
-
 
 class threadBlock
 {
@@ -32,14 +28,8 @@ public:
     threadBlock(int threadNum, int idx, int idy, int dim, int tx, int ty, int sm, int bmask);
     std::list<mem_acc_list> instruction_stream;
     std::list<mem_acc_list>::iterator it;
-    //std::map<int, warp> warp_list;
-    //std::map<int, warp>::iterator w_it;
 
-    void addAccessToLocalList(int in_tx, int in_ty, int in_wid, std::string in_dsname, int in_oper, long long in_idx, long long in_address, long long in_cycles);
-    void sortAccessEntries();
-    void printInstructionStream();
-    void clearAllData();
-
+    /*Default setters and getters*/
     int getNumWarps() const;
     void setNumWarps(int value);
 
@@ -82,24 +72,29 @@ public:
     bool getRunning() const;
     void setRunning(bool value);
 
-    int generateSectorIndex(long long address);
-    int generateSetIndex(long long address);
-
-    std::list<update_line_info> getUpdateInfo();
-
-    bool isFinished();
     long long getNextCycleVal() const;
     void setNextCycleVal(long long value);
 
+    /*Custom Functions*/
+    int generateSectorIndex(long long address);
+    int generateSetIndex(long long address);
+    void addAccessToLocalList(int in_tx, int in_ty, int in_wid, std::string in_dsname, int in_oper, long long in_idx, long long in_address, long long in_cycles);
+    void sortAccessEntries();
+    void printInstructionStream();
+    void clearAllData();
+    bool isFinished();
     void updateNextCycleCounter();
-
     int generateLineTag(long long address);
+    std::list<update_line_info> getUpdateInfo();
+
+
 private:
     int blockDim;
     int blockId;
     int blockIdX;
     int blockIdY;
     int blockIdZ;
+    int tag_line_offset;
     int mappedToSM;
     int numThreads;
     int numThreadsX;
