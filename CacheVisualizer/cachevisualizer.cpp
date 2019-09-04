@@ -7,6 +7,7 @@
 #include "view.h"
 #include "statuscontroller.h"
 #include "simulation.h"
+#include "backgroundworker.h"
 #include <math.h>
 #include <utility>
 #include <map>
@@ -15,6 +16,7 @@
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QActionGroup>
+#include <QMetaType>
 
 
 
@@ -189,9 +191,7 @@ void CacheVisualizer::on_actionOpen_Trace_triggered()
         QMessageBox::critical(this, "Warning", "Operation aborted!\nSomething went wrong when reading the trace input.\nLoad a file that adheres to the default specifications");
     }
 
-
     file.close();
-
 
 }
 
@@ -216,14 +216,23 @@ void CacheVisualizer::on_actionStart_triggered()
 
     //!!Launch the worker thread here
     if(sim_mode == 0){ //if autoplay
-        while(mySim->isSimulationComplete() == false){
-            std::list<update_line_info> visual_upd;
-            visual_upd = mySim->getUpdateInfoFromBlock();
-            if(!visual_upd.empty()){
-                updateSceneFromInfo(visual_upd, myStatistics);
-            }
-        }
-    QMessageBox::information(this, "Simulation Completed", "The simulation has been completed. The reults can now be printed");
+//        while(mySim->isSimulationComplete() == false){
+//            std::list<update_line_info> visual_upd;
+//            visual_upd = mySim->getUpdateInfoFromBlock();
+//            if(!visual_upd.empty()){
+//                updateSceneFromInfo(visual_upd, myStatistics);
+//            }
+//        }
+
+        backgroundworker *wrk_thread = new backgroundworker(mySim, 100);
+
+        qRegisterMetaType<std::list<update_line_info>>("std::list<update_line_info>");
+        connect(wrk_thread, SIGNAL(guiUpdate(std::list<update_line_info>)), this, SLOT(handleWorkerThreadUpdate(std::list<update_line_info>)));
+        connect(wrk_thread, SIGNAL(finished()), wrk_thread, SLOT(deleteLater()));
+        connect(wrk_thread, SIGNAL(hasFinished(bool)), this, SLOT(handleWorkerThreadFinished(bool)));
+        wrk_thread->start();
+
+        //QMessageBox::information(this, "Simulation Completed", "The simulation has been completed. The reults can now be printed");
 
     } else {
         QMessageBox::information(this, "Setup Completed", "The simulation has been set up in step-wise mode\nUse the Next Step option from this menu to proceed through it.");
@@ -390,8 +399,15 @@ void CacheVisualizer::updateStatusBar(QString sts){
 void CacheVisualizer::handleWorkerThreadUpdate(std::list<update_line_info> wrk_upd)
 {
     //!!sectored?
+    qDebug("handleWorkerThreadUpdate triggered!\n");
     updateSceneFromInfo(wrk_upd, myStatistics);
 
+}
+
+void CacheVisualizer::handleWorkerThreadFinished(bool fin)
+{
+    qDebug("Received Finished from worker!\n");
+    QMessageBox::information(this, "Simulation Completed", "The simulation has been completed. The reults can now be printed");
 }
 
 
@@ -455,11 +471,11 @@ void CacheVisualizer::on_actionNext_Step_triggered()
         //Run the next simulation step
         printf("Taking sim step\n");
 
-    if(mySim->isSimulationComplete()){QMessageBox::information(this, "Simulation Complete", "There are no more available instructions to simulate\nThe simulation is completed");}
-    std::list<update_line_info> visual_upd;
-    visual_upd = mySim->getUpdateInfoFromBlock();
-    bool rcv_empty = visual_upd.empty();
-    qDebug("Next Step = is update list empty:%d\n", rcv_empty);
-    updateSceneFromInfo(visual_upd, myStatistics);
+        if(mySim->isSimulationComplete()){QMessageBox::information(this, "Simulation Complete", "There are no more available instructions to simulate\nThe simulation is completed");}
+        std::list<update_line_info> visual_upd;
+        visual_upd = mySim->getUpdateInfoFromBlock();
+        bool rcv_empty = visual_upd.empty();
+        //qDebug("Next Step = is update list empty:%d\n", rcv_empty);
+        updateSceneFromInfo(visual_upd, myStatistics);
     }
 }

@@ -77,6 +77,7 @@ private:
 public slots:
     void updateStatusBar(QString sts);
     void handleWorkerThreadUpdate(std::list<update_line_info> wrk_upd);
+    void handleWorkerThreadFinished(bool fin);
 };
 
 #endif // CACHEVISUALIZER_H
