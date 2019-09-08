@@ -39,6 +39,7 @@ public:
     void printSchedule();
     int findNextInstructionFromBlocks();
     bool isSimulationComplete();
+    void updateBitMask();
     std::list<update_line_info> getUpdateInfoFromBlock();
 
     /*Auto-generated getters and setters*/

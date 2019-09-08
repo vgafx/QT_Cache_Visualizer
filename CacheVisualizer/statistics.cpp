@@ -15,7 +15,6 @@ statistics::statistics()
     this->w_partial_hits = 0;
     this->hitrate = 0.0;
     this->output = "";
-
 }
 
 QString statistics::getStatisticsOutput(){
@@ -54,10 +53,8 @@ void statistics::estimateTotals(){
 
 void statistics::estimatePercentage()
 {
-    qDebug("Estimating tfh: %d, tph:%d, tmr:%d\n",this->total_full_hits, this->total_partial_hits, this->total_mem_requests);
     this->hitrate = (double(this->total_full_hits) + double(this->total_partial_hits)) / double(this->total_mem_requests);
     this->hitrate *= 100;
-    qDebug("HR:%.2f\n", this->hitrate);
 }
 
 void statistics::recordWritePartialHit(){

@@ -3,29 +3,29 @@
 #include "math.h"
 
 /*Init with Titanx configuration on default*/
-std::string name="GTX TitanX";
-int l2_size=3145728;
-int l1_size=24576;
-int line_size=128;
-long long global_size=12884901888;
-int sector_size=32;
-int way_size_l1=6;
-int way_size_l2=6;
-int warp_size=6;
-int is_sectored=1;
-int is_l1_enabled=0;
-int num_sm=24;
-int concurrent_warps=4;
-int cuda_cores=3072;
-int replacement_policy=1; //1 =LRU
-int write_policy=1; //1 = write allocate
-int l1_load_granularity=128;
-int l2_load_granularity=32;
-std::string architecture="2nd generation Maxwell";
-std::string chip="GM200-400-A1";
-int worker_delay=200;
-int global_latency=400;
-int data_type_bytes=4;//!!Add this in config file
+std::string name = "GTX TitanX";
+int l2_size = 3145728;
+int l1_size = 24576;
+int line_size = 128;
+long long global_size = 12884901888;
+int sector_size = 32;
+int way_size_l1 = 6;
+int way_size_l2 = 6;
+int warp_size = 6;
+int is_sectored = 1;
+int is_l1_enabled = 0;
+int num_sm = 24;
+int concurrent_warps = 4;
+int cuda_cores = 3072;
+int replacement_policy = 1; //1 =LRU
+int write_policy = 1; //1 = write allocate
+int l1_load_granularity = 128;
+int l2_load_granularity = 32;
+std::string architecture = "2nd generation Maxwell";
+std::string chip = "GM200-400-A1";
+int worker_delay = 200;
+int global_latency = 400;
+int data_type_bytes = 4;//!!Add this in config file
 
 bool missingConfigAttribute = false;
 
@@ -40,13 +40,14 @@ int num_sets_l1;
 int num_clines_l1;
 int block_offset_bits;
 
-bool simulation_done=false;
-bool trace_loaded=false;
-bool config_loaded=false;
-bool sim_mode_selected=false;
-int sim_mode=0;
-bool start_flag=false;
-bool worker_running=false;
+bool simulation_done = false;
+bool trace_loaded = false;
+bool config_loaded = false;
+bool sim_mode_selected = false;
+int sim_mode = 0;
+bool start_flag = false;
+bool pause_flag = false;
+bool worker_running = false;
 
 std::multimap<int, cline_info> idx_map;
 

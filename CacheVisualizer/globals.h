@@ -57,6 +57,7 @@ extern bool config_loaded;
 extern bool sim_mode_selected;
 extern int sim_mode; //0=autoplay , 1= step wise
 extern bool start_flag;
+extern bool pause_flag;
 extern bool worker_running;
 
 #define EMPTY_RET -1

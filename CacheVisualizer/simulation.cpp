@@ -38,7 +38,7 @@ simulation::simulation()
         case 14: this->bit_mask = MASK_14bit; break;
         case 15: this->bit_mask = MASK_15bit; break;
         case 16: this->bit_mask = MASK_16bit; break;
-        default: printf("Error in bitmask resolution!\n"); break;
+        default: qDebug("Error in bitmask resolution!\n"); break;
     }
 }
 
@@ -62,6 +62,8 @@ void simulation::cleanAll(){
     this->blocks_x = 0;
     this->blocks_y = 0;
     this->blocks_z = 0;
+    this->current_active_blocks = 0;
+    this->isRunning = false;
 }
 
 /*Runtime functions (4)*/
@@ -85,6 +87,27 @@ bool simulation::isSimulationComplete(){
         if(!it->second.isFinished()){ret_val = false;}
     }
     return ret_val;
+}
+
+void simulation::updateBitMask()
+{
+    int result = int(log2(num_sets_l2));
+
+    switch (result) {
+        case 5: this->bit_mask = MASK_5bit; break;
+        case 6: this->bit_mask = MASK_6bit; break;
+        case 7: this->bit_mask = MASK_7bit; break;
+        case 8: this->bit_mask = MASK_8bit; break;
+        case 9: this->bit_mask = MASK_9bit; break;
+        case 10: this->bit_mask = MASK_10bit; break;
+        case 11: this->bit_mask = MASK_11bit; break;
+        case 12: this->bit_mask = MASK_12bit; break;
+        case 13: this->bit_mask = MASK_13bit; break;
+        case 14: this->bit_mask = MASK_14bit; break;
+        case 15: this->bit_mask = MASK_15bit; break;
+        case 16: this->bit_mask = MASK_16bit; break;
+        default: qDebug("Error in bitmask resolution!\n"); break;
+    }
 }
 
 int simulation::findNextInstructionFromBlocks(){

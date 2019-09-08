@@ -36,7 +36,7 @@ CacheVisualizer::CacheVisualizer(QWidget *parent) :
     l2View->view()->setScene(scene);
     l2View->show();
     setCentralWidget(l2View);
-    mySim = new simulation(); //!!Remember to destruct these objects at the end or on reset...
+    mySim = new simulation();
     myStatistics = new statistics();
 
     //autoplay
@@ -212,6 +212,10 @@ void CacheVisualizer::on_actionStart_triggered()
         return;
     }
 
+    if(start_flag){
+        return;
+    }
+
     mySim->sortAllBlockAccesses();
     mySim->prepareInitialBlocks();
     start_flag = true;
@@ -240,12 +244,12 @@ void CacheVisualizer::on_actionStart_triggered()
 */
 void CacheVisualizer::on_actionPause_triggered()
 {
-    if(sim_mode == 1){
+    if (sim_mode == 1){
         QMessageBox::information(this, "Not Applicable", "This option has no effect when the simulation is in step-wise mode.");
     } else {
         emit sendPauseSignal();
+        pause_flag = (pause_flag) ? false : true;
     }
-
 }
 
 /*Menu Bar Trigger
@@ -253,10 +257,15 @@ void CacheVisualizer::on_actionPause_triggered()
 */
 void CacheVisualizer::on_actionStop_triggered()
 {
-    if(sim_mode == 1){
+    if (sim_mode == 1){
         QMessageBox::information(this, "Not Applicable", "This option has no effect when the simulation is in step-wise mode.\nTo remove the current simulation data use the Clear option instead.");
     } else {
-        emit sendStopSignal();
+        if (pause_flag){
+            QMessageBox::information(this, "Simulation still active in the background", "The simulation is still paused in the background.\nTo completely stop it use the Resume menu option first and then Stop.");
+        } else {
+            emit sendStopSignal();
+        }
+
     }
 }
 
@@ -265,15 +274,24 @@ void CacheVisualizer::on_actionStop_triggered()
 */
 void CacheVisualizer::on_actionClear_triggered()
 {
+    if(worker_running){
+        QMessageBox::critical(this, "Cannot Clear", "Simulation still running in the background.\nResume the simulation first,then use the Stop menu option and then Clear." );
+        return;
+    }
     idx_map.clear();
     scene->clear();
-    //populateScene();
     populateSceneNormal();
     l2View->view()->setScene(scene);
 
+    if(!worker_running){mySim->cleanAll();}
+    trace_loaded = false;
     simulation_done = false;
-    //l2View->show();
-    //l2View
+    worker_running = false;
+    start_flag = false;
+    pause_flag = false;
+    sim_mode_selected = false;
+    m_e_group->checkedAction()->setChecked(false);
+    myStatistics->reset();
 }
 
 /*Menu Bar Trigger
@@ -281,6 +299,11 @@ void CacheVisualizer::on_actionClear_triggered()
 */
 void CacheVisualizer::on_actionChange_Configuration_File_triggered()
 {
+    if(worker_running || start_flag){
+        QMessageBox::critical(this, "Simulation Running", "A simulation is currently running.\nStop and Clear the current simuation first");
+        return;
+    }
+
     QMessageBox::information(this, "Info", "Changing the configuration file will force the application to re-draw the visual output. This might take a while..." );
 
     QString config_fname = QFileDialog::getOpenFileName(this, tr("Open configuration file"), "", tr("Trace Files (*)"));
@@ -297,14 +320,27 @@ void CacheVisualizer::on_actionChange_Configuration_File_triggered()
         QMessageBox::information(this, "Info", "Configuration File loaded successfully!\n" );
     } else {
         QMessageBox::critical(this, "Warning", "Operation aborted!\nOne or more required attributes is missing from the specified configuration file.\nLoad a file that adheres to the default specifications");
+        return;
     }
+    qDebug("Change config-reseting data\n");
+    idx_map.clear();
     file.close();
+    mySim->updateBitMask();
     scene->clear();
     populateSceneNormal();
     l2View->view()->setScene(scene);
-    //!! change cacheline referenes stored
-    idx_map.clear();
-
+    if(!worker_running){mySim->cleanAll();}
+    trace_loaded = false;
+    simulation_done = false;
+    worker_running = false;
+    start_flag = false;
+    pause_flag = false;
+    sim_mode_selected = false;
+    //m_e_group->checkedAction()->setChecked(false);
+    if (m_e_group->actions().at(0)->isChecked() || m_e_group->actions().at(1)->isChecked()){
+        m_e_group->checkedAction()->setChecked(false);
+    }
+    myStatistics->reset();
 }
 
 /*Menu Bar Trigger
@@ -361,7 +397,7 @@ void CacheVisualizer::on_actionAbout_triggered()
 void CacheVisualizer::on_actionSave_Simulation_Results_triggered()
 {
     if(!simulation_done){
-        printf("Simulation Data not ready!\n");
+        qDebug("Simulation Data not ready!\n");
         QMessageBox::warning(this, "Warning", "Simulation data not ready for saving. Complete a simulation and then use this option.");
         return;
     } else {
@@ -372,10 +408,7 @@ void CacheVisualizer::on_actionSave_Simulation_Results_triggered()
             return;
         }
         QTextStream out(&file);
-        QString text = "";
-        //!!Debug this
-        text = myStatistics->getStatisticsOutput();
-        printf("OUTPUT TEXT SIZE: %d\n",text.size());
+        QString text = myStatistics->getStatisticsOutput();
         out << text;
         file.close();
     }
@@ -403,18 +436,19 @@ void CacheVisualizer::handleWorkerThreadFinished(bool fin)
     qDebug("Received Finished from worker!\n");
     worker_running = false;
     simulation_done = true;
+    start_flag = false;
     QMessageBox::information(this, "Simulation Completed", "The simulation has been completed. The reults can now be printed");
 }
 
 void CacheVisualizer::on_autoplay_triggered()
 {
-    sim_mode = 0;
+    if(!start_flag){sim_mode = 0;}
     sim_mode_selected = true;
 }
 
 void CacheVisualizer::on_actionManual_Step_wise_triggered()
 {
-    sim_mode = 1;
+    if(!start_flag){sim_mode = 1;}
     sim_mode_selected = true;
 }
 
@@ -426,12 +460,14 @@ void CacheVisualizer::on_actionNext_Step_triggered()
     }
 
     if(sim_mode_selected && sim_mode == 1){
-        printf("Taking sim step\n");
-
-        if(mySim->isSimulationComplete()){QMessageBox::information(this, "Simulation Complete", "There are no more available instructions to simulate\nThe simulation is completed"); simulation_done = true;}
+        qDebug("Taking sim step\n");
+        if(mySim->isSimulationComplete()){
+            QMessageBox::information(this, "Simulation Complete", "There are no more available instructions to simulate\nThe simulation is completed");
+            simulation_done = true;
+            start_flag = false;
+        }
         std::list<update_line_info> visual_upd;
         visual_upd = mySim->getUpdateInfoFromBlock();
-        bool rcv_empty = visual_upd.empty();
         updateSceneFromInfo(visual_upd, myStatistics);
     }
 }

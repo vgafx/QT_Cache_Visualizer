@@ -89,9 +89,9 @@ std::list<update_line_info> threadBlock::getUpdateInfo(){
             update_line_info line_info = {uniq_entries.at(o).set_id, uniq_entries.at(0).tag, operation, name, uniq_entries.at(o).min_add, uniq_entries.at(o).max_add,
                                           uniq_entries.at(o).min_idx, uniq_entries.at(o).max_idx, uniq_entries.at(o).cycles, uniq_entries.at(o).sec0,
                                           uniq_entries.at(o).sec1, uniq_entries.at(o).sec2, uniq_entries.at(o).sec3};
-//            qDebug("getUpdateInfo()-E:%lu- SID: %d, TAG: %d , OP: %d, NAME: %s, MINAD: %llu, MAXAD: %llu, MINIDX: %llu, MAXIDX: %llu, CYC: %llu, S0: %d,S1: %d,S2: %d,S3: %d\n",
-//                   o,line_info.set_idx, line_info.tag, line_info.oper, line_info.name.c_str(),line_info.add_low, line_info.add_high, line_info.idx_low, line_info.idx_high, line_info.cycles,
-//                   line_info.s0, line_info.s1, line_info.s2, line_info.s3);
+            qDebug("getUpdateInfo()-E:%lu- SID: %d, TAG: %d , OP: %d, NAME: %s, MINAD: %llu, MAXAD: %llu, MINIDX: %llu, MAXIDX: %llu, CYC: %llu, S0: %d,S1: %d,S2: %d,S3: %d\n",
+                   o,line_info.set_idx, line_info.tag, line_info.oper, line_info.name.c_str(),line_info.add_low, line_info.add_high, line_info.idx_low, line_info.idx_high, line_info.cycles,
+                   line_info.s0, line_info.s1, line_info.s2, line_info.s3);
             ret_update_entries.push_back(line_info);
         }
     }//instruction_stream.empty

@@ -144,8 +144,7 @@ void readConfig(){
 
         configFile.close();
     } else {
-        //!!Consider using a visual exception in this case
-        printf("Failed to open configuration file\n");
+        qDebug("Failed to open configuration file\n");
     }
 }
 
@@ -231,12 +230,10 @@ bool readConfigFromQstream(QTextStream &configData){
         }
     }
     computeConfig();
-    printf("========CONFIG CHANGED========\n");
+    qDebug("========CONFIG CHANGED========\n");
     printGlobals();
 
-
     return true;
-
 }
 
 
