@@ -141,10 +141,7 @@ void CacheVisualizer::populateSceneNormal(){
 
 void CacheVisualizer::on_actionExit_triggered()
 {
-    printf("Exit Option Pressed\n");
-    //!!Maybe clean up before quitting
     mySim->cleanAll();
-    //!!Verify that the object destructors work
     myStatistics->~statistics();
     mySim->~simulation();
     QApplication::quit();
@@ -290,7 +287,9 @@ void CacheVisualizer::on_actionClear_triggered()
     start_flag = false;
     pause_flag = false;
     sim_mode_selected = false;
-    m_e_group->checkedAction()->setChecked(false);
+    if (m_e_group->actions().at(0)->isChecked() || m_e_group->actions().at(1)->isChecked()){
+        m_e_group->checkedAction()->setChecked(false);
+    }
     myStatistics->reset();
 }
 
