@@ -61,7 +61,6 @@
     <addaction name="actionClear"/>
     <addaction name="menuSpeed"/>
     <addaction name="actionNext_Step"/>
-    <addaction name="actionDebug_Action"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -107,7 +106,7 @@
      <normaloff>:/imgs/icons/pause1.png</normaloff>:/imgs/icons/pause1.png</iconset>
    </property>
    <property name="text">
-    <string>Pause</string>
+    <string>Pause / Resume</string>
    </property>
   </action>
   <action name="actionStop">
@@ -179,11 +178,6 @@
    </property>
    <property name="text">
     <string>Save Simulation Results</string>
-   </property>
-  </action>
-  <action name="actionDebug_Action">
-   <property name="text">
-    <string>Debug Action</string>
    </property>
   </action>
   <action name="actionManual_Step_wise">

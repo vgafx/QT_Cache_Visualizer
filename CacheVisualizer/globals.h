@@ -48,14 +48,16 @@ extern int sectorsPerSetL2;
 extern int bytes_in_set_l1;
 extern int num_sets_l1;
 extern int num_clines_l1;
-
 extern int block_offset_bits;
+
+//control
 extern bool simulation_done;
 extern bool trace_loaded;
 extern bool config_loaded;
 extern bool sim_mode_selected;
 extern int sim_mode; //0=autoplay , 1= step wise
 extern bool start_flag;
+extern bool worker_running;
 
 #define EMPTY_RET -1
 #define NO_RET -2

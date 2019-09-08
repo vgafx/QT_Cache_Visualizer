@@ -78,7 +78,6 @@ void CacheVisualizer::populateScene(){
             ++numLines;
         }
     }
-    printf("DREW: %d \n", numLines);
 }
 
 
@@ -97,8 +96,6 @@ void CacheVisualizer::populateSceneNormal(){
     int i_iter = way_size_l2 * i_inc;
     int extra_lines = 0;
 
-    //num_sets_l2 = 8192;
-    //Have to check if display dimensions of the set (i.e. 4096 sets = 64 x 64
     int dispDims = int(sqrt(num_sets_l2));
     int wideDimsCol = dispDims + (dispDims / 2);
     int j_total_range = wideDimsCol * j_inc;
@@ -201,12 +198,17 @@ void CacheVisualizer::on_actionOpen_Trace_triggered()
 void CacheVisualizer::on_actionStart_triggered()
 {
     if(!trace_loaded){
-        QMessageBox::critical(this, "No Trace Data", "No Trace data were loaded for simulation.\nLoad a trace file first and try again");
+        QMessageBox::critical(this, "No Trace Data", "No Trace data were loaded for simulation.\nLoad a trace file first and try again.");
         return;
     }
 
     if(!sim_mode_selected){
-        QMessageBox::critical(this, "No Mode Selected", "The simulation mode is not set.\nSelect a simulation mode from the menu options before running a simulation");
+        QMessageBox::critical(this, "No Mode Selected", "The simulation mode is not set.\nSelect a simulation mode from the menu options before running a simulation.");
+        return;
+    }
+
+    if(worker_running){
+        QMessageBox::critical(this, "Simulation Already Running", "A background worker thread is currently running a simulation.\n Either wait for its completion or use the Stop Option.");
         return;
     }
 
@@ -214,26 +216,19 @@ void CacheVisualizer::on_actionStart_triggered()
     mySim->prepareInitialBlocks();
     start_flag = true;
 
-    //!!Launch the worker thread here
-    if(sim_mode == 0){ //if autoplay
-//        while(mySim->isSimulationComplete() == false){
-//            std::list<update_line_info> visual_upd;
-//            visual_upd = mySim->getUpdateInfoFromBlock();
-//            if(!visual_upd.empty()){
-//                updateSceneFromInfo(visual_upd, myStatistics);
-//            }
-//        }
+    if(sim_mode == 0){
 
-        backgroundworker *wrk_thread = new backgroundworker(mySim, 100);
-
+        backgroundworker *wrk_thread = new backgroundworker(mySim, worker_delay);
         qRegisterMetaType<std::list<update_line_info>>("std::list<update_line_info>");
+
         connect(wrk_thread, SIGNAL(guiUpdate(std::list<update_line_info>)), this, SLOT(handleWorkerThreadUpdate(std::list<update_line_info>)));
         connect(wrk_thread, SIGNAL(finished()), wrk_thread, SLOT(deleteLater()));
         connect(wrk_thread, SIGNAL(hasFinished(bool)), this, SLOT(handleWorkerThreadFinished(bool)));
+
+        connect(this, SIGNAL(sendPauseSignal()), wrk_thread, SLOT(handlePause()));
+        connect(this, SIGNAL(sendStopSignal()), wrk_thread, SLOT(handleStop()));
+        worker_running = true;
         wrk_thread->start();
-
-        //QMessageBox::information(this, "Simulation Completed", "The simulation has been completed. The reults can now be printed");
-
     } else {
         QMessageBox::information(this, "Setup Completed", "The simulation has been set up in step-wise mode\nUse the Next Step option from this menu to proceed through it.");
     }
@@ -243,13 +238,12 @@ void CacheVisualizer::on_actionStart_triggered()
 /*Menu Bar Trigger
   Pauses the simulation
 */
-//!!Activate flag for worker thread
 void CacheVisualizer::on_actionPause_triggered()
 {
     if(sim_mode == 1){
         QMessageBox::information(this, "Not Applicable", "This option has no effect when the simulation is in step-wise mode.");
     } else {
-
+        emit sendPauseSignal();
     }
 
 }
@@ -262,7 +256,7 @@ void CacheVisualizer::on_actionStop_triggered()
     if(sim_mode == 1){
         QMessageBox::information(this, "Not Applicable", "This option has no effect when the simulation is in step-wise mode.\nTo remove the current simulation data use the Clear option instead.");
     } else {
-
+        emit sendStopSignal();
     }
 }
 
@@ -277,6 +271,7 @@ void CacheVisualizer::on_actionClear_triggered()
     populateSceneNormal();
     l2View->view()->setScene(scene);
 
+    simulation_done = false;
     //l2View->show();
     //l2View
 }
@@ -377,13 +372,12 @@ void CacheVisualizer::on_actionSave_Simulation_Results_triggered()
             return;
         }
         QTextStream out(&file);
-        //!! fill QString text with output data
         QString text = "";
         //!!Debug this
         text = myStatistics->getStatisticsOutput();
+        printf("OUTPUT TEXT SIZE: %d\n",text.size());
         out << text;
         file.close();
-
     }
 }
 
@@ -407,46 +401,10 @@ void CacheVisualizer::handleWorkerThreadUpdate(std::list<update_line_info> wrk_u
 void CacheVisualizer::handleWorkerThreadFinished(bool fin)
 {
     qDebug("Received Finished from worker!\n");
+    worker_running = false;
+    simulation_done = true;
     QMessageBox::information(this, "Simulation Completed", "The simulation has been completed. The reults can now be printed");
 }
-
-
-void CacheVisualizer::on_actionDebug_Action_triggered()
-{
-    printf("Debug Functionality\n");
-    std::pair <std::multimap<int,cline_info>::iterator, std::multimap<int,cline_info>::iterator> ret;
-    ret = idx_map.equal_range(0);
-    for (std::multimap<int,cline_info>::iterator it = ret.first; it!=ret.second; it++){
-        it->second.cline_ptr->setColor(Qt::red);
-        it->second.cline_ptr->update();
-        //update();
-        //cacheline *temp = it->second.cline_ptr;
-        //temp->setColor(Qt::green);
-    }
-
-    //WORKS
-    std::vector<long long> test = {81723146496, 81723146500, 81723146504, 81723146508, 81723146512, 81723146516, 81723146520,
-                                  81723146524, 81723146528, 81723146532, 81723146536, 81723146540, 81723146544, 81723146548,
-                                  81723146552, 81723146556, 81723146560, 81723146564, 81723146568, 81723146572, 81723146576,
-                                  81723146580, 81723146584, 81723146588, 81723146592, 81723146596, 81723146600, 81723146604,
-                                  81723146608, 81723146612, 81723146616, 81723146620, 81723146628,81723670784};
-
-        for (int i=128; i<4096;i+=32) {
-            int results = int(log2(i));
-            printf("i is %d - log2: %d \n",i,results);
-        }
-    for (size_t i = 0; i < test.size(); i++) {
-        long long tmp_add = test.at(i);
-        long long set_idx = tmp_add >> BLOCK_OFFSET_BITS;
-
-        long long tag = set_idx >> 12;
-        set_idx &= MASK_12bit;
-        //printf("Element %d, Add: %llu, Set_ID: %d, Tag_ID:%d\n", i, test.at(i), set_idx, tag);
-
-    }
-
-}
-
 
 void CacheVisualizer::on_autoplay_triggered()
 {
@@ -468,14 +426,12 @@ void CacheVisualizer::on_actionNext_Step_triggered()
     }
 
     if(sim_mode_selected && sim_mode == 1){
-        //Run the next simulation step
         printf("Taking sim step\n");
 
-        if(mySim->isSimulationComplete()){QMessageBox::information(this, "Simulation Complete", "There are no more available instructions to simulate\nThe simulation is completed");}
+        if(mySim->isSimulationComplete()){QMessageBox::information(this, "Simulation Complete", "There are no more available instructions to simulate\nThe simulation is completed"); simulation_done = true;}
         std::list<update_line_info> visual_upd;
         visual_upd = mySim->getUpdateInfoFromBlock();
         bool rcv_empty = visual_upd.empty();
-        //qDebug("Next Step = is update list empty:%d\n", rcv_empty);
         updateSceneFromInfo(visual_upd, myStatistics);
     }
 }

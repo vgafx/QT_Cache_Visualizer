@@ -12,26 +12,52 @@ statistics::statistics()
     this->r_partial_hits = 0;
     this->w_full_hits = 0;
     this->w_misses_total = 0;
-    this->w_partial_hits =0;
+    this->w_partial_hits = 0;
+    this->hitrate = 0.0;
     this->output = "";
 
 }
 
 QString statistics::getStatisticsOutput(){
-    QString results = QString("Simulation Results\n Total Memory Requests Issued: %1\nTotal Full Hits: %2\nTotal Partial Hits: %3"
-                              "\nTotal Misses: %4\nRead-Write Statistics\n---------------------------\n"
-                              "Read Full Hits: %5\nRead Partial Hits: %6\nRead Misses: %7\nWrite Full Hits: %8\nWrite Partial Hits: %9\nWrite Misses: %10")
-            .arg(this->total_mem_requests).arg(this->total_full_hits).arg(this->total_partial_hits).arg(this->total_misses).arg(this->r_full_hits).arg(this->r_partial_hits)
+    estimateTotals();
+    estimatePercentage();
+    QString results = QString("Simulation Results\n---------------------------\nTotal Memory Requests Issued(Warp-wide): %1\nTotal Full Hits: %2\nTotal Partial Hits: %3"
+                              "\nTotal Misses: %4\nCache Hit-Rate: %5%\n\nRead-Write Statistics\n---------------------------\n"
+                              "Read Full Hits: %6\nRead Partial Hits: %7\nRead Misses: %8\nWrite Full Hits: %9\nWrite Partial Hits: %10\nWrite Misses: %11")
+            .arg(this->total_mem_requests).arg(this->total_full_hits).arg(this->total_partial_hits).arg(this->total_misses).arg(this->hitrate).arg(this->r_full_hits).arg(this->r_partial_hits)
             .arg(this->r_misses_total).arg(this->w_full_hits).arg(this->w_partial_hits).arg(this->w_misses_total);
 
-    return this->output;
+    return results;
 }
 
+void statistics::reset()
+{
+    this->total_misses = 0;
+    this->total_full_hits = 0;
+    this->total_mem_requests = 0;
+    this->total_partial_hits = 0;
+    this->r_full_hits = 0;
+    this->r_misses_total = 0;
+    this->r_partial_hits = 0;
+    this->w_full_hits = 0;
+    this->w_misses_total = 0;
+    this->w_partial_hits = 0;
+    this->hitrate = 0.0;
+    this->output = "";
+}
 
 void statistics::estimateTotals(){
     this->total_misses = this->w_misses_total + this->r_misses_total;
     this->total_full_hits = this->w_full_hits + this->r_full_hits;
     this->total_partial_hits = this->w_partial_hits + this->r_partial_hits;
+}
+
+void statistics::estimatePercentage()
+{
+    qDebug("Estimating tfh: %d, tph:%d, tmr:%d\n",this->total_full_hits, this->total_partial_hits, this->total_mem_requests);
+    this->hitrate = (double(this->total_full_hits) + double(this->total_partial_hits)) / double(this->total_mem_requests);
+    this->hitrate *= 100;
+    qDebug("HR:%.2f\n", this->hitrate);
 }
 
 void statistics::recordWritePartialHit(){

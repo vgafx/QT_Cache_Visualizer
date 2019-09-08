@@ -10,14 +10,19 @@ class backgroundworker : public QThread
 public:
     backgroundworker(simulation *wrkSim, int upd_delay);
     void run();
-    void startAutoSim();
 
 signals:
     void guiUpdate(std::list<update_line_info> wrk_upd);
     void hasFinished(bool fin);
+//!!implement these
+public slots:
+    void handlePause();
+    void handleStop();
 
 private:
     int delay;
+    bool pauseFlag;
+    bool stopFlag;
     simulation *wrk_sim;
 };
 

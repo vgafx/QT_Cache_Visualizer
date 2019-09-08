@@ -10,7 +10,6 @@
 #include <QObject>
 #include <random>
 
-//!!Could change this to a non-class file.
 cacherules::cacherules()
 {
 }

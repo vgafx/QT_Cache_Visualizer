@@ -48,7 +48,9 @@ public:
     void recordWritePartialHit();
     void recordWriteFullHit();
     void estimateTotals();
+    void estimatePercentage();
     QString getStatisticsOutput();
+    void reset();
 
 private:
     int r_misses_total;
@@ -61,6 +63,7 @@ private:
     int total_partial_hits;
     int total_full_hits;
     int total_mem_requests;
+    double hitrate;
     QString output;
 
 };

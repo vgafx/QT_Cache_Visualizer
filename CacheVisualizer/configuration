@@ -60,7 +60,7 @@ writepolicy=1
 l1loadgranularity=128
 l2loadgranularity=32
 #autoplay delay in milliseconds
-autodelay=200
+autodelay=500
 #global latency in cycles
 globallatency=400
 

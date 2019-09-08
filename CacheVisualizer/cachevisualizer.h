@@ -54,8 +54,6 @@ private slots:
 
     void on_actionSave_Simulation_Results_triggered();
 
-    void on_actionDebug_Action_triggered();
-
     void on_autoplay_triggered();
 
     void on_actionManual_Step_wise_triggered();
@@ -78,6 +76,11 @@ public slots:
     void updateStatusBar(QString sts);
     void handleWorkerThreadUpdate(std::list<update_line_info> wrk_upd);
     void handleWorkerThreadFinished(bool fin);
+
+signals:
+    void sendPauseSignal();
+    void sendStopSignal();
+
 };
 
 #endif // CACHEVISUALIZER_H

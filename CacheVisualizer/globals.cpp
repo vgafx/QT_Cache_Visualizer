@@ -38,21 +38,20 @@ int sectorsPerSetL2;
 int bytes_in_set_l1;
 int num_sets_l1;
 int num_clines_l1;
-
 int block_offset_bits;
+
 bool simulation_done=false;
 bool trace_loaded=false;
 bool config_loaded=false;
 bool sim_mode_selected=false;
 int sim_mode=0;
 bool start_flag=false;
+bool worker_running=false;
 
 std::multimap<int, cline_info> idx_map;
 
 globals::globals()
 {
-
-
 }
 
 void printGlobals(){
