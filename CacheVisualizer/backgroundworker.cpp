@@ -12,9 +12,7 @@ backgroundworker::backgroundworker(simulation *worker_sim, int upd_delay)
 
 void backgroundworker::run(){
     while (!wrk_sim->isSimulationComplete()){
-        qDebug("Before sleep\n");
         this->msleep(this->delay);
-        qDebug("After sleep\n");
         std::list<update_line_info> wrk_upd;
         wrk_upd = wrk_sim->getUpdateInfoFromBlock();
         if (wrk_upd.empty()){//No more visual updates produced
@@ -35,7 +33,6 @@ void backgroundworker::run(){
             qDebug("In pause flag loop\n");
             this->sleep(1);
         }
-
     }
 
     if(!this->stopFlag){
@@ -47,12 +44,12 @@ void backgroundworker::run(){
 
 void backgroundworker::handlePause()
 {
-    qDebug("Worker pause flag flipped!\n");
+    //qDebug("Worker pause flag flipped!\n");
     this->pauseFlag = (this->pauseFlag) ? false : true;
 }
 
 void backgroundworker::handleStop()
 {
-    qDebug("Worker stop flag set!\n");
+    //qDebug("Worker stop flag set!\n");
     this->stopFlag = true;
 }

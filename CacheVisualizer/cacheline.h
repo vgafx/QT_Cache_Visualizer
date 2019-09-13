@@ -19,11 +19,9 @@ public:
     void invalidateSector(int secID);
     void flipAllSectors(int onoff);
     void incAge();
-    void setFilledOnEmpty();
     void displayEviction();
-    void displayHit();
+    void displayFullHit();
     void displayPartialHit();
-    void displayMiss();
 
 
     /*Setters and getters*/
@@ -66,6 +64,9 @@ public:
     bool getSector_four_filled() const;
     void setSector_four_filled(bool value);
 
+    long long getCycles() const;
+    void setCycles(long long value);
+
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 
@@ -80,6 +81,7 @@ private:
     int block_offest;
     long long address_low;
     long long address_high;
+    long long cycles;
     std::string data_structure;
     bool sector_one_filled;
     bool sector_two_filled;

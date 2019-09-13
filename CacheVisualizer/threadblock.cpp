@@ -125,7 +125,6 @@ int threadBlock::generateSectorIndex(long long address){
 }
 
 int threadBlock::generateLineTag(long long address){
-    //!!Needs work
     long long temp_address = address >> block_offset_bits;
     return int(temp_address >>= this->tag_line_offset);
 }

@@ -110,6 +110,7 @@ void simulation::updateBitMask()
     }
 }
 
+/*Look at all scheduled blocks and pick the one with the lowest cycle counter to execute*/
 int simulation::findNextInstructionFromBlocks(){
     long long min_cyc = LLONG_MAX;
     int id = EMPTY_RET;
@@ -138,7 +139,6 @@ int simulation::findNextInstructionFromBlocks(){
             }
         }
     }
-
     return id;
 }
 

@@ -85,7 +85,7 @@ extern bool worker_running;
 /*Used by the idx_map to store the pointers to the visual objects*/
 struct cline_info{
     cacheline *cline_ptr;
-    int tag; //!!Could remove these and store the pointers directly
+    int tag;
     int age;
 };
 

@@ -10,20 +10,15 @@
 #include <iomanip>
 #include <map>
 
-
 #define FILENAME "configuration"
-
-//!!TODO: Add a L2 latency field in the config file and while reading the config setup
 
 using namespace std;
 
 std::map<std::string,int> config_att;
 
-
 fileIO::fileIO()
 {
 }
-
 
 
 void initConfigMap(){
@@ -63,7 +58,7 @@ void readConfig(){
             std::getline(tokenizer, attribute, '=');
             std::getline(tokenizer, value);
 
-            printf("Tokenizer: att=%s,val=%s\n", attribute.c_str(), value.c_str());
+            qDebug("Tokenizer: att=%s,val=%s\n", attribute.c_str(), value.c_str());
 
             if (attribute=="name"){
                 name = value;
@@ -126,7 +121,7 @@ void readConfig(){
                 worker_delay = std::stoi(value);
                 config_att["autodelay"] = 1;
             } else {
-                printf("Unknown Option\n");
+                qDebug("Unknown Option\n");
             }
 
         }
@@ -164,7 +159,7 @@ bool readConfigFromQstream(QTextStream &configData){
     map<std::string, int>::iterator it;
     for (it = config_att.begin(); it != config_att.end(); it++){
         if(it->second != 1){
-            printf("Menu:Option missing\n");
+            qDebug("Menu:Option missing\n");
             missingConfigAttribute = true;
         }
     }
@@ -225,40 +220,36 @@ bool readConfigFromQstream(QTextStream &configData){
             } else if(att=="autodelay"){
                 worker_delay = std::stoi(val);
             }else {
-                printf("Unknown Option\n");
+                qDebug("Unknown Option\n");
             }
         }
     }
     computeConfig();
     qDebug("========CONFIG CHANGED========\n");
-    printGlobals();
+    //printGlobals();
 
     return true;
 }
 
 
 bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
-
     traceData.seek(0);
     bool seenEqual = false;
     bool seenPlus = false;
     bool allowOnce = true;
-    //bool encounteredProblem = false;
-    //qDebug("Begun reading from QStream");
+
 
     while(!traceData.atEnd()){
-        //qDebug("Started reading lines\n");
         QString line = traceData.readLine();
         if(!line.isEmpty() && line.at(0) != '#'){
             if (line.at(0) == '='){seenEqual = true;}
             if (line.at(0) == '+'){seenPlus = true;}
-            //Get the launch configuration
             if (!seenEqual){
                 QStringList linesplit = line.split(":");
                 std::string att, val;
                 att = linesplit[0].toStdString();
                 val = linesplit[1].toStdString();
-                printf("Read: att=%s,val=%s\n",att.c_str(),val.c_str());
+                qDebug("Read: att=%s,val=%s\n",att.c_str(),val.c_str());
                 if(att == "numBlocks"){
                     sim->setNumBlocks(std::stoi(val));
                 } else if (att == "numThreadsPerBlock"){
@@ -267,7 +258,6 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
                     QStringList val_split = QString::fromStdString(val).split("-");
                     if (val_split.size() != 3){
                         traceData.flush();
-                        qDebug("RF1\n");
                         return false;
                     } else {
                         sim->setBlocks_x(val_split[0].toInt());
@@ -278,7 +268,6 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
                     QStringList val_split = QString::fromStdString(val).split("-");
                     if (val_split.size() != 3){
                         traceData.flush();
-                        qDebug("RF2\n");
                         return false;
                     } else {
                         sim->setThreads_x(val_split[0].toInt());
@@ -293,7 +282,6 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
                 if (line.isEmpty() || line.at(0) == '='){continue;}
                 QStringList linesplit = line.trimmed().split(",");
                 if (linesplit.size() != 3){
-                    qDebug("RF3\n");
                     traceData.flush();
                     return false;
                 } else {
@@ -303,7 +291,6 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
                     QStringList block_vals = entrysplit1[1].split("-");
                     if (entrysplit1.size() != 2 && entrysplit2.size() != 2 && entrysplit2.size() != 2 && block_vals.size() != 3){
                         traceData.flush();
-                        qDebug("RF4\n");
                         return false;
                     }
                     std::string attribute1, attribute2, attribute3;
@@ -314,17 +301,14 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
                     block_vals = entrysplit1[1].split("-");
 
                     if (attribute1 == "B" && attribute2 == "SM" && attribute3 == "GT"){
-                        //Replace with ds
                         int bx = block_vals[0].toInt();
                         int by = block_vals[1].toInt();
                         int bz = block_vals[2].toInt();
                         int smid = entrysplit2[1].toInt();
                         long long gtime = entrysplit3[1].toLongLong();
                         sim->addScheduleEntry(bx, by, smid, gtime);
-                        //printf("bx:%d, by:%d, bz:%d, smid:%d, gtime:%llu\n",bx,by,bz,smid,gtime);
                     } else {
                         traceData.flush();
-                        qDebug("RF5\n");
                         return false;
                     }
                 }
@@ -333,23 +317,17 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
             //Finally get the trace input
             if (seenPlus && seenEqual){
                 if(allowOnce){
-                    //qDebug("Allow Once S\n");
                     sim->sortSchedulingEntries();
                     sim->configureDims();
                     sim->generateBlocks();
                     allowOnce = false;
-                    //qDebug("Allow Once F\n");
                 }
                 if (line.isEmpty() || line.at(0) == '+'){continue;}
                 QStringList linesplit = line.split(",");
                 if (linesplit.size() != 7){
                     traceData.flush();
-                    qDebug("RF6\n");
                     return false;
                 } else {
-                    //!!changed here
-                    //int tx = linesplit[0].toInt();
-                    //int ty = linesplit[1].toInt();
                     QStringList b_info = linesplit[0].split('-');
                     int blockx = b_info[0].toInt();
                     int blocky = b_info[1].toInt();
@@ -365,21 +343,12 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
                     long long ds_idx = linesplit[4].toLongLong();
                     long long address = linesplit[5].toLongLong();
                     long long cycles = linesplit[6].toLongLong();
-                    //qDebug("Map\n");
                     sim->mapAccessToBlock(wid, wid, blockx, blocky, wid, dsn, operation, ds_idx, address, cycles);
-                    //qDebug("Map F\n");
                 }
             }
         }//end if empty/comment
 
     }//end of trace reading
     //qDebug("Finished reading from QStream");
-    //sim->sortAllBlockAccesses();
-    //sim->printBlockAccessLists();
-    //sim->printBlocks();
     return true;
-
 }
-
-
-

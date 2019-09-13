@@ -11,6 +11,5 @@ statusController::statusController()
 }
 
 void statusController::setStatusText(QString intxt){
-    //printf("Emmiting signal!\n");
     emit clickSignal(intxt);
 }

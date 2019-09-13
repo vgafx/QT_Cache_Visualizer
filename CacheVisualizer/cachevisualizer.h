@@ -62,7 +62,7 @@ private slots:
 
 private:
     Ui::CacheVisualizer *ui;
-    //QString currentFile=""; //!!why is this here?
+    //QString currentFile="";
     QGraphicsScene *scene;
     View *l2View;
     QActionGroup *m_e_group;

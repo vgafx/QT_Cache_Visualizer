@@ -30,7 +30,6 @@ CacheVisualizer::CacheVisualizer(QWidget *parent) :
         QMessageBox::critical(this, "Warning", "Configuration not loaded properly!\n Some of the predifined attributes are missing from the configuration file.\n Consult the provided default file and restart the application");
         exit(0);
     }
-    //populateScene();
     populateSceneNormal();
     l2View = new View("L2 Cache");
     l2View->view()->setScene(scene);
@@ -120,7 +119,6 @@ void CacheVisualizer::populateSceneNormal(){
             cacheline *line = new cacheline(color, xx, yy, s-1, stsC);
             cline_info c_info{line ,line->getTag() ,line->getAge()};
             idx_map.insert(std::pair<int,cline_info>(s-1, c_info));
-            //idx_map.insert(s-1,c_info);
             line->setPos(QPointF(j, l));
             scene->addItem(line);
             ++yy;
@@ -141,6 +139,10 @@ void CacheVisualizer::populateSceneNormal(){
 
 void CacheVisualizer::on_actionExit_triggered()
 {
+    if (worker_running){
+        QMessageBox::critical(this, "Thread active", "The background worker is still running a simulation. Use the Stop menu option to terminate it first and then Quit");
+        return;
+    }
     mySim->cleanAll();
     myStatistics->~statistics();
     mySim->~simulation();
@@ -169,7 +171,6 @@ void CacheVisualizer::on_actionOpen_Trace_triggered()
 
     QString trace_fname = QFileDialog::getOpenFileName(this, tr("Open trace"), "", tr("Trace Files (*.trc)"));
     QFile file(trace_fname);
-    //currentFile = trace_fname;
     if(!file.open(QIODevice::ReadOnly | QFile::Text)){
         QMessageBox::critical(this, "Warning", "Cannot Open file : " + file.errorString());
         return;
@@ -178,7 +179,7 @@ void CacheVisualizer::on_actionOpen_Trace_triggered()
 
     bool result = readTraceDataFromQstream(in, mySim);
     if(result){
-        printf("Trace file read succesfully\n!");
+        qDebug("Trace file read succesfully\n!");
         QMessageBox::information(this, "Info", "Trace File loaded successfully!\n" );
         trace_loaded = true;
     } else {
@@ -186,8 +187,8 @@ void CacheVisualizer::on_actionOpen_Trace_triggered()
     }
 
     file.close();
-
 }
+
 
 /*Menu Bar Trigger
   Starts the simulation of the trace data
@@ -315,7 +316,7 @@ void CacheVisualizer::on_actionChange_Configuration_File_triggered()
     bool result = readConfigFromQstream(in);
 
     if(result){
-        printf("Configuration file read succesfully\n!");
+        qDebug("Configuration file read succesfully\n!");
         QMessageBox::information(this, "Info", "Configuration File loaded successfully!\n" );
     } else {
         QMessageBox::critical(this, "Warning", "Operation aborted!\nOne or more required attributes is missing from the specified configuration file.\nLoad a file that adheres to the default specifications");
@@ -335,7 +336,6 @@ void CacheVisualizer::on_actionChange_Configuration_File_triggered()
     start_flag = false;
     pause_flag = false;
     sim_mode_selected = false;
-    //m_e_group->checkedAction()->setChecked(false);
     if (m_e_group->actions().at(0)->isChecked() || m_e_group->actions().at(1)->isChecked()){
         m_e_group->checkedAction()->setChecked(false);
     }

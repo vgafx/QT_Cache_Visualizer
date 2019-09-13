@@ -117,43 +117,49 @@ void cacheline::mousePressEvent(QGraphicsSceneMouseEvent *event)
         QPoint t_pos = event->screenPos();
         QToolTip::showText(t_pos,tltip);
     } else if (event->button() == Qt::LeftButton){
-        printf("Left Click\n");
         QGraphicsItem::mousePressEvent(event);
         QString sts_txt = QString("Set Index:  %1, \nAddres Range:  %2 - %3, \nData Structure:  %4, \nIndex Range: %5 - %6, \nSectors Filled:  %7 - %8 - %9 - %10, \nTag:  %11, \nAge:  %12")
                 .arg(this->set_idx).arg(this->address_low).arg(this->address_high).arg(QString::fromStdString(this->data_structure)).arg(this->idx_low).arg(this->idx_high).arg(this->sector_one_filled).arg(this->sector_two_filled).arg(this->sector_three_filled).arg(this->sector_four_filled).arg(this->tag).arg(this->age);
         event->accept();
         sts->setStatusText(sts_txt);
     }
-
     update();
 }
 
-//!!Instead of manually setting the colors in cacherules call these.
-/*UI Object visual updaters*/
-void cacheline::setFilledOnEmpty(){
-    //??
+long long cacheline::getCycles() const
+{
+    return cycles;
 }
 
+void cacheline::setCycles(long long value)
+{
+    cycles = value;
+}
+
+
+/*UI Object visual updaters*/
 void cacheline::displayEviction(){
     QColor evict_color(Qt::red);
     this->setColor(evict_color);
-    QColor fresh_line_color(Qt::darkGreen);
+    this->update();
+    QColor fresh_line_color(Qt::green);
     this->setColor(fresh_line_color);
+    this->update();
 }
 
-void cacheline::displayHit(){
-    QColor color(Qt::green);
+void cacheline::displayFullHit(){
+    QColor color(Qt::darkGreen);
     this->setColor(color);
+    this->update();
 }
 
 void cacheline::displayPartialHit(){
-    QColor color(Qt::green);
-
-}
-
-void cacheline::displayMiss(){
-    QColor color(Qt::red);
-
+    QColor part_color(Qt::yellow);
+    this->setColor(part_color);
+    this->update();
+    QColor after_color(Qt::darkGreen);
+    this->setColor(after_color);
+    this->update();
 }
 
 /*Custom functions*/
