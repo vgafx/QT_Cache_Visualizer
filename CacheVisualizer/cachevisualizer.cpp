@@ -425,7 +425,7 @@ void CacheVisualizer::updateStatusBar(QString sts){
 void CacheVisualizer::handleWorkerThreadUpdate(std::list<update_line_info> wrk_upd)
 {
     //!!sectored?
-    qDebug("handleWorkerThreadUpdate triggered!\n");
+    //qDebug("handleWorkerThreadUpdate triggered!\n");
     updateSceneFromInfo(wrk_upd, myStatistics);
 
 }

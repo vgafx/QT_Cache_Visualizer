@@ -154,6 +154,12 @@ std::list<update_line_info> simulation::getUpdateInfoFromBlock(){
 }
 
 
+void simulation::getMinMaxFromBlocks(){
+    for (auto it = blocks.begin(); it != blocks.end(); ++it){
+        qDebug("Block: %d Min: %llu Max: %llu",it->second.getBlockIdX() , it->second.getMinCyc() ,it->second.getMaxCyc());
+    }
+}
+
 
 /*Input & Setup functions (6)*/
 void simulation::mapAccessToBlock(int in_tx, int in_ty, int in_bx, int in_by, int in_wid, std::string in_dsname, int in_oper, long long in_idx, long long in_address, long long in_cycles){
@@ -168,6 +174,7 @@ void simulation::sortAllBlockAccesses(){
     for (auto it = blocks.begin(); it != blocks.end(); ++it){
         it->second.sortAccessEntries();
     }
+    getMinMaxFromBlocks();
 }
 
 void simulation::addScheduleEntry(int bx, int by, int sm, long long t){

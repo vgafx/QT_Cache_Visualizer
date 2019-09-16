@@ -91,6 +91,7 @@ public:
     bool getIsRunning() const;
     void setIsRunning(bool value);
 
+    void getMinMaxFromBlocks();
 private:
     int numBlocks;
     int blocks_x;

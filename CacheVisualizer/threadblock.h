@@ -88,6 +88,8 @@ public:
     std::list<update_line_info> getUpdateInfo();
 
 
+    long long getMinCyc();
+    long long getMaxCyc();
 private:
     int blockDim;
     int blockId;

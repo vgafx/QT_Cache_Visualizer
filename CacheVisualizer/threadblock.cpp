@@ -95,7 +95,7 @@ std::list<update_line_info> threadBlock::getUpdateInfo(){
             ret_update_entries.push_back(line_info);
         }
     }//instruction_stream.empty
-
+    qDebug("Block %d Instructions %llu \n", this->blockIdX, instruction_stream.size());
     this->updateNextCycleCounter();
     return ret_update_entries;
 }
@@ -139,6 +139,13 @@ void threadBlock::clearAllData(){
     instruction_stream.clear();
 }
 
+long long threadBlock::getMinCyc(){
+    return instruction_stream.front().cycles;
+}
+
+long long threadBlock::getMaxCyc(){
+    return instruction_stream.back().cycles;
+}
 
 /*Input reading & setup*/
 void threadBlock::addAccessToLocalList(int in_tx, int in_ty, int in_wid, std::string in_dsname, int in_oper, long long in_idx, long long in_address, long long in_cycles){
@@ -149,6 +156,7 @@ void threadBlock::addAccessToLocalList(int in_tx, int in_ty, int in_wid, std::st
 void threadBlock::sortAccessEntries(){
     instruction_stream.sort();
     this->updateNextCycleCounter();
+    qDebug("Hello from block x:%d y:%d id:%d", this->blockIdX, this->blockIdY, this->blockId);
 }
 
 /*Debug function*/
