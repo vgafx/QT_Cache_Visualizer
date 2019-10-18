@@ -4,15 +4,12 @@
 statistics::statistics()
 {
     this->total_misses = 0;
-    this->total_full_hits = 0;
+    this->total_hits = 0;
     this->total_mem_requests = 0;
-    this->total_partial_hits = 0;
-    this->r_full_hits = 0;
     this->r_misses_total = 0;
-    this->r_partial_hits = 0;
-    this->w_full_hits = 0;
+    this->r_hits_total = 0;
     this->w_misses_total = 0;
-    this->w_partial_hits = 0;
+    this->w_hits_total = 0;
     this->hitrate = 0.0;
     this->output = "";
 }
@@ -20,11 +17,11 @@ statistics::statistics()
 QString statistics::getStatisticsOutput(){
     estimateTotals();
     estimatePercentage();
-    QString results = QString("Simulation Results\n---------------------------\nTotal Memory Requests Issued(Warp-wide): %1\nTotal Full Hits: %2\nTotal Partial Hits: %3"
-                              "\nTotal Misses: %4\nCache Hit-Rate: %5%\n\nRead-Write Statistics\n---------------------------\n"
-                              "Read Full Hits: %6\nRead Partial Hits: %7\nRead Misses: %8\nWrite Full Hits: %9\nWrite Partial Hits: %10\nWrite Misses: %11")
-            .arg(this->total_mem_requests).arg(this->total_full_hits).arg(this->total_partial_hits).arg(this->total_misses).arg(this->hitrate).arg(this->r_full_hits).arg(this->r_partial_hits)
-            .arg(this->r_misses_total).arg(this->w_full_hits).arg(this->w_partial_hits).arg(this->w_misses_total);
+    QString results = QString("Simulation Results\n---------------------------\nTotal Memory Requests Issued: %1\nTotal Hits: %2\n"
+                              "\nTotal Misses: %3\nCache Hit-Rate: %4%\n\nRead-Write Statistics\n---------------------------\n"
+                              "Read Hits: %5\nRead Misses: %6\nWrite Hits: %7\nWrite Misses: %8")
+            .arg(this->total_mem_requests).arg(this->total_hits).arg(this->total_misses).arg(this->hitrate).arg(this->r_hits_total).arg(this->r_misses_total)
+            .arg(this->w_hits_total).arg(this->w_misses_total);
 
     return results;
 }
@@ -32,49 +29,49 @@ QString statistics::getStatisticsOutput(){
 void statistics::reset()
 {
     this->total_misses = 0;
-    this->total_full_hits = 0;
+    this->total_hits = 0;
     this->total_mem_requests = 0;
-    this->total_partial_hits = 0;
-    this->r_full_hits = 0;
     this->r_misses_total = 0;
-    this->r_partial_hits = 0;
-    this->w_full_hits = 0;
+    this->r_hits_total = 0;
     this->w_misses_total = 0;
-    this->w_partial_hits = 0;
+    this->w_hits_total = 0;
     this->hitrate = 0.0;
     this->output = "";
 }
 
 void statistics::estimateTotals(){
     this->total_misses = this->w_misses_total + this->r_misses_total;
-    this->total_full_hits = this->w_full_hits + this->r_full_hits;
-    this->total_partial_hits = this->w_partial_hits + this->r_partial_hits;
+    this->total_hits = this->r_hits_total + this->w_hits_total;
+}
+
+void statistics::recordReadMisses(int r_misses){
+    this->r_misses_total+=r_misses;
+}
+
+void statistics::recordWriteMisses(int w_misses){
+    this->w_misses_total+=w_misses;
+}
+
+void statistics::recordReadHits(int r_hits){
+    this->r_hits_total+=r_hits;
+}
+
+void statistics::recordWriteHits(int w_hits){
+    this->w_hits_total+=w_hits;
+}
+
+void statistics::recordMemoryRequests(int m_req){
+    this->total_mem_requests+=m_req;
 }
 
 void statistics::estimatePercentage()
 {
-    this->hitrate = (double(this->total_full_hits) + double(this->total_partial_hits)) / double(this->total_mem_requests);
+    this->hitrate = double(this->total_hits) / double(this->total_mem_requests);
     this->hitrate *= 100;
-}
-
-void statistics::recordWritePartialHit(){
-    this->w_partial_hits++;
-}
-
-void statistics::recordWriteFullHit(){
-    this->w_full_hits++;
 }
 
 void statistics::recordWriteMiss(){
     this->w_misses_total++;
-}
-
-void statistics::recordReadPartialHit(){
-    this->r_partial_hits++;
-}
-
-void statistics::recordReadFullHit(){
-    this->r_full_hits++;
 }
 
 void statistics::recordReadMiss(){
@@ -114,66 +111,6 @@ int statistics::getTotal_misses() const
 void statistics::setTotal_misses(int value)
 {
     total_misses = value;
-}
-
-int statistics::getR_full_hits() const
-{
-    return r_full_hits;
-}
-
-void statistics::setR_full_hits(int value)
-{
-    r_full_hits = value;
-}
-
-int statistics::getR_partial_hits() const
-{
-    return r_partial_hits;
-}
-
-void statistics::setR_partial_hits(int value)
-{
-    r_partial_hits = value;
-}
-
-int statistics::getW_full_hits() const
-{
-    return w_full_hits;
-}
-
-void statistics::setW_full_hits(int value)
-{
-    w_full_hits = value;
-}
-
-int statistics::getW_partial_hits() const
-{
-    return w_partial_hits;
-}
-
-void statistics::setW_partial_hits(int value)
-{
-    w_partial_hits = value;
-}
-
-int statistics::getTotal_partial_hits() const
-{
-    return total_partial_hits;
-}
-
-void statistics::setTotal_partial_hits(int value)
-{
-    total_partial_hits = value;
-}
-
-int statistics::getTotal_full_hits() const
-{
-    return total_full_hits;
-}
-
-void statistics::setTotal_full_hits(int value)
-{
-    total_full_hits = value;
 }
 
 int statistics::getTotal_mem_requests() const

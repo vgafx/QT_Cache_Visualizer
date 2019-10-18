@@ -123,6 +123,10 @@ struct update_line_info{
     bool s1;
     bool s2;
     bool s3;
+    int s0_req;
+    int s1_req;
+    int s2_req;
+    int s3_req;
 
 };
 
@@ -137,6 +141,10 @@ struct distinct_entries{
     long long max_idx;
     bool sec0, sec1, sec2, sec3;
     long long cycles;
+    int s0_reqs;
+    int s1_reqs;
+    int s2_reqs;
+    int s3_reqs;
 };
 
 

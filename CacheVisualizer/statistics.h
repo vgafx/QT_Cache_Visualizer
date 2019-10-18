@@ -18,24 +18,6 @@ public:
     int getTotal_misses() const;
     void setTotal_misses(int value);
 
-    int getR_full_hits() const;
-    void setR_full_hits(int value);
-
-    int getR_partial_hits() const;
-    void setR_partial_hits(int value);
-
-    int getW_full_hits() const;
-    void setW_full_hits(int value);
-
-    int getW_partial_hits() const;
-    void setW_partial_hits(int value);
-
-    int getTotal_partial_hits() const;
-    void setTotal_partial_hits(int value);
-
-    int getTotal_full_hits() const;
-    void setTotal_full_hits(int value);
-
     int getTotal_mem_requests() const;
     void setTotal_mem_requests(int value);
 
@@ -52,16 +34,18 @@ public:
     QString getStatisticsOutput();
     void reset();
 
+    void recordReadMisses(int r_misses);
+    void recordWriteMisses(int w_misses);
+    void recordReadHits(int r_hits);
+    void recordWriteHits(int w_hits);
+    void recordMemoryRequests(int m_req);
 private:
     int r_misses_total;
     int w_misses_total;
     int total_misses;
-    int r_full_hits;
-    int r_partial_hits;
-    int w_full_hits;
-    int w_partial_hits;
-    int total_partial_hits;
-    int total_full_hits;
+    int r_hits_total;
+    int w_hits_total;
+    int total_hits;
     int total_mem_requests;
     double hitrate;
     QString output;
