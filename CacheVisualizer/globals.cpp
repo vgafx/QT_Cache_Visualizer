@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "math.h"
 
+
 /*Init with Titanx configuration on default*/
 std::string name = "GTX TitanX";
 int l2_size = 2359296;

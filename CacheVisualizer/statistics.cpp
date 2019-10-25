@@ -11,6 +11,8 @@ statistics::statistics()
     this->w_misses_total = 0;
     this->w_hits_total = 0;
     this->hitrate = 0.0;
+    this->w_hitrate = 0.0;
+    this->r_hitrate = 0.0;
     this->output = "";
 }
 
@@ -19,9 +21,9 @@ QString statistics::getStatisticsOutput(){
     estimatePercentage();
     QString results = QString("Simulation Results\n---------------------------\nTotal Memory Requests Issued: %1\nTotal Hits: %2\n"
                               "\nTotal Misses: %3\nCache Hit-Rate: %4%\n\nRead-Write Statistics\n---------------------------\n"
-                              "Read Hits: %5\nRead Misses: %6\nWrite Hits: %7\nWrite Misses: %8")
+                              "Read Hits: %5\nRead Misses: %6\nWrite Hits: %7\nWrite Misses: %8\nRead Hitrate: %9\nWrite Hitrate: %10")
             .arg(this->total_mem_requests).arg(this->total_hits).arg(this->total_misses).arg(this->hitrate).arg(this->r_hits_total).arg(this->r_misses_total)
-            .arg(this->w_hits_total).arg(this->w_misses_total);
+            .arg(this->w_hits_total).arg(this->w_misses_total).arg(this->r_hitrate).arg(this->w_hitrate);
 
     return results;
 }
@@ -36,6 +38,8 @@ void statistics::reset()
     this->w_misses_total = 0;
     this->w_hits_total = 0;
     this->hitrate = 0.0;
+    this->w_hitrate = 0.0;
+    this->r_hitrate = 0.0;
     this->output = "";
 }
 
@@ -68,6 +72,10 @@ void statistics::estimatePercentage()
 {
     this->hitrate = double(this->total_hits) / double(this->total_mem_requests);
     this->hitrate *= 100;
+    int total_writes = this->w_hits_total + this->w_misses_total;
+    int total_reads = this->r_hits_total + this->r_misses_total;
+    this->r_hitrate = double(this->r_hits_total) / double(total_reads) ;
+    this->w_hitrate = double(this->w_hits_total) / double(total_writes) ;
 }
 
 void statistics::recordWriteMiss(){

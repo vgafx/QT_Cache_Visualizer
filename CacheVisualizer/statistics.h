@@ -48,6 +48,8 @@ private:
     int total_hits;
     int total_mem_requests;
     double hitrate;
+    double w_hitrate;
+    double r_hitrate;
     QString output;
 
 };
