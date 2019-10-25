@@ -4,13 +4,13 @@
 
 /*Init with Titanx configuration on default*/
 std::string name = "GTX TitanX";
-int l2_size = 3145728;
+int l2_size = 2359296;
 int l1_size = 24576;
 int line_size = 128;
 long long global_size = 12884901888;
 int sector_size = 32;
-int way_size_l1 = 6;
-int way_size_l2 = 6;
+int way_size_l1 = 9;
+int way_size_l2 = 9;
 int warp_size = 6;
 int is_sectored = 1;
 int is_l1_enabled = 0;
@@ -23,8 +23,8 @@ int l1_load_granularity = 128;
 int l2_load_granularity = 32;
 std::string architecture = "2nd generation Maxwell";
 std::string chip = "GM200-400-A1";
-int worker_delay = 200;
-int global_latency = 400;
+int worker_delay = 1;
+int global_latency = 142;
 int data_type_bytes = 4;//!!Add this in config file
 
 bool missingConfigAttribute = false;
