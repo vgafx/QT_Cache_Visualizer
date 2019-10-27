@@ -15,7 +15,6 @@ cacherules::cacherules()
 }
 
 
-//!!TODO:Include latency(~200ms on R/W cache hits)
 void updateSceneFromInfo(std::list<update_line_info> up_info, statistics *stat_out){
     bool found_data_on_read = false, found_data_on_write = false, detected_empy_cline = false;
     bool read_once = true, write_once = true;
@@ -108,7 +107,7 @@ void updateSceneFromInfo(std::list<update_line_info> up_info, statistics *stat_o
 
             if(!found_data_on_read && detected_empy_cline){ //Data was not found, so pick the first empty cline from set and fill it
                 for (auto r_it = ret.first; r_it != ret.second; r_it++) {
-                    if(r_it->second.cline_ptr->getIs_empty() && read_once){
+                    if(r_it->second.cline_ptr->getIs_empty() && read_once && r_it->second.cline_ptr->getTag() == 0){
                         int requests = it->s0_req;
                         requests += it->s1_req;
                         requests += it->s2_req;
@@ -283,7 +282,7 @@ void updateSceneFromInfo(std::list<update_line_info> up_info, statistics *stat_o
 
             if(!found_data_on_write && detected_empy_cline){
                 for (auto w_it = ret.first; w_it != ret.second; w_it++) {
-                    if(w_it->second.cline_ptr->getIs_empty() && write_once){
+                    if(w_it->second.cline_ptr->getIs_empty() && write_once && w_it->second.cline_ptr->getTag() == 0){
                         int requests = it->s0_req;
                         requests += it->s1_req;
                         requests += it->s2_req;
@@ -435,7 +434,7 @@ void updateSceneFromInfoNonSectored(std::list<update_line_info> up_info, statist
 
             if(!found_data_on_read && detected_empy_cline){ //Data was not found, so pick the first empty cline from set and fill it
                 for (auto r_it = ret.first; r_it != ret.second; r_it++) {
-                    if(r_it->second.cline_ptr->getIs_empty() && read_once){
+                    if(r_it->second.cline_ptr->getIs_empty() && read_once && r_it->second.cline_ptr->getTag() == 0){
                         int requests = it->s0_req;
                         requests += it->s1_req;
                         requests += it->s2_req;
@@ -568,7 +567,7 @@ void updateSceneFromInfoNonSectored(std::list<update_line_info> up_info, statist
 
             if(!found_data_on_write && detected_empy_cline){
                 for (auto w_it = ret.first; w_it != ret.second; w_it++) {
-                    if(w_it->second.cline_ptr->getIs_empty() && write_once){
+                    if(w_it->second.cline_ptr->getIs_empty() && write_once && w_it->second.cline_ptr->getTag() == 0){
                         int requests = it->s0_req;
                         requests += it->s1_req;
                         requests += it->s2_req;
