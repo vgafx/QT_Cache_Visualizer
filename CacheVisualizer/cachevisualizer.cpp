@@ -175,9 +175,10 @@ void CacheVisualizer::on_actionOpen_Trace_triggered()
         QMessageBox::critical(this, "Warning", "Cannot Open file : " + file.errorString());
         return;
     }
-    QTextStream in(&file);
+    //QTextStream in(&file);
 
-    bool result = readTraceDataFromQstream(in, mySim);
+    //bool result = readTraceDataFromQstream(in, mySim);
+    bool result = readTraceDataByte(&file, mySim);
     if(result){
         qDebug("Trace file read succesfully\n!");
         QMessageBox::information(this, "Info", "Trace File loaded successfully!\n" );

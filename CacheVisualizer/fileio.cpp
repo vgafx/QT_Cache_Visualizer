@@ -9,6 +9,7 @@
 #include <iostream>
 #include <iomanip>
 #include <map>
+#include <QFile>
 
 #define FILENAME "configuration"
 
@@ -352,3 +353,128 @@ bool readTraceDataFromQstream(QTextStream &traceData, simulation *sim){
     //qDebug("Finished reading from QStream");
     return true;
 }
+
+
+bool readTraceDataByte(QFile *file , simulation *sim){
+    bool seenEqual = false;
+    bool seenPlus = false;
+    bool allowOnce = true;
+
+    //file->open(QIODevice::ReadOnly | QFile::Text);
+    qDebug("file size %llu",file->size());
+    qDebug("Can read? %d",file->canReadLine());
+
+
+    while(!file->atEnd()){
+        const QByteArray line = file->readLine();
+        qDebug("Line read\n");
+
+        if(!line.isEmpty() && !line.isNull() && line.at(0) != '#' && line.at(0) != '\n'){
+            if (line.at(0) == '='){seenEqual = true;}
+            if (line.at(0) == '+'){seenPlus = true;}
+            if (!seenEqual){
+                const QList<QByteArray> linesplit = line.split(':');
+                std::string att, val;
+                att = linesplit[0].toStdString();
+                val = linesplit[1].toStdString();
+                qDebug("Read: att=%s,val=%s\n",att.c_str(),val.c_str());
+                if(att == "numBlocks"){
+                    sim->setNumBlocks(std::stoi(val));
+                } else if (att == "numThreadsPerBlock"){
+                    sim->setThreadsPerBlock(std::stoi(val));
+                } else if (att == "blockDimensions"){
+                    QStringList val_split = QString::fromStdString(val).split('-');
+                    if (val_split.size() != 3){
+                        return false;
+                    } else {
+                        sim->setBlocks_x(val_split[0].toInt());
+                        sim->setBlocks_y(val_split[1].toInt());
+                        sim->setBlocks_z(val_split[2].toInt());
+                    }
+                } else if (att == "threadDimensions"){
+                    QStringList val_split = QString::fromStdString(val).split("-");
+                    if (val_split.size() != 3){
+                        return false;
+                    } else {
+                        sim->setThreads_x(val_split[0].toInt());
+                        sim->setThreads_y(val_split[1].toInt());
+                        sim->setThreads_z(val_split[2].toInt());
+                    }
+                }
+            }//end launch config
+            //qDebug("Launch Config done\n");
+            //Get the block scheduling info
+            if (!seenPlus && seenEqual){
+                if (line.isEmpty() || line.at(0) == '=' || line.at(0) == '\n' || line.isNull()){continue;}
+                const QList<QByteArray> linesplit = line.trimmed().split(',');
+                if (linesplit.size() != 3){
+                    return false;
+                } else {
+                    const QList<QByteArray> entrysplit1 = linesplit[0].split(':');
+                    const QList<QByteArray> entrysplit2 = linesplit[1].split(':');
+                    const QList<QByteArray> entrysplit3 = linesplit[2].split(':');
+                    QList<QByteArray> block_vals = entrysplit1[1].split('-');
+                    if (entrysplit1.size() != 2 && entrysplit2.size() != 2 && entrysplit2.size() != 2 && block_vals.size() != 3){
+                        return false;
+                    }
+                    std::string attribute1, attribute2, attribute3;
+
+                    attribute1 = entrysplit1[0].trimmed().toStdString();
+                    attribute2 = entrysplit2[0].trimmed().toStdString();
+                    attribute3 = entrysplit3[0].trimmed().toStdString();
+                    block_vals = entrysplit1[1].split('-');
+
+                    if (attribute1 == "B" && attribute2 == "SM" && attribute3 == "GT"){
+                        int bx = block_vals[0].toInt();
+                        int by = block_vals[1].toInt();
+                        int bz = block_vals[2].toInt();
+                        int smid = entrysplit2[1].toInt();
+                        long long gtime = entrysplit3[1].toLongLong();
+                        sim->addScheduleEntry(bx, by, smid, gtime);
+                    } else {
+                        return false;
+                    }
+                }
+            }//end block scheduling info
+    //qDebug("Block sched done\n");
+            //Finally get the trace input
+            if (seenPlus && seenEqual){
+                if(allowOnce){
+                    sim->sortSchedulingEntries();
+                    sim->configureDims();
+                    sim->generateBlocks();
+                    allowOnce = false;
+                }
+                if (line.isEmpty() || line.at(0) == '+' || line.at(0) == '\n' || line.isNull()){continue;}
+                const QList<QByteArray> linesplit = line.split(',');
+                if (linesplit.size() != 7){
+                    return false;
+                } else {
+                    const QList<QByteArray> b_info = linesplit[0].split('-');
+                    int blockx = b_info[0].toInt();
+                    int blocky = b_info[1].toInt();
+                    int wid = linesplit[1].toInt();
+                    std::string dsn = linesplit[2].toStdString();
+                    std::string s_op = linesplit[3].toStdString();
+                    int operation;
+                    if (s_op == "R"){
+                        operation = READ;
+                    } else if (s_op == "W"){
+                        operation = WRITE;
+                    }
+                    long long ds_idx = linesplit[4].toLongLong();
+                    long long address = linesplit[5].toLongLong();
+                    long long cycles = linesplit[6].toLongLong();
+                    sim->mapAccessToBlock(wid, wid, blockx, blocky, wid, dsn, operation, ds_idx, address, cycles);
+                    //qDebug("Entry mapped\n");
+                }
+            }
+        }//end if empty/comment
+
+    }
+    return true;
+
+
+}
+
+
