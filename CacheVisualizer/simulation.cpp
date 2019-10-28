@@ -274,6 +274,10 @@ int simulation::getThreadsPerBlock() const
 void simulation::setThreadsPerBlock(int value)
 {
     threadsPerBlock = value;
+    if (threadsPerBlock < max_threads){
+        int temp = max_threads / threadsPerBlock;
+        num_sm*=temp;
+    }
 }
 
 bool simulation::getPauseFlag() const

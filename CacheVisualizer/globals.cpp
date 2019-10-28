@@ -18,6 +18,7 @@ int is_l1_enabled = 0;
 int num_sm = 24;
 int concurrent_warps = 4;
 int cuda_cores = 3072;
+int max_threads = 1024;
 int replacement_policy = 1; //1 =LRU
 int write_policy = 1; //1 = write allocate
 int l1_load_granularity = 128;

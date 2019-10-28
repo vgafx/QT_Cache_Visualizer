@@ -25,6 +25,7 @@ extern int is_l1_enabled;
 extern int num_sm;
 extern int concurrent_warps;
 extern int cuda_cores;
+extern int max_threads;
 extern int replacement_policy; //1 =LRU
 extern int write_policy; //1 = write allocate
 extern int l1_load_granularity;
