@@ -90,6 +90,7 @@ public:
 
     long long getMinCyc();
     long long getMaxCyc();
+    long long getInstructionCount();
 private:
     int blockDim;
     int blockId;

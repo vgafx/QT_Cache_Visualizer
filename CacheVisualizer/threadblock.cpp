@@ -173,6 +173,10 @@ void threadBlock::printInstructionStream(){
     }
 }
 
+long long threadBlock::getInstructionCount(){
+    return instruction_stream.size();
+}
+
 /*Setters and Getters*/
 long long threadBlock::getNextCycleVal() const
 {

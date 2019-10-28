@@ -92,6 +92,7 @@ public:
     void setIsRunning(bool value);
 
     void getMinMaxFromBlocks();
+    void getInstructionCounts();
 private:
     int numBlocks;
     int blocks_x;

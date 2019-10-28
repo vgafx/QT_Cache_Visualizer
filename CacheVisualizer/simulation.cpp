@@ -161,6 +161,12 @@ void simulation::getMinMaxFromBlocks(){
 }
 
 
+void simulation::getInstructionCounts(){
+    for (auto it = blocks.begin(); it != blocks.end(); ++it){
+        qDebug("BlockX: %d BlockY: %d  Instructions: %llu ",it->second.getBlockIdX() , it->second.getBlockIdX() ,it->second.getInstructionCount());
+    }
+}
+
 /*Input & Setup functions (6)*/
 void simulation::mapAccessToBlock(int in_tx, int in_ty, int in_bx, int in_by, int in_wid, std::string in_dsname, int in_oper, long long in_idx, long long in_address, long long in_cycles){
     for (auto it = blocks.begin(); it != blocks.end(); ++it) {
@@ -175,6 +181,7 @@ void simulation::sortAllBlockAccesses(){
         it->second.sortAccessEntries();
     }
     getMinMaxFromBlocks();
+    getInstructionCounts();
 }
 
 void simulation::addScheduleEntry(int bx, int by, int sm, long long t){
