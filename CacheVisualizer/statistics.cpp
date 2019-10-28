@@ -76,6 +76,8 @@ void statistics::estimatePercentage()
     int total_reads = this->r_hits_total + this->r_misses_total;
     this->r_hitrate = double(this->r_hits_total) / double(total_reads) ;
     this->w_hitrate = double(this->w_hits_total) / double(total_writes) ;
+    this->r_hitrate *= 100;
+    this->w_hitrate *= 100;
 }
 
 void statistics::recordWriteMiss(){

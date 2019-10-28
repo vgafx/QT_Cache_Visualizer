@@ -171,9 +171,14 @@ void simulation::getMinMaxFromBlocks(){
 
 
 void simulation::getInstructionCounts(){
+    int count = 0;
     for (auto it = blocks.begin(); it != blocks.end(); ++it){
-        qDebug("BlockX: %d BlockY: %d  Instructions: %llu ",it->second.getBlockIdX() , it->second.getBlockIdX() ,it->second.getInstructionCount());
+        //qDebug("BlockX: %d BlockY: %d  Instructions: %llu ",it->second.getBlockIdX() , it->second.getBlockIdX() ,it->second.getInstructionCount());
+        if(it->second.getInstructionCount()>0){
+            count++;
+        }
     }
+    qDebug("%d Blocks still have instructions to execute\n");
 }
 
 /*Input & Setup functions (6)*/

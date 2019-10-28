@@ -17,8 +17,9 @@ void backgroundworker::run(){
         wrk_upd = wrk_sim->getUpdateInfoFromBlock();
         if (wrk_upd.empty()){//No more visual updates produced
             //qDebug("Update Info Empty\n");
+            wrk_sim->getInstructionCounts();
         } else {
-            qDebug("Emmiting SIGNAL from worker!\n");
+            //qDebug("Emmiting SIGNAL from worker!\n");
             emit guiUpdate(wrk_upd);
         }
 
