@@ -18,7 +18,7 @@ void backgroundworker::run(){
         if (wrk_upd.empty()){//No more visual updates produced
             //qDebug("Update Info Empty\n");
         } else {
-            //qDebug("Emmiting SIGNAL from worker!\n");
+            qDebug("Emmiting SIGNAL from worker!\n");
             emit guiUpdate(wrk_upd);
         }
 

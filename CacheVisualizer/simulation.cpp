@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <string>
 #include <cmath>
+#include <tuple>
 #include "simulation.h"
 #include "globals.h"
 #include "threadblock.h"
@@ -72,7 +73,8 @@ void simulation::prepareInitialBlocks(){
     int first_blocks = 0;
     for (auto it = block_schedule.begin(); it != block_schedule.end(); it++) {
         if (first_blocks < max_blocks){
-            blocks.find(it->sm_id)->second.setRunning(true);
+            std::tuple<int,int,int> unique_key(it->sm_id, it->block_id_x, it->block_id_y);
+            blocks.find(unique_key)->second.setRunning(true);
             first_blocks++;
         }
     }
@@ -111,16 +113,19 @@ void simulation::updateBitMask()
 }
 
 /*Look at all scheduled blocks and pick the one with the lowest cycle counter to execute*/
-int simulation::findNextInstructionFromBlocks(){
+std::tuple<int,int,int> simulation::findNextInstructionFromBlocks(){
     long long min_cyc = LLONG_MAX;
     int id = EMPTY_RET;
     int cur_active_blocks = 0;
+    std::tuple<int,int,int> ret_key(EMPTY_RET,EMPTY_RET,EMPTY_RET);
+
     for (auto it = blocks.begin(); it != blocks.end(); it++) {
         if (it->second.getRunning()){
             cur_active_blocks++;
             if (it->second.getNextCycleVal() < min_cyc){
                 min_cyc = it->second.getNextCycleVal();
-                id = it->second.getMappedToSM();
+                //id = it->second.getMappedToSM();
+                ret_key=std::tuple<int,int,int>(it->second.getMappedToSM(), it->second.getBlockIdX(),it->second.getBlockIdY());
             }
         }
     }
@@ -129,25 +134,29 @@ int simulation::findNextInstructionFromBlocks(){
         if(!block_schedule.empty()){
             int fresh_blocks = std::min(int(block_schedule.size()),(num_sm - current_active_blocks));
             for (int i = 0; i < fresh_blocks; i++) {
-                int temp_id = block_schedule.front().sm_id;
-                blocks.find(temp_id)->second.setRunning(true);
-                if (blocks.find(temp_id)->second.getNextCycleVal() < min_cyc){
-                    min_cyc = blocks.find(temp_id)->second.getNextCycleVal();
-                    id = blocks.find(temp_id)->second.getMappedToSM();
+                //int temp_id = block_schedule.front().sm_id;
+                std::tuple<int,int,int> temp_key(block_schedule.front().sm_id, block_schedule.front().block_id_x, block_schedule.front().block_id_y);
+                blocks.find(temp_key)->second.setRunning(true);
+                if (blocks.find(temp_key)->second.getNextCycleVal() < min_cyc){
+                    min_cyc = blocks.find(temp_key)->second.getNextCycleVal();
+                    ret_key=std::tuple<int,int,int>(blocks.find(temp_key)->second.getMappedToSM(), blocks.find(temp_key)->second.getBlockIdX(),blocks.find(temp_key)->second.getBlockIdY());
+                    //id = blocks.find(temp_key)->second.getMappedToSM();
                 }
                 block_schedule.pop_front();
             }
         }
     }
-    return id;
+    return ret_key;
 }
 
 
 std::list<update_line_info> simulation::getUpdateInfoFromBlock(){
     std::list<update_line_info> tmp_list;
-    int block_id = this->findNextInstructionFromBlocks();
-    if(block_id != EMPTY_RET){
-        tmp_list = blocks.find(block_id)->second.getUpdateInfo();
+    std::tuple<int,int,int> ret_key = this->findNextInstructionFromBlocks();
+    if(std::get<0>(ret_key) != EMPTY_RET && std::get<1>(ret_key) != EMPTY_RET && std::get<2>(ret_key) != EMPTY_RET){
+        tmp_list = blocks.find(ret_key)->second.getUpdateInfo();
+    } else {
+        //qDebug("Empty ret!!\n");
     }
 
     return tmp_list;
@@ -207,7 +216,11 @@ void simulation::generateBlocks(){
     int count = 0;
     for (it = block_schedule.begin(); it != block_schedule.end(); it++) {
         threadBlock *blk = new threadBlock(this->threadsPerBlock, it->block_id_x, it->block_id_y, this->blockDims, this->threads_x, this->threads_y, it->sm_id, this->bit_mask);
-        blocks.insert(std::pair<int,threadBlock>(it->sm_id,*blk));
+        std::tuple<int,int,int> unique_key(it->sm_id, it->block_id_x, it->block_id_y);// = make_tuple(it->sm_id, it->block_id_x, it->block_id_y);
+        //blocks.insert(std::pair<int,threadBlock>(unique_key,*blk));
+        //blocks.insert(unique_key,*blk);
+        std::pair<std::tuple<int,int,int>,threadBlock>bpair(unique_key,*blk);
+        blocks.insert(bpair);
         count++;
     }
     this->numBlocks = count;

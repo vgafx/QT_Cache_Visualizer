@@ -2,6 +2,7 @@
 #define SIMULATION_H
 #include <list>
 #include <map>
+#include <tuple>
 #include "threadblock.h"
 
 
@@ -23,7 +24,9 @@ public:
 
     std::list<schedule_entry> block_schedule;
     std::list<schedule_entry>::iterator it;
-    std::multimap<int, threadBlock> blocks;
+
+    //typedef std::tuple<int,int,int> uniq_key;
+    std::multimap<std::tuple<int,int,int>, threadBlock> blocks;
 
     /*Custom functions*/
     void cleanAll();
@@ -37,7 +40,7 @@ public:
     void sortAllBlockAccesses();
     void printBlockAccessLists();
     void printSchedule();
-    int findNextInstructionFromBlocks();
+    //int findNextInstructionFromBlocks();
     bool isSimulationComplete();
     void updateBitMask();
     std::list<update_line_info> getUpdateInfoFromBlock();
@@ -93,6 +96,8 @@ public:
 
     void getMinMaxFromBlocks();
     void getInstructionCounts();
+    std::tuple<int, int, int> findNextInstructionFromBlocks();
+
 private:
     int numBlocks;
     int blocks_x;
