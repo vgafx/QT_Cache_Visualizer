@@ -11,8 +11,10 @@ backgroundworker::backgroundworker(simulation *worker_sim, int upd_delay)
 
 
 void backgroundworker::run(){
+    long long counter = 0;
     while (!wrk_sim->isSimulationComplete()){
-        this->msleep(this->delay);
+        counter++;
+        //this->msleep(this->delay);
         std::list<update_line_info> wrk_upd;
         wrk_upd = wrk_sim->getUpdateInfoFromBlock();
         if (wrk_upd.empty()){//No more visual updates produced
@@ -34,6 +36,13 @@ void backgroundworker::run(){
             qDebug("In pause flag loop\n");
             this->sleep(1);
         }
+
+
+        if (counter % 2048 == 0){
+            wrk_sim->getInstructionCounts();
+        }
+
+
     }
 
     if(!this->stopFlag){

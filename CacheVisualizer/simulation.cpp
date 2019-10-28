@@ -86,7 +86,7 @@ void simulation::prepareInitialBlocks(){
 bool simulation::isSimulationComplete(){
     bool ret_val = true;
     for (auto it = blocks.begin(); it != blocks.end(); it++) {
-        if(!it->second.isFinished()){ret_val = false;}
+        if(!it->second.isFinished()){ret_val = false; break;}
     }
     return ret_val;
 }
