@@ -4,22 +4,18 @@
  * as an intermediary. Otherwise, each cacheline would have to have its own signal. Since the status
  * update is on-click, this solution is fine.
 */
-
-#ifndef STATUSCONTROLLER_H
-#define STATUSCONTROLLER_H
+#pragma once
 
 #include <QObject>
 
-class statusController: public QObject
+class StatusController: public QObject
 {
     Q_OBJECT
 public:
-    statusController();
-    QString stsTxt;
+    StatusController();
+    QString sts_txt;
     void setStatusText(QString intxt);
 
 signals:
     void clickSignal(QString txt);
 };
-
-#endif // STATUSCONTROLLER_H

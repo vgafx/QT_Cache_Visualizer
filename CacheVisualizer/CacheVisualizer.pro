@@ -22,35 +22,40 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-CONFIG += c++11
+CONFIG += c++17
 
 
 SOURCES += \
         backgroundworker.cpp \
+        block.cpp \
+        cache.cpp \
         cacheline.cpp \
-        cacherules.cpp \
-        fileio.cpp \
-        globals.cpp \
+        executionsimulation.cpp \
+        filehandler.cpp \
         main.cpp \
         cachevisualizer.cpp \
-        simulation.cpp \
-        statistics.cpp \
+        runtimeflags.cpp \
+        scopedtimer.cpp \
+        settings.cpp \
+        simulationstatistics.cpp \
         statuscontroller.cpp \
-        threadblock.cpp \
         view.cpp
 
 HEADERS += \
         backgroundworker.h \
+        block.h \
+        cache.h \
         cacheline.h \
-        cacherules.h \
         cachevisualizer.h \
-        fileio.h \
-        globals.h \
+        datadefinitions.h \
+        executionsimulation.h \
+        filehandler.h \
         main.h \
-        simulation.h \
-        statistics.h \
+        runtimeflags.h \
+        scopedtimer.h \
+        settings.h \
+        simulationstatistics.h \
         statuscontroller.h \
-        threadblock.h \
         view.h
 
 FORMS += \

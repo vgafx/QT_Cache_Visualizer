@@ -1,29 +1,35 @@
-#ifndef BACKGROUNDWORKER_H
-#define BACKGROUNDWORKER_H
+/*** Background Worker
+ * Class inheriting from QThread. Its purpose is to automatically produce cacheline update
+ * information to be consumed by the visualizer. The thread of this type runs in the background
+ * while the main (GUI) thread receives updates(for the Autoplay mode) from this thread.
+ ***/
+#pragma once
 #include <QThread>
-#include "simulation.h"
+#include "executionsimulation.h"
 
-class backgroundworker : public QThread
+class BackgroundWorker : public QThread
 {
     Q_OBJECT
 
 public:
-    backgroundworker(simulation *wrkSim, int upd_delay);
+    BackgroundWorker(ExecutionSimulation *w_sim, int upd_delay);
     void run();
 
 signals:
-    void guiUpdate(std::list<update_line_info> wrk_upd);
-    void hasFinished(bool fin);
+    void guiUpdate(std::vector<update_cline_info<unsigned int, unsigned long long>>& wrk_upd);
+    void hasFinished(bool stopped);
 
 public slots:
     void handlePause();
     void handleStop();
+    void handleUpdateFinish();
 
 private:
     int delay;
-    bool pauseFlag;
-    bool stopFlag;
-    simulation *wrk_sim;
+    ExecutionSimulation& wrk_sim;
+    bool pause_flag;
+    bool stop_flag;
+    bool update_finished;
+
 };
 
-#endif // BACKGROUNDWORKER_H

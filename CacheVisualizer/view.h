@@ -1,5 +1,7 @@
-#ifndef VIEW_H
-#define VIEW_H
+/*** View
+ * Implements the viewing functionality for the GUI.
+ ***/
+#pragma once
 
 #include <QFrame>
 #include <QGraphicsView>
@@ -53,6 +55,3 @@ private:
     QToolButton *resetButton;
     QSlider *zoomSlider;
 };
-
-
-#endif

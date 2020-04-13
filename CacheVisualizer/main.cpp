@@ -1,19 +1,16 @@
 #include <QApplication>
 #include <string>
-#include "fileio.h"
-#include "globals.h"
-#include "cachevisualizer.h"
 #include <random>
+#include <iostream>
+
+#include "cachevisualizer.h"
+#include "settings.h"
+#include "datadefinitions.h"
+#include "filehandler.h"
+
 
 int main(int argc, char *argv[])
 {
-
-    initConfigMap();
-    readConfig();
-    qDebug("Configuration finished...\n");
-    computeConfig();
-    printGlobals();
-
 
     QApplication a(argc, argv);
 

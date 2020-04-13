@@ -59,8 +59,6 @@ replacementpolicy=1
 #2 : random from set
 writepolicy=1
 #1 : write allocate (in L2)
-l1loadgranularity=128
-l2loadgranularity=32
 #autoplay delay in milliseconds
 autodelay=1
 #global latency in cycles

@@ -5,11 +5,11 @@
   the same object.*/
 #include "statuscontroller.h"
 
-statusController::statusController()
+StatusController::StatusController()
+    :sts_txt("")
 {
-    this->stsTxt = "";
 }
 
-void statusController::setStatusText(QString intxt){
+void StatusController::setStatusText(QString intxt){
     emit clickSignal(intxt);
 }

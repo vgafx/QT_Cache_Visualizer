@@ -1,5 +1,8 @@
-#ifndef CACHEVISUALIZER_H
-#define CACHEVISUALIZER_H
+/*** Cache Visualizer
+ *  The application's main window. Handles communication, user actions, and
+ *  generally glues everything together.
+ ***/
+#pragma once
 
 #include <QMainWindow>
 #include <QFile>
@@ -8,12 +11,27 @@
 #include <QMessageBox>
 #include <QLineEdit>
 #include <QActionGroup>
+#include <QLabel>
+#include <QGridLayout>
+#include <QHBoxLayout>
+#include <QActionGroup>
+#include <QMetaType>
+#include <math.h>
+#include <utility>
+#include <map>
+#include <fstream>
 
-#include "fileio.h"
+#include "executionsimulation.h"
+#include "cacheline.h"
+#include "cache.h"
 #include "view.h"
 #include "statuscontroller.h"
-#include "simulation.h"
-#include "statistics.h"
+#include "simulationstatistics.h"
+#include "backgroundworker.h"
+#include "filehandler.h"
+#include "settings.h"
+#include "runtimeflags.h"
+#include "scopedtimer.h"
 
 class QGraphicsScene;
 class QSplitter;
@@ -27,12 +45,16 @@ class CacheVisualizer : public QMainWindow
     Q_OBJECT
 
 public:
-    statusController *stsC;
-    simulation *mySim;
-    statistics *myStatistics;
+    StatusController* sts_c;
+    SimulationStatistics* statistics;
+    FileHandler* f_handler;
+    ExecutionSimulation* e_sim;
+    Cache* l2_cache;
+
     explicit CacheVisualizer(QWidget *parent = nullptr);
     ~CacheVisualizer();
 
+/*Handling user actions*/
 private slots:
     void on_actionExit_triggered();
 
@@ -61,26 +83,27 @@ private slots:
     void on_actionNext_Step_triggered();
 
 private:
-    Ui::CacheVisualizer *ui;
-    //QString currentFile="";
-    QGraphicsScene *scene;
-    View *l2View;
-    QActionGroup *m_e_group;
+    Ui::CacheVisualizer* ui;
+    QGraphicsScene* scene;
+    View* l2View;
+    QActionGroup* m_e_group;
+
+    const std::string cname = "configuration";
 
     void populateScene();
     void populateSceneSectored();
     void populateSceneNormal();
     void setupMatrix();
     void createStatusBar();
+
 public slots:
     void updateStatusBar(QString sts);
-    void handleWorkerThreadUpdate(std::list<update_line_info> wrk_upd);
-    void handleWorkerThreadFinished(bool fin);
+    void handleWorkerThreadUpdate(std::vector<update_cline_info<unsigned int, unsigned long long>>& wrk_upd);
+    void handleWorkerThreadFinished(bool stopped);
 
 signals:
     void sendPauseSignal();
     void sendStopSignal();
+    void sendUpdateFinishedSignal();
 
 };
-
-#endif // CACHEVISUALIZER_H

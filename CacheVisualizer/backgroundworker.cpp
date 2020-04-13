@@ -1,65 +1,61 @@
-#include <QThread>
 #include "backgroundworker.h"
 
-backgroundworker::backgroundworker(simulation *worker_sim, int upd_delay)
+BackgroundWorker::BackgroundWorker(ExecutionSimulation *worker_sim, int upd_delay)
+    : delay(upd_delay), wrk_sim(*worker_sim)
 {
-    this->delay = upd_delay;
-    this->wrk_sim = worker_sim;
-    this->stopFlag = false;
-    this->pauseFlag = false;
+    this->stop_flag = false;
+    this->pause_flag = false;
+    this->update_finished = true;
 }
 
 
-void backgroundworker::run(){
-    long long counter = 0;
-    while (!wrk_sim->isSimulationComplete()){
-        counter++;
-        //this->msleep(this->delay);
-        std::list<update_line_info> wrk_upd;
-        wrk_upd = wrk_sim->getUpdateInfoFromBlock();
-        if (wrk_upd.empty()){//No more visual updates produced
-            //qDebug("Update Info Empty\n");
-            wrk_sim->getInstructionCounts();
-        } else {
-            //qDebug("Emmiting SIGNAL from worker!\n");
-            emit guiUpdate(wrk_upd);
+void BackgroundWorker::run(){
+
+    while (!wrk_sim.isSimulationComplete()){
+        if (update_finished){
+            update_finished = false;
+            std::vector<update_cline_info<unsigned int, unsigned long long>>& wrk_upd = wrk_sim.getUpdateInfoFromBlock();
+            if (wrk_upd.front().set_idx == NORET && wrk_upd.front().tag == NORET){//No more visual updates produced
+                qDebug("Update NORET\n");
+            } else {
+                /*sync point*/
+                emit guiUpdate(wrk_upd);
+            }
         }
 
-        if (this->stopFlag){
+        if (this->stop_flag){
             qDebug("run::stopflag\n");
-            this->wrk_sim->cleanAll();
             emit hasFinished(true);
             break;
         }
 
-        while(pauseFlag){
+        while(pause_flag){
             qDebug("In pause flag loop\n");
-            this->sleep(1);
+            this->sleep(10);
         }
-
-
-        if (counter % 2048 == 0){
-            wrk_sim->getInstructionCounts();
-        }
-
 
     }
 
-    if(!this->stopFlag){
-        emit hasFinished(true);
-        this->wrk_sim->cleanAll();
+    if(!this->stop_flag){
+        emit hasFinished(false);
         this->exit();
     }
+
+    this->exit();
 }
 
-void backgroundworker::handlePause()
+void BackgroundWorker::handlePause()
 {
-    //qDebug("Worker pause flag flipped!\n");
-    this->pauseFlag = (this->pauseFlag) ? false : true;
+    this->pause_flag = (this->pause_flag) ? false : true;
 }
 
-void backgroundworker::handleStop()
+void BackgroundWorker::handleStop()
 {
-    //qDebug("Worker stop flag set!\n");
-    this->stopFlag = true;
+    this->stop_flag = true;
+}
+
+void BackgroundWorker::handleUpdateFinish()
+{
+    wrk_sim.popBlockUpdate();
+    this->update_finished = true;
 }
